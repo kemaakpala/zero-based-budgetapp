@@ -1,3 +1,15 @@
 .App {
   text-align: center;
 }
+
+.form-control {
+  /* styles for the form-control block */
+}
+
+.form-control--error {
+  /* styles for form-control elements with the error modifier */
+}
+
+.form-control--disabled {
+  /* styles for form-control elements with the disabled modifier */
+}

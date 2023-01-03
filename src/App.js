@@ -5,7 +5,7 @@ function App() {
     <div className="App">
       <header className="App-header">Zero Based Budgeting App</header>
       <main>
-        <form>
+        <form className="form">
           <div className="income-container">
             <div className="total-income-hero__text">£ 0.00</div>
             <div className="income-fields">
@@ -18,7 +18,7 @@ function App() {
                 </label>
                 <input
                   id="primaryIncome"
-                  className="primary-income-fields__input"
+                  className="form-control primary-income-fields__input"
                   type="text"
                   name="primary-income"
                   value=""
@@ -32,7 +32,7 @@ function App() {
                   Salary 2
                 </label>
                 <input
-                  className="secondary-income-fields__input"
+                  className="form-control secondary-income-fields__input"
                   id="secondaryIncome1"
                   type="text"
                   name="secondary-income-1"
@@ -48,7 +48,7 @@ function App() {
             <div className="group-item">
               <div className="group-item-fields">
                 <label className="group-item-fields__label">Emergency Fund: </label>
-                <input className="group-item-fields__input" type="text" name="savings_emergency_fund" value="" />
+                <input className="form-control group-item-fields__input" type="text" name="savings_emergency_fund" value="" />
               </div>
               <div className="group-item-status">
                 <h4 className="group-item-status__header">Planned</h4>
@@ -63,8 +63,8 @@ function App() {
               </div>
             </div>
             <div className="group-actions">
-              <button className="group-actions__button">Add New Group Item</button>
-              <button className="group-actions__button">Delete Group</button>
+              <button className="form-control group-actions__button">Add New Group Item</button>
+              <button className="form-control group-actions__button">Delete Group</button>
             </div>
           </div>
           <div className="group-container">
@@ -74,7 +74,7 @@ function App() {
             <div className="group-item">
               <div className="group-item-fields">
                 <label className="group-item-fields__label">Rent / Mortgage: </label>
-                <input className="group-item-fields__input" type="text" name="housing_rent_mortgage" value="" />
+                <input className="form-control group-item-fields__input" type="text" name="housing_rent_mortgage" value="" />
               </div>
               <div className="group-item-status">
                 <h4 className="group-item-status__header">Planned</h4>
@@ -89,8 +89,8 @@ function App() {
               </div>
             </div>
             <div className="group-actions">
-              <button className="group-actions__button">Add New Group Item</button>
-              <button className="group-actions__button">Delete Group</button>
+              <button className="form-control group-actions__button">Add New Group Item</button>
+              <button className="form-control group-actions__button">Delete Group</button>
             </div>
           </div>
           <div className="group-container">
@@ -100,7 +100,7 @@ function App() {
             <div className="group-item">
               <div className="group-item-fields">
                 <label className="group-item-fields__label">TFL: </label>
-                <input className="group-item-fields__input" type="text" name="transport_tfl" value="" />
+                <input className="form-control group-item-fields__input" type="text" name="transport_tfl" value="" />
               </div>
               <div className="group-item-status">
                 <h4 className="group-item-status__header">Planned</h4>
@@ -115,13 +115,13 @@ function App() {
               </div>
             </div>
             <div className="group-actions">
-              <button className="group-actions__button">Add New Group Item</button>
-              <button className="group-actions__button">Delete Group</button>
+              <button className="form-control group-actions__button">Add New Group Item</button>
+              <button className="form-control group-actions__button">Delete Group</button>
             </div>
           </div>
-          <div className="App-actions">
-            <button className="App-actions__button">Add New Group</button>
-            <button classNam="App-actions__button">Submit Budget</button>
+          <div className="form-actions">
+            <button className="form-control form-actions__button">Add New Group</button>
+            <button classNam="form-control form-actions__button">Submit Budget</button>
           </div>
         </form>
       </main>
