@@ -1,92 +1,131 @@
-import './App.css';
+import "./App.css";
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        Zero Based Budgeting App
-      </header>
+      <header className="App-header">Zero Based Budgeting App</header>
       <main>
         <form>
-          <div className="bdgt-header-container">
-            <div className="bdgt-total-income-hero">
-              £ 0.00
-            </div>
-            <div className="bdgt-fields">
-              <div className="bdgt-primary-fields">
-                <label for="salary">Salary 1</label>
-                <input id="salary" type="text" name="salary_1" value="" />
+          <div className="income-container">
+            <div className="total-income-hero__text">£ 0.00</div>
+            <div className="income-fields">
+              <div className="primary-income-fields">
+                <label
+                  className="primary-income-fields__label"
+                  for="primaryIncome"
+                >
+                  Salary 1
+                </label>
+                <input
+                  id="primaryIncome"
+                  className="primary-income-fields__input"
+                  type="text"
+                  name="primary-income"
+                  value=""
+                />
               </div>
-              <div className="bdgt-secondary-fields">
-                <label for="additionalIncome">Salary 2</label>
-                <input id="additonalIncome" type="text" name="salary_2" value="" />
+              <div className="secondary-income-fields">
+                <label
+                  className="secondary-income-fields__label"
+                  for="secondaryIncome1"
+                >
+                  Salary 2
+                </label>
+                <input
+                  className="secondary-income-fields__input"
+                  id="secondaryIncome1"
+                  type="text"
+                  name="secondary-income-1"
+                  value=""
+                />
               </div>
             </div>
           </div>
-          <div className="bdgt-group-container">
-            <div className="bdgt-group-header"><h3>Savings</h3></div>
-            <div className="bdgt-group-items">
-              <div>
-                <label>Emergency Fund: </label>
-                <input type="text" name="savings_emergency_fund" value="" />
+          <div className="group-container">
+            <div className="group-header">
+              <h3>Savings</h3>
+            </div>
+            <div className="group-item">
+              <div className="group-item-fields">
+                <label className="group-item-fields__label">Emergency Fund: </label>
+                <input className="group-item-fields__input" type="text" name="savings_emergency_fund" value="" />
               </div>
-              <div>
-                <h4>Planned</h4>
-                <p>£0.00</p>
+              <div className="group-item-status">
+                <h4 className="group-item-status__header">Planned</h4>
+                <p className="group-item-status__text">£0.00</p>
               </div>
-              <div>
-                <h4>Remaining</h4>
-                <p>£0.00</p>
+              <div className="group-item-status">
+                <h4 className="group-item-status__header">Remaining</h4>
+                <p className="group-item-status__text">£0.00</p>
+              </div>
+              <div className="group-item-action">
+                <button className="group-item-action__button">Delete Item</button>
               </div>
             </div>
-            <div className="bdgt-group-items-actions">
-              <button>Add New Group Item</button>
-            </div>
-          </div>
-          <div className="bdgt-group-container">
-            <div className="bdgt-group-header"><h3>Housing</h3></div>
-            <div className="bdgt-group-items">
-              <div>
-                <label>Rent: </label>
-                <input type="text" name="housing_rent" value="" />
-              </div>
-              <div>
-                <h4>Planned</h4>
-                <p>£0.00</p>
-              </div>
-              <div>
-                <h4>Remaining</h4>
-                <p>£0.00</p>
-              </div>
-            </div>
-            <div className="bdgt-group-items-actions">
-              <button>Add New Group Item</button>
+            <div className="group-actions">
+              <button className="group-actions__button">Add New Group Item</button>
+              <button className="group-actions__button">Delete Group</button>
             </div>
           </div>
-          <div className="bdgt-group-container">
-            <div className="bdgt-group-header"><h3>Transport</h3></div>
-            <div className="bdgt-group-items">
-              <div>
-                <label>TFL: </label>
-                <input type="text" name="transport_tfl" value="" />
+          <div className="group-container">
+            <div className="group-header">
+              <h3>Housing</h3>
+            </div>
+            <div className="group-item">
+              <div className="group-item-fields">
+                <label className="group-item-fields__label">Rent / Mortgage: </label>
+                <input className="group-item-fields__input" type="text" name="housing_rent_mortgage" value="" />
               </div>
-              <div>
-                <h4>Planned</h4>
-                <p>£0.00</p>
+              <div className="group-item-status">
+                <h4 className="group-item-status__header">Planned</h4>
+                <p className="group-item-status__text">£0.00</p>
               </div>
-              <div>
-                <h4>Remaining</h4>
-                <p>£0.00</p>
+              <div className="group-item-status">
+                <h4 className="group-item-status__header">Remaining</h4>
+                <p className="group-item-status__text">£0.00</p>
+              </div>
+              <div className="group-item-action">
+                <button className="group-item-action__button">Delete Item</button>
               </div>
             </div>
-            <div className="bdgt-group-items-actions">
-              <button>Add New Group Item</button>
+            <div className="group-actions">
+              <button className="group-actions__button">Add New Group Item</button>
+              <button className="group-actions__button">Delete Group</button>
             </div>
+          </div>
+          <div className="group-container">
+            <div className="group-header">
+              <h3>Transport</h3>
+            </div>
+            <div className="group-item">
+              <div className="group-item-fields">
+                <label className="group-item-fields__label">TFL: </label>
+                <input className="group-item-fields__input" type="text" name="transport_tfl" value="" />
+              </div>
+              <div className="group-item-status">
+                <h4 className="group-item-status__header">Planned</h4>
+                <p className="group-item-status__text">£0.00</p>
+              </div>
+              <div className="group-item-status">
+                <h4 className="group-item-status__header">Remaining</h4>
+                <p className="group-item-status__text">£0.00</p>
+              </div>
+              <div className="group-item-action">
+                <button className="group-item-action__button">Delete Item</button>
+              </div>
+            </div>
+            <div className="group-actions">
+              <button className="group-actions__button">Add New Group Item</button>
+              <button className="group-actions__button">Delete Group</button>
+            </div>
+          </div>
+          <div className="App-actions">
+            <button className="App-actions__button">Add New Group</button>
+            <button classNam="App-actions__button">Submit Budget</button>
           </div>
         </form>
       </main>
-      <footer>
-      </footer>
+      <footer>Budget Footer</footer>
     </div>
   );
 }
