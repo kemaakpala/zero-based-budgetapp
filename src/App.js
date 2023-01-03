@@ -125,7 +125,7 @@ function App() {
           </div>
         </form>
       </main>
-      <footer>Budget Footer</footer>
+      <footer className="App-footer">Budget Footer</footer>
     </div>
   );
 }
