@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TextField test textfield renders 1`] = `
+<label
+  class="primary-income-fields__label"
+  for="testName"
+>
+  test
+</label>
+`;
