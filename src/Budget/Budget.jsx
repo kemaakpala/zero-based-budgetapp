@@ -1,4 +1,4 @@
-import { Button } from "../Component";
+import { Button, TextField } from "../Component";
 
 function Budget() {
   return (
@@ -9,15 +9,10 @@ function Budget() {
         </div>
         <div className="group-item">
           <div className="group-item-fields">
-            <label className="group-item-fields__label" htmlFor="primaryIncome">
-              Salary 1
-            </label>
-            <input
+            <TextField
               id="primaryIncome"
-              className="form-control primary-income-fields__input"
-              type="text"
-              name="income_primary"
-              value=""
+              label="Salary 1"
+              inputName="primary_income"
             />
           </div>
           <div className="group-item-status">
@@ -34,18 +29,11 @@ function Budget() {
         </div>
         <div className="group-item">
           <div className="group-item-fields">
-            <label
-              className="secondary-income-fields__label"
-              htmlFor="secondaryIncome1"
-            >
-              Salary 2
-            </label>
-            <input
-              className="form-control secondary-income-fields__input"
-              id="secondaryIncome1"
-              type="text"
-              name="income_secondary"
-              value=""
+            <TextField
+              id="secondaryIncome"
+              label="Salary 2"
+              inputName="secondary_income"
+              variant="secondary"
             />
           </div>
         </div>
@@ -127,9 +115,7 @@ function Budget() {
           <Button className="form-control group-actions__Button">
             Add New Group Item
           </Button>
-          <Button classModifier="secondary">
-            Delete Group
-          </Button>
+          <Button classModifier="secondary">Delete Group</Button>
         </div>
       </div>
       <div className="group-container">
@@ -168,9 +154,7 @@ function Budget() {
           <Button className="form-control group-actions__Button">
             Add New Group Item
           </Button>
-          <Button classModifier="secondary">
-            Delete Group
-          </Button>
+          <Button classModifier="secondary">Delete Group</Button>
         </div>
       </div>
       <div className="group-container">
@@ -209,9 +193,7 @@ function Budget() {
           <Button className="form-control group-actions__Button">
             Add New Group Item
           </Button>
-          <Button classModifier="secondary">
-            Delete Group
-          </Button>
+          <Button classModifier="secondary">Delete Group</Button>
         </div>
       </div>
       <div className="group-container">
@@ -247,9 +229,7 @@ function Budget() {
           <Button className="form-control group-actions__Button">
             Add New Group Item
           </Button>
-          <Button classModifier="secondary">
-            Delete Group
-          </Button>
+          <Button classModifier="secondary">Delete Group</Button>
         </div>
       </div>
       <div className="group-container">
@@ -288,9 +268,7 @@ function Budget() {
           <Button className="form-control group-actions__Button">
             Add New Group Item
           </Button>
-          <Button classModifier="secondary">
-            Delete Group
-          </Button>
+          <Button classModifier="secondary">Delete Group</Button>
         </div>
       </div>
       <div className="form-actions">
