@@ -1,8 +1,14 @@
 import { render, screen } from '@testing-library/react';
+import { RouterProvider } from 'react-router-dom';
+import browserRouter from './Routes/router';
 import App from './App';
 
 test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  const router = browserRouter({
+    path: "/",
+    element: <App />
+  })
+  const { container: { firstChild } } = render(
+    <RouterProvider router={router} />);
+  expect(firstChild).toMatchSnapshot();
 });

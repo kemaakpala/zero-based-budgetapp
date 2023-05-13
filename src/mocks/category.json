@@ -1,0 +1,182 @@
+{
+  "category": {
+    "02_2023_01": {
+      "title": "Housing",
+      "planned": 0,
+      "recieved": 0,
+      "items": [
+        {
+          "name": "Mortgage/Rent",
+          "planned": 0,
+          "recieved": 0
+        },
+        {
+          "name": "Electricity",
+          "planned": 0,
+          "recieved": 0
+        },
+        {
+          "name": "Council Tax",
+          "planned": 0,
+          "received": 0
+        }
+      ]
+    },
+    "02_2023_02": {
+      "title": "Funds",
+      "type": "fund",
+      "balance": 0,
+      "planned": 0,
+      "recieved": 0,
+      "items": [
+        {
+          "name": "Emergency Fund",
+          "balance": 0,
+          "planned": 0,
+          "recieved": 0
+        },
+        {
+          "name": "Birthday Fund",
+          "balance": 0,
+          "planned": 0,
+          "recieved": 0
+        },
+        {
+          "name": "Home Fund",
+          "balance": 0,
+          "planned": 0,
+          "received": 0
+        }
+      ]
+    },
+    "02_2023_03": {
+      "title": "Giving",
+      "planned": 0,
+      "recieved": 0,
+      "items": [
+        {
+          "name": "Charity",
+          "planned": 0,
+          "recieved": 0
+        },
+        {
+          "name": "Tithes",
+          "planned": 0,
+          "recieved": 0
+        }
+      ]
+    },
+    "02_2023_04": {
+      "type": "debt",
+      "title": "Debt",
+      "balance": 0,
+      "planned": 0,
+      "recieved": 0,
+      "items": [
+        {
+          "name": "Bank Loan",
+          "balance": 0,
+          "planned": 0,
+          "recieved": 0,
+          "dueDate": "Fri Feb 17 2023 04:42:25 GMT+0000"
+        },
+        {
+          "name": "Automotive Loan",
+          "balance": 0,
+          "planned": 0,
+          "recieved": 0,
+          "dueDate": "Fri Feb 17 2023 04:42:25 GMT+0000"
+        }
+      ]
+    },
+    "03_2023_01": {
+      "title": "Housing",
+      "planned": 0,
+      "recieved": 0,
+      "items": [
+        {
+          "name": "Mortgage/Rent",
+          "planned": 0,
+          "recieved": 0
+        },
+        {
+          "name": "Electricity",
+          "planned": 0,
+          "recieved": 0
+        },
+        {
+          "name": "Council Tax",
+          "planned": 0,
+          "received": 0
+        }
+      ]
+    },
+    "03_2023_02": {
+      "title": "Funds",
+      "type": "fund",
+      "balance": 0,
+      "planned": 0,
+      "recieved": 0,
+      "items": [
+        {
+          "name": "Emergency Fund",
+          "balance": 0,
+          "planned": 0,
+          "recieved": 0
+        },
+        {
+          "name": "Birthday Fund",
+          "balance": 0,
+          "planned": 0,
+          "recieved": 0
+        },
+        {
+          "name": "Home Fund",
+          "balance": 0,
+          "planned": 0,
+          "received": 0
+        }
+      ]
+    },
+    "03_2023_03": {
+      "title": "Giving",
+      "planned": 0,
+      "recieved": 0,
+      "items": [
+        {
+          "name": "Charity",
+          "planned": 0,
+          "recieved": 0
+        },
+        {
+          "name": "Tithes",
+          "planned": 0,
+          "recieved": 0
+        }
+      ]
+    },
+    "03_2023_04": {
+      "type": "debt",
+      "title": "Debt",
+      "balance": 0,
+      "planned": 0,
+      "recieved": 0,
+      "items": [
+        {
+          "name": "Bank Loan",
+          "balance": 0,
+          "planned": 0,
+          "recieved": 0,
+          "dueDate": "Fri Feb 17 2023 04:42:25 GMT+0000"
+        },
+        {
+          "name": "Automotive Loan",
+          "balance": 0,
+          "planned": 0,
+          "recieved": 0,
+          "dueDate": "Fri Feb 17 2023 04:42:25 GMT+0000"
+        }
+      ]
+    }
+  }
+}

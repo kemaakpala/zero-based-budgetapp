@@ -1,0 +1,17 @@
+.group-actions__button {
+  text-decoration: none;
+  padding: 0.625rem 1.5rem;
+  border-radius: 1.25rem;
+  margin-bottom:1.5rem;
+}
+
+.group-actions__button--primary {
+  color:#ffffff;
+  background-color: #397933;
+  border: 1px solid #397933;
+}
+.group-actions__button--secondary {
+  color:#ffffff;
+  background-color: #793733;
+  border: 1px solid #793733;
+}

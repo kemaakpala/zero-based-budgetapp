@@ -1,0 +1,59 @@
+{
+  "months": [
+    {
+      "monthID": 0,
+      "FullMonth": "January",
+      "abbrMonth": "Jan",
+      "year": 2023,
+      "budgetID": "00_2023"
+    },
+    {
+      "monthID": 1,
+      "FullMonth": "February",
+      "abbrMonth": "Feb",
+      "year": 2023,
+      "budgetID": "01_2023"
+    },
+    {
+      "monthID": 2,
+      "FullMonth": "March",
+      "abbrMonth": "Mar",
+      "year": 2023,
+      "budgetID": "02_2023"
+    },
+    {
+      "monthID": 3,
+      "FullMonth": "April",
+      "abbrMonth": "Apr",
+      "year": 2023,
+      "budgetID": "03_2023"
+    }
+  ],
+  "year": [2023],
+  "budget": [
+    {
+      "budgetID": "00_2023",
+      "categoryID": [],
+      "current": false
+    },
+    {
+      "budgetID": "01_2023",
+      "categoryID": [],
+      "current": false
+    },
+    {
+      "budgetID": "02_2023",
+      "categoryID": ["02_2023_01", "02_2023_02", "02_2023_03", "02_2023_04"],
+      "current": false
+    },
+    {
+      "budgetID": "03_2023",
+      "categoryID": ["03_2023_01", "03_2023_02", "03_2023_03", "03_2023_04"],
+      "current": true
+    },{
+      "budgetID": "04_2023",
+      "categoryID": [],
+      "current": false
+    }
+  ]
+}
