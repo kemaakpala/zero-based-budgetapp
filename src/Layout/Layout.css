@@ -1,5 +1,6 @@
 .App-header,
-.App-footer {
+.App-footer,
+.App-main {
   grid-column: 1 / -1;
 }
 
@@ -23,24 +24,20 @@
   grid-row: 1 / 2;
   margin: 0;
 }
-.user-profile__container{
+.user-profile-container{
   grid-column: 1 / 2;
 }
-.budget-summary__container{
+.budget-summary-container{
   grid-column: 10 / 11;
 }
 .menu >:last-child {
   grid-column: 12 / -1;
 }
 
-main {
-  grid-column: 2 / -2;
-}
-
-aside {
+/* aside {
   display: none;
   grid-column: -2 / -1;
-}
+} */
 
 .divider {
   border: 1px solid #000000;
@@ -48,17 +45,14 @@ aside {
   margin: 1rem 0 0;
 }
 
-.user-profile__container,
-.budget-summary__container,
-.budget-search__container {
+.user-profile-container,
+.budget-summary-container,
+.budget-search-container {
   width: 1rem;
   height: 1rem;
   border-radius: 50%;
 }
-.user-profile__container {
-  background-color: darkslategray;
-}
-.user-profile__image img {
+.user-profile-container img {
   width: 100%;
   height: 100%;
   border-radius: 50%;

@@ -28,21 +28,21 @@ export default function Layout() {
       <header className="App-header">
         <nav className="menu">
           <h1>Every Pound (£)</h1>
-          <div className="user-profile__container">
+          <div className="user-profile-container">
             <FontAwesomeIcon
               icon={faUserCircle}
               size="1x"
               title="user profile image"
             />
           </div>
-          <div className="budget-summary__container">
+          <div className="budget-summary-container">
             <FontAwesomeIcon
               icon={faChartPie}
               size="1x"
               title="budget summary"
             />
           </div>
-          <div className="budget-search__container">
+          <div className="budget-search-container">
             <FontAwesomeIcon
               icon={faMagnifyingGlass}
               size="1x"
@@ -61,10 +61,10 @@ export default function Layout() {
           </ul>
         </nav> */}
       </header>
-      <main>
+      <main className="App-main">
         <Outlet />
       </main>
-      <aside>
+      {/* <aside>
         <nav>
           <ul>
             <li>
@@ -78,7 +78,7 @@ export default function Layout() {
             </li>
           </ul>
         </nav>
-      </aside>
+      </aside> */}
       <footer className="App-footer">
         <hr />
         <p>&copy; {year}</p>

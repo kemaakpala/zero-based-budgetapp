@@ -1,0 +1,55 @@
+section,
+.hero-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  box-sizing: border-box;
+  justify-content: center;
+  align-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+}
+section {
+  justify-items: center;
+  align-items: center;
+  padding: 1rem;
+}
+
+.hero-container {
+  border: 1px solid red;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  min-width: 260px;
+  width: 200px;
+  max-width: 400px;
+}
+
+.hero-container h2,
+.hero-container h3 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.hero-container h2 > :first-child {
+  font-weight: 500;
+}
+
+.hero-container h2 > :last-child {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.hero-container > div {
+  display: flex;
+  margin-top: 1rem;
+}
+
+.hero-container > div > :first-child {
+  margin: 0 0.5rem 0 0;
+}
+
+.hero-received-amount .amount >:last-child,
+.hero-planned-amount .amount >:last-child {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
