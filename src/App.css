@@ -6,14 +6,17 @@
   grid-auto-rows: auto;
   grid-gap: 8px;
   height: 100%;
-
 }
 
-.App > * {
+.App > *:not(aside) {
   display: flex;
   flex-direction: column;
 }
 
+/* .App > header {
+  flex-direction: row;
+  justify-content: space-between;
+} */
 .form-control {
   /* styles for the form-control block */
 }

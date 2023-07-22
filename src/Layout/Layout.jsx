@@ -1,4 +1,11 @@
 import { Outlet, Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUserCircle } from "@fortawesome/free-regular-svg-icons";
+import {
+  faChartPie,
+  faMagnifyingGlass,
+} from "@fortawesome/free-solid-svg-icons";
+
 import "./Layout.css";
 export default function Layout() {
   const months = [
@@ -19,9 +26,32 @@ export default function Layout() {
   return (
     <>
       <header className="App-header">
-        <p>Zero Based Budgeting App</p>
-        <hr />
-        <nav>
+        <nav className="menu">
+          <h1>Every Pound (£)</h1>
+          <div className="user-profile__container">
+            <FontAwesomeIcon
+              icon={faUserCircle}
+              size="1x"
+              title="user profile image"
+            />
+          </div>
+          <div className="budget-summary__container">
+            <FontAwesomeIcon
+              icon={faChartPie}
+              size="1x"
+              title="budget summary"
+            />
+          </div>
+          <div className="budget-search__container">
+            <FontAwesomeIcon
+              icon={faMagnifyingGlass}
+              size="1x"
+              title="budget search"
+            />
+          </div>
+        </nav>
+        <hr className="divider" />
+        {/* <nav>
           <ul>
             {months.map((month) => (
               <li>
@@ -29,7 +59,7 @@ export default function Layout() {
               </li>
             ))}
           </ul>
-        </nav>
+        </nav> */}
       </header>
       <main>
         <Outlet />
