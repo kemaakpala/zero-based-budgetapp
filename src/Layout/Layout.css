@@ -1,0 +1,15 @@
+.App-header {
+  grid-column: 1 / 2;
+}
+
+main {
+  grid-column: 2 / -2;
+}
+
+aside {
+  grid-column: -2 / -1;
+}
+
+.App-footer {
+  grid-column: 1 / -1;
+}

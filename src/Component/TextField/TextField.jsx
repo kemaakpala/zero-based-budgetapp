@@ -14,6 +14,7 @@ const TextField = ({id, label, inputName, placeholder, variant}) => (
       type="text"
       name={inputName}
       placeholder={placeholder}
+      onChange={(e) => console.log(e)}
     />
   </>
 );

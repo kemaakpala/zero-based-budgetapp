@@ -1,5 +1,17 @@
 .App {
   display:grid;
+  grid-template-columns: repeat(12, 1fr);
+  /* grid-template-rows: auto auto auto 40px;
+   */
+  grid-auto-rows: auto;
+  grid-gap: 8px;
+  height: 100%;
+
+}
+
+.App > * {
+  display: flex;
+  flex-direction: column;
 }
 
 .form-control {

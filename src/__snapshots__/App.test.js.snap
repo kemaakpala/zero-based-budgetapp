@@ -7,7 +7,10 @@ exports[`renders learn react link 1`] = `
   <header
     class="App-header"
   >
-    Zero Based Budgeting App
+    <p>
+      Zero Based Budgeting App
+    </p>
+    <hr />
     <nav>
       <ul>
         <li>
@@ -128,7 +131,11 @@ exports[`renders learn react link 1`] = `
   <footer
     class="App-footer"
   >
-    Budget Footer
+    <hr />
+    <p>
+      © 
+      2023
+    </p>
   </footer>
 </div>
 `;

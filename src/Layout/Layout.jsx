@@ -1,47 +1,33 @@
 import { Outlet, Link } from "react-router-dom";
+import "./Layout.css";
 export default function Layout() {
+  const months = [
+    "January",
+    "Febuary",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  const year = new Date(Date.now()).getFullYear();
   return (
     <>
       <header className="App-header">
-        Zero Based Budgeting App
+        <p>Zero Based Budgeting App</p>
+        <hr />
         <nav>
           <ul>
-            <li>
-              <Link to={"January"}>January</Link>
-            </li>
-            <li>
-              <Link to={"Febuary"}>Febuary</Link>
-            </li>
-            <li>
-              <Link to={"March"}>March</Link>
-            </li>
-            <li>
-              <Link to={"April"}>April</Link>
-            </li>
-            <li>
-              <Link to={"May"}>May</Link>
-            </li>
-            <li>
-              <Link to={"June"}>June</Link>
-            </li>
-            <li>
-              <Link to={"July"}>July</Link>
-            </li>
-            <li>
-              <Link to={"August"}>August</Link>
-            </li>
-            <li>
-              <Link to={"September"}>September</Link>
-            </li>
-            <li>
-              <Link to={"October"}>October</Link>
-            </li>
-            <li>
-              <Link to={"November"}>November</Link>
-            </li>
-            <li>
-              <Link to={"December"}>December</Link>
-            </li>
+            {months.map((month) => (
+              <li>
+                <Link to={month}>{month}</Link>
+              </li>
+            ))}
           </ul>
         </nav>
       </header>
@@ -63,7 +49,10 @@ export default function Layout() {
           </ul>
         </nav>
       </aside>
-      <footer className="App-footer">Budget Footer</footer>
+      <footer className="App-footer">
+        <hr />
+        <p>&copy; {year}</p>
+      </footer>
     </>
   );
 }
