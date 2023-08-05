@@ -1,11 +1,12 @@
 section,
-.hero-container {
+.hero-container,
+.form  {
   display: flex;
   flex-direction: column;
   flex: 1;
   box-sizing: border-box;
-  justify-content: center;
-  align-content: center;
+  /* justify-content: left; */
+  /* align-content: flex-start; */
   flex-wrap: wrap;
   width: 100%;
 }
@@ -15,13 +16,14 @@ section {
   padding: 1rem;
 }
 
-.hero-container {
+.hero-container,
+.form  {
   border: 1px solid red;
   border-radius: 0.5rem;
   padding: 1rem;
   min-width: 260px;
-  width: 200px;
-  max-width: 400px;
+  width: 100%;
+  max-width: 450px;
 }
 
 .hero-container h2,
@@ -42,12 +44,15 @@ section {
 .hero-container > div {
   display: flex;
   margin-top: 1rem;
+  width: 100%;
 }
 
 .hero-container > div > :first-child {
   margin: 0 0.5rem 0 0;
 }
-
+.hero-received-amount {
+  margin-left: auto;
+}
 .hero-received-amount .amount >:last-child,
 .hero-planned-amount .amount >:last-child {
   font-size: 1.5rem;

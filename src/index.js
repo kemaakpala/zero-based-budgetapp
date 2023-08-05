@@ -7,7 +7,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import ErrorPage from './Error/Error';
 import Settings from './Settings/Settings';
-import Budget from './Budget/Budget';
+import Budget from './Container/Budget/Budget';
 import browserRouter from './Routes/router';
 
 const router = browserRouter({
