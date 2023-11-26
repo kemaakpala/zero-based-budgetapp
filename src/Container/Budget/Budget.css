@@ -58,3 +58,24 @@ section {
   font-size: 1.5rem;
   font-weight: bold;
 }
+
+.group-item-progress {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0.5rem 0;
+  width: 100%;
+}
+.progress {
+  width: 100%;
+  height: 0.5rem;
+  border-radius: 0.25rem;
+  background-color: #e0e0e0;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #4caf50;
+}

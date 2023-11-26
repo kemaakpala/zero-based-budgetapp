@@ -1,31 +1,33 @@
 import TextField from "../TextField/TextField";
 import Button from "../Button/Button";
+import { removeSpace } from "../../utils/utils";
 
 const BudgetGroupItem = ({
-  budgetGroup,
+  budgetGroupName,
   budgetGroupIndex,
   budgetGroupItemIndex,
   budgetGroupItem,
   updateBudgetGroupItem,
   deleteBudgetGroupItem,
+  onChangeHandler
 }) => {
   return budgetGroupItem.map((item) => {
-    const { id, label } = item;
+    const { id, label, type } = item;
+    const grouptItemID = `${budgetGroupName}_${removeSpace(
+      label
+    )}_${type}_${id}`;
     return (
       <div className="group-item" key={id}>
         <div className="group-item-fields">
-          <label
-            className="group-item-fields__label"
-            htmlFor="savings_emergency_fund"
-          >
+          <label className="group-item-fields__label" htmlFor={grouptItemID}>
             {label}:{" "}
           </label>
           <TextField
-            id="savings_emergency_fund"
+            id={grouptItemID}
             className="form-control group-item-fields__input"
             type="text"
-            name="savings_emergency_fund"
-            value=""
+            name={grouptItemID}
+            onChange={onChangeHandler}
           />
         </div>
         <div className="group-item-status">

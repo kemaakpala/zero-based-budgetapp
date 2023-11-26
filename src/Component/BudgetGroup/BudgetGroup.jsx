@@ -13,7 +13,7 @@ const BudgetGroup = ({ budgetGroup, budgetGroupIndex, budgetGroupTotal }) => {
       <div className="group-header">
         <h3>{name}</h3>
       </div>
-      <BudgetGroupItem budgetGroupItem={budgetGroupItem}/>
+      <BudgetGroupItem budgetGroupName={name} budgetGroupItem={budgetGroupItem}/>
       <BudgetGroupActions />
     </div>
   );
