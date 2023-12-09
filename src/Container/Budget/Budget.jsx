@@ -7,7 +7,7 @@ import {
   TextField,
 } from "../../Component";
 import "./Budget.css";
-import { generateUniqueId } from "../../utils/utils";
+import { generateUniqueId, formatBudgetItemAmount } from "../../utils/utils";
 
 function Budget() {
   const getFullYear = () => {
@@ -17,48 +17,55 @@ function Budget() {
     return `${month} ${year}`;
   };
 
-  const [income, setIncome] = useState(formatBudgetItemAmount(0));
-  const [receivedIncome, setReceivedIncome] = useState(
-    formatBudgetItemAmount(0)
-  );
+  const [income, setIncome] = useState({
+    planned: formatBudgetItemAmount(0),
+    received: formatBudgetItemAmount(0),
+  });
+
   const [progress, setProgress] = useState(0);
   const [fullyear, setFullYear] = useState(getFullYear());
 
   const onIncomeChange = (e) => {
     const value = parseFloat(e.target.value);
-    setIncome(formatBudgetItemAmount(value));
+    setIncome({
+      ...income,
+      [e.target.name]: formatBudgetItemAmount(value),
+    });
   };
 
-  const onReceivedIncomeChange = (e) => {
-    const value = parseFloat(e.target.value);
-    setReceivedIncome(formatBudgetItemAmount(value));
-  };
-
+  // This useEffect hook updates the fullyear state
   useEffect(() => {
-    setIncome(formatBudgetItemAmount(income));
-    setReceivedIncome(formatBudgetItemAmount(receivedIncome));
     setFullYear(getFullYear());
-    setProgress(
-      (formatBudgetItemAmount(receivedIncome) /
-        formatBudgetItemAmount(income)) *
-        100
-    );
-  }, [income, receivedIncome, fullyear]);
+  }, [fullyear]);
 
-  function formatBudgetItemAmount(value) {
-    if (isNaN(value)) {
-      return parseFloat(0).toFixed(2);
+  // This useEffect hook updates the income state
+  useEffect(() => {
+    const { planned, received } = income;
+    const formattedPlanned = formatBudgetItemAmount(planned);
+    const formattedReceived = formatBudgetItemAmount(received);
+    if (planned !== formattedPlanned || received !== formattedReceived) {
+      setIncome({
+        planned: formattedPlanned,
+        received: formattedReceived,
+      });
     }
-    return parseFloat(value).toFixed(2);
-  }
+  }, [income]);
+
+  // This useEffect hook updates the progress state whenever the income state changes
+  useEffect(() => {
+    const { planned, received } = income;
+    if (planned && received) {
+      setProgress((received / planned) * 100);
+    }
+  }, [income]);
 
   return (
     <section>
       <Hero
         month={fullyear}
-        income={income}
-        planned={income}
-        received={receivedIncome}
+        income={income.planned}
+        planned={income.planned}
+        received={income.received}
       />
       <BudgetForm className="form">
         <div className="group-container">
@@ -68,22 +75,22 @@ function Budget() {
           <div className="group-item group-item--hidden">
             <div className="group-item-fields">
               <TextField
-                label="Income"
-                id="primaryIncome"
-                inputName="primary_income"
+                label="Planned"
+                id="planned"
+                inputName="planned"
                 onChange={onIncomeChange}
-                defaultVal={income}
-                placeholder={income}
+                defaultVal={income.planned}
+                placeholder={income.planned}
               />
             </div>
             <div className="group-item-fields">
               <TextField
                 label="Received"
-                id="received_income"
-                inputName="received_income"
-                onChange={onReceivedIncomeChange}
-                defaultVal={receivedIncome}
-                placeholder={receivedIncome}
+                id="received"
+                inputName="received"
+                onChange={onIncomeChange}
+                defaultVal={income.received}
+                placeholder={income.received}
               />
             </div>
             <div className="group-item group-item-progress">
@@ -91,8 +98,10 @@ function Budget() {
                 <div
                   className="progress-bar"
                   role="progressbar"
-                  style={{ width: `${(receivedIncome / income) * 100}%` }}
-                  aria-valuenow={(receivedIncome / income) * 100}
+                  style={{
+                    width: `${progress}%`,
+                  }}
+                  aria-valuenow={progress}
                   aria-valuemin="0"
                   aria-valuemax="100"
                 ></div>

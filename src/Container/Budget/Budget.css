@@ -21,7 +21,6 @@ section {
   border: 1px solid red;
   border-radius: 0.5rem;
   padding: 1rem;
-  min-width: 260px;
   width: 100%;
   max-width: 450px;
 }

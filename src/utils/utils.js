@@ -5,3 +5,10 @@ Array.from(window.crypto.getRandomValues(new Uint8Array(16)))
   .join("");
 
 export const removeSpace = (str) => str.replace(/\s+/g, '')
+
+export const formatBudgetItemAmount = (value) => {
+  if (isNaN(value)) {
+    return parseFloat(0).toFixed(2);
+  }
+  return parseFloat(value).toFixed(2);
+}
