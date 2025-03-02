@@ -1,6 +1,6 @@
 section,
 .hero-container,
-.form  {
+.form {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -17,14 +17,15 @@ section {
 }
 
 .hero-container,
-.form  {
+.form {
   border: 1px solid red;
-  border-radius: 0.5rem;
-  padding: 1rem;
   width: 100%;
   max-width: 450px;
 }
-
+.hero-container {
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
 .hero-container h2,
 .hero-container h3 {
   font-size: 1rem;
@@ -52,8 +53,44 @@ section {
 .hero-received-amount {
   margin-left: auto;
 }
-.hero-received-amount .amount >:last-child,
-.hero-planned-amount .amount >:last-child {
+.hero-received-amount .amount > :last-child,
+.hero-planned-amount .amount > :last-child {
   font-size: 1.5rem;
   font-weight: bold;
+}
+
+.group-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  box-sizing: border-box;
+  justify-content: left;
+  align-content: flex-start;
+  flex-wrap: wrap;
+  width: 100%;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid red;
+}
+.group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.group-header h3 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.group-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.group-content--hidden {
+  display: none;
+}
+
+.group-item {
+  display: flex;
 }

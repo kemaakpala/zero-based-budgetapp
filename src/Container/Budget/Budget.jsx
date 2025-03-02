@@ -6,9 +6,12 @@ import {
   Button,
   TextField,
 } from "../../Component";
-import "./Budget.css";
+import "./styles/Budget.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import { generateUniqueId, formatBudgetItemAmount } from "../../utils/utils";
 import ProgressBar from "../../Component/ProgressBar";
+
 
 function Budget() {
   const getFullYear = () => {
@@ -25,6 +28,7 @@ function Budget() {
 
   const [progress, setProgress] = useState(0);
   const [fullyear, setFullYear] = useState(getFullYear());
+  const [hideContent, setHideContent] = useState(false);
 
   const onIncomeChange = (e) => {
     const value = parseFloat(e.target.value);
@@ -60,6 +64,16 @@ function Budget() {
     }
   }, [income]);
 
+  const toggleGroupContent = (event) => {
+    event.preventDefault();
+    console.log("toggle", event);
+    console.log("classList: ", event.target.classList);
+    console.log("parentNode: ", event.target.parentNode);
+    console.log("parentNode.classList: ", event.target.parentNode.classList);
+
+    setHideContent((prevHideContent) => !prevHideContent);
+  };
+
   return (
     <section>
       <Hero
@@ -72,30 +86,44 @@ function Budget() {
         <div className="group-container">
           <div className="group-header">
             <h3>Income</h3>
-          </div>
-          <div className="group-item group-item--hidden">
-            <div className="group-item-fields">
-              <TextField
-                label="Planned"
-                id="planned"
-                inputName="planned"
-                onChange={onIncomeChange}
-                defaultVal={income.planned}
-                placeholder={income.planned}
+            <Button
+              classModifier="transparent"
+              onClickHandler={(e) => {
+                toggleGroupContent(e);
+              }}
+            >
+              <FontAwesomeIcon
+                icon={hideContent ? faChevronUp: faChevronDown}
+                size="1x"
+                title="budget group collapse toggle"
               />
-            </div>
-            <div className="group-item-fields">
-              <TextField
-                label="Received"
-                id="received"
-                inputName="received"
-                onChange={onIncomeChange}
-                defaultVal={income.received}
-                placeholder={income.received}
-              />
-            </div>
-            <ProgressBar percentage={progress} />
+            </Button>
           </div>
+          <div className={`group-content ${hideContent ? "group-content--hidden" : ""}`}>
+            <div className="group-item">
+              <div className="group-item-fields">
+                <TextField
+                  label="Planned"
+                  id="planned"
+                  inputName="planned"
+                  onChange={onIncomeChange}
+                  defaultVal={income.planned}
+                  placeholder={income.planned}
+                />
+              </div>
+              <div className="group-item-fields">
+                <TextField
+                  label="Received"
+                  id="received"
+                  inputName="received"
+                  onChange={onIncomeChange}
+                  defaultVal={income.received}
+                  placeholder={income.received}
+                />
+              </div>
+            </div>
+          </div>
+          <ProgressBar percentage={progress} />
         </div>
 
         <BudgetGroup

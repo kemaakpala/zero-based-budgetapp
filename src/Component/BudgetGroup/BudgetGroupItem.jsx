@@ -1,7 +1,10 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import TextField from "../TextField/TextField";
 import Button from "../Button/Button";
 import { removeSpace } from "../../utils/utils";
 import ProgressBar from "../ProgressBar";
+import "./styles/BudgetGroupItem.css";
 
 const BudgetGroupItem = ({
   budgetGroupName,
@@ -10,7 +13,7 @@ const BudgetGroupItem = ({
   budgetGroupItem,
   updateBudgetGroupItem,
   deleteBudgetGroupItem,
-  onChangeHandler
+  onChangeHandler,
 }) => {
   return budgetGroupItem.map((item) => {
     const { id, label, type } = item;
@@ -39,9 +42,14 @@ const BudgetGroupItem = ({
           <h4 className="group-item-status__header">Remaining</h4>
           <p className="group-item-status__text">£0.00</p>
         </div>
-        <ProgressBar percentage={0} />
         <div className="group-item-action">
-          <Button className="group-item-action__Button">Delete Item</Button>
+          <Button className="group-item-action__Button">
+            <FontAwesomeIcon
+              icon={faTrashCan}
+              size="1x"
+              title="delete budget item"
+            />
+          </Button>
         </div>
       </div>
     );

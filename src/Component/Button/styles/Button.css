@@ -1,17 +1,39 @@
+/* Base button class with minimal styling */
 .group-actions__button {
   text-decoration: none;
-  padding: 0.625rem 1.5rem;
-  border-radius: 1.25rem;
-  margin-bottom:1.5rem;
+  border: none;
+  cursor: pointer;
 }
 
+/* Modifier class for transparent button */
+.group-actions__button--transparent {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Common styles for primary and secondary buttons */
+.group-actions__button--styled {
+  padding: 0.625rem 1.5rem;
+  border-radius: 1.25rem;
+  margin-bottom: 1.5rem;
+  color: #ffffff;
+}
+
+/* Modifier class for primary button */
 .group-actions__button--primary {
-  color:#ffffff;
+  color: #ffffff;
   background-color: #397933;
   border: 1px solid #397933;
 }
+
+/* Modifier class for secondary button */
 .group-actions__button--secondary {
-  color:#ffffff;
+  color: #ffffff;
   background-color: #793733;
   border: 1px solid #793733;
+  padding: 0.625rem 1.5rem;
+  border-radius: 1.25rem;
+  margin-bottom: 1.5rem;
 }

@@ -1,0 +1,14 @@
+.group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.group-header h1,
+.group-header h2,
+.group-header h3,
+.group-header h4,
+.group-header h5 {
+  margin-top: 0;
+  margin-bottom: 0;
+}

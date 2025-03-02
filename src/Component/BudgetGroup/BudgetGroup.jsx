@@ -1,19 +1,22 @@
 import React from "react";
 import "./styles/BudgetGroup.css";
+import BudgetGroupHeader from "./BudgetGroupHeader";
 import BudgetGroupActions from "./BudgetGroupActions";
 import BudgetGroupItem from "./BudgetGroupItem";
+import ProgressBar from "../ProgressBar";
 
 const BudgetGroup = ({ budgetGroup, budgetGroupIndex, budgetGroupTotal }) => {
-  const {
-    name,
-    budgetGroupItem,
-  } = budgetGroup;
+  const { name, budgetGroupItem } = budgetGroup;
   return (
     <div className="group-container">
-      <div className="group-header">
-        <h3>{name}</h3>
+      <BudgetGroupHeader budgetGroupName={name} />
+      <div className="group-content">
+        <BudgetGroupItem
+          budgetGroupName={name}
+          budgetGroupItem={budgetGroupItem}
+        />
       </div>
-      <BudgetGroupItem budgetGroupName={name} budgetGroupItem={budgetGroupItem}/>
+      <ProgressBar percentage="0" />
       <BudgetGroupActions />
     </div>
   );
