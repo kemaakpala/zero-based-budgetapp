@@ -10,7 +10,7 @@ describe('utils', () => {
       }
     };
   });
-  w
+  
   it('should test that space is removed', () => { 
     expect(removeSpace('hello world')).toBe('helloworld');
   })
