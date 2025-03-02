@@ -8,6 +8,7 @@ import {
 } from "../../Component";
 import "./Budget.css";
 import { generateUniqueId, formatBudgetItemAmount } from "../../utils/utils";
+import ProgressBar from "../../Component/ProgressBar";
 
 function Budget() {
   const getFullYear = () => {
@@ -93,23 +94,7 @@ function Budget() {
                 placeholder={income.received}
               />
             </div>
-            <div className="group-item group-item-progress">
-              <div className="progress">
-                <div
-                  className="progress-bar"
-                  role="progressbar"
-                  style={{
-                    width: `${progress}%`,
-                  }}
-                  aria-valuenow={progress}
-                  aria-valuemin="0"
-                  aria-valuemax="100"
-                ></div>
-              </div>
-            </div>
-            <div className="group-item-action">
-              <Button classModifier="secondary">Delete Item</Button>
-            </div>
+            <ProgressBar percentage={progress} />
           </div>
         </div>
 

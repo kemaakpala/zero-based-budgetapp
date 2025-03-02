@@ -1,6 +1,7 @@
 import TextField from "../TextField/TextField";
 import Button from "../Button/Button";
 import { removeSpace } from "../../utils/utils";
+import ProgressBar from "../ProgressBar";
 
 const BudgetGroupItem = ({
   budgetGroupName,
@@ -38,6 +39,7 @@ const BudgetGroupItem = ({
           <h4 className="group-item-status__header">Remaining</h4>
           <p className="group-item-status__text">£0.00</p>
         </div>
+        <ProgressBar percentage={0} />
         <div className="group-item-action">
           <Button className="group-item-action__Button">Delete Item</Button>
         </div>
