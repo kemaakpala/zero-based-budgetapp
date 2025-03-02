@@ -8,10 +8,9 @@ import {
 } from "../../Component";
 import "./styles/Budget.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faChevronUp, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { generateUniqueId, formatBudgetItemAmount } from "../../utils/utils";
 import ProgressBar from "../../Component/ProgressBar";
-
 
 function Budget() {
   const getFullYear = () => {
@@ -66,11 +65,6 @@ function Budget() {
 
   const toggleGroupContent = (event) => {
     event.preventDefault();
-    console.log("toggle", event);
-    console.log("classList: ", event.target.classList);
-    console.log("parentNode: ", event.target.parentNode);
-    console.log("parentNode.classList: ", event.target.parentNode.classList);
-
     setHideContent((prevHideContent) => !prevHideContent);
   };
 
@@ -85,7 +79,17 @@ function Budget() {
       <BudgetForm className="form">
         <div className="group-container">
           <div className="group-header">
-            <h3>Income</h3>
+            <div className="group-header-title">
+              <h3>Income</h3>
+              <Button classModifier="transparent" color="red">
+                <FontAwesomeIcon
+                  icon={faTrashCan}
+                  size="1x"
+                  title="delete budget group"
+                />
+              </Button>
+            </div>
+
             <Button
               classModifier="transparent"
               onClickHandler={(e) => {
@@ -93,13 +97,17 @@ function Budget() {
               }}
             >
               <FontAwesomeIcon
-                icon={hideContent ? faChevronUp: faChevronDown}
+                icon={hideContent ? faChevronUp : faChevronDown}
                 size="1x"
                 title="budget group collapse toggle"
               />
             </Button>
           </div>
-          <div className={`group-content ${hideContent ? "group-content--hidden" : ""}`}>
+          <div
+            className={`group-content ${
+              hideContent ? "group-content--hidden" : ""
+            }`}
+          >
             <div className="group-item">
               <div className="group-item-fields">
                 <TextField

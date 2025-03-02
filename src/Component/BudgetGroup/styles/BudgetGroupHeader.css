@@ -12,3 +12,12 @@
   margin-top: 0;
   margin-bottom: 0;
 }
+
+.group-header-title{
+  display:flex;
+  align-items: center;
+}
+
+.group-header-title button {
+  margin-left: 1rem;
+}

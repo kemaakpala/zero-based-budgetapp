@@ -43,7 +43,11 @@ const BudgetGroupItem = ({
           <p className="group-item-status__text">£0.00</p>
         </div>
         <div className="group-item-action">
-          <Button className="group-item-action__Button">
+          <Button
+            className="group-item-action__Button"
+            classModifier="transparent"
+            color="red"
+          >
             <FontAwesomeIcon
               icon={faTrashCan}
               size="1x"

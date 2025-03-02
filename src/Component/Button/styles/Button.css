@@ -37,3 +37,18 @@
   border-radius: 1.25rem;
   margin-bottom: 1.5rem;
 }
+
+.group-actions__button--red {
+  color:#793733;
+}
+.group-actions__button--green{
+  color:#397933;
+}
+
+.group-actions__button--bg-red {
+  background-color: #793733;
+}
+
+.group-actions__button--bg-green {
+  background-color: #397933;
+}
