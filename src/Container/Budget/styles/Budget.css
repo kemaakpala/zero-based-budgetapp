@@ -111,3 +111,7 @@ section {
 .group-actions__button--bg-green {
   background-color: #397933;
 }
+
+button > i, [data-prefix='fas'] {
+  pointer-events: none;
+}

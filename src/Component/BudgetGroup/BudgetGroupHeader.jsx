@@ -12,18 +12,29 @@ const BudgetGroupHeader = ({
   budgetGroupName,
   handleToggle,
   hideContentFlag,
+  showDeleteButtonFlag,
+  handleHeaderClick,
 }) => {
   return (
     <div className="group-header">
-      <div className="group-header-title">
+      <div
+        className="group-header-title"
+        role="button"
+        onClick={handleHeaderClick}
+      >
         <h3>{budgetGroupName}</h3>
-        <Button classModifier="transparent" color="red">
-          <FontAwesomeIcon
-            icon={faTrashCan}
-            size="1x"
-            title="delete budget group"
-          />
-        </Button>
+        {showDeleteButtonFlag && (
+          <Button classModifier="transparent" color="red">
+            <FontAwesomeIcon
+              icon={faTrashCan}
+              size="1x"
+              title="delete budget group"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            />
+          </Button>
+        )}
       </div>
       <Button classModifier="transparent" onClickHandler={handleToggle}>
         <FontAwesomeIcon

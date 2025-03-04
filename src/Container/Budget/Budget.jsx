@@ -8,7 +8,11 @@ import {
 } from "../../Component";
 import "./styles/Budget.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown, faChevronUp, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import {
+  faChevronDown,
+  faChevronUp,
+  faTrashCan,
+} from "@fortawesome/free-solid-svg-icons";
 import { generateUniqueId, formatBudgetItemAmount } from "../../utils/utils";
 import ProgressBar from "../../Component/ProgressBar";
 
@@ -28,6 +32,7 @@ function Budget() {
   const [progress, setProgress] = useState(0);
   const [fullyear, setFullYear] = useState(getFullYear());
   const [hideContent, setHideContent] = useState(false);
+  const [showDeleteButton, setShowDeleteButton] = useState(false);
 
   const onIncomeChange = (e) => {
     const value = parseFloat(e.target.value);
@@ -68,6 +73,27 @@ function Budget() {
     setHideContent((prevHideContent) => !prevHideContent);
   };
 
+  console.log("showDeleteButton", showDeleteButton);
+
+  const toggleDeleteButton = (event) => {
+    event.preventDefault();
+    setShowDeleteButton((prevShowDeleteButton) => !prevShowDeleteButton);
+  };
+  const deleteGroupHandler = (event) => {
+    console.log("delete group:", event.target.previousSibling.textContent);
+  };
+  const groupHeaderTitleHandler = (event) => {
+    event.preventDefault();
+    console.log("event", event);
+    console.log("event", event.target.tagName);
+    if (event.target.tagName === "H3") {
+      toggleDeleteButton(event);
+    }
+    if (event.target.tagName === "BUTTON") {
+      deleteGroupHandler(event);
+    }
+  };
+
   return (
     <section>
       <Hero
@@ -79,15 +105,27 @@ function Budget() {
       <BudgetForm className="form">
         <div className="group-container">
           <div className="group-header">
-            <div className="group-header-title">
+            <div
+              className="group-header-title"
+              role="button"
+              onClick={groupHeaderTitleHandler}
+            >
               <h3>Income</h3>
-              <Button classModifier="transparent" color="red">
-                <FontAwesomeIcon
-                  icon={faTrashCan}
-                  size="1x"
-                  title="delete budget group"
-                />
-              </Button>
+              {showDeleteButton && (
+                <Button
+                  classModifier="transparent"
+                  color="red"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                >
+                  <FontAwesomeIcon
+                    icon={faTrashCan}
+                    size="1x"
+                    title="delete budget group"
+                  />
+                </Button>
+              )}
             </div>
 
             <Button
