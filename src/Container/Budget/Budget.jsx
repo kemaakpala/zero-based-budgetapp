@@ -1,29 +1,13 @@
 import React, { useEffect, useState } from "react";
-import {
-  Hero,
-  BudgetForm,
-  BudgetGroup,
-  Button,
-  TextField,
-} from "../../Component";
+import { Hero, BudgetForm, BudgetGroup } from "../../Component";
 import "./styles/Budget.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faChevronDown,
-  faChevronUp,
-  faTrashCan,
-} from "@fortawesome/free-solid-svg-icons";
-import { generateUniqueId, formatBudgetItemAmount } from "../../utils/utils";
-import ProgressBar from "../../Component/ProgressBar";
+  generateUniqueId,
+  formatBudgetItemAmount,
+  getFullYear,
+} from "../../utils/utils";
 
 function Budget() {
-  const getFullYear = () => {
-    const date = new Date();
-    const month = date.toLocaleString("default", { month: "long" });
-    const year = date.getFullYear();
-    return `${month} ${year}`;
-  };
-
   const [income, setIncome] = useState({
     planned: formatBudgetItemAmount(0),
     received: formatBudgetItemAmount(0),
@@ -31,15 +15,144 @@ function Budget() {
 
   const [progress, setProgress] = useState(0);
   const [fullyear, setFullYear] = useState(getFullYear());
-  const [hideContent, setHideContent] = useState(false);
-  const [showDeleteButton, setShowDeleteButton] = useState(false);
 
-  const onIncomeChange = (e) => {
-    const value = parseFloat(e.target.value);
-    setIncome({
-      ...income,
-      [e.target.name]: formatBudgetItemAmount(value),
-    });
+  const [budgetGroups, setBudgetGroups] = useState([
+    {
+      name: "Income",
+      budgetGroupItems: [
+        {
+          id: generateUniqueId(),
+          fields: [
+            {
+              label: "Planned",
+              value: income.planned,
+              placeholder: income.planned,
+              type: "text",
+            },
+            {
+              label: "Received",
+              value: income.received,
+              placeholder: income.received,
+              type: "text",
+            },
+          ],
+          action: { label: "Delete", color: "red", type: "button" },
+          type: "income",
+        },
+      ],
+    },
+    {
+      name: "Giving",
+      budgetGroupItems: [
+        {
+          id: generateUniqueId(),
+          fields: [
+            {
+              label: "Charity",
+              value: "0.00",
+              type: "text",
+            },
+          ],
+          status: [
+            {
+              label: "Planned",
+              value: "0.00",
+              type: "text",
+            },
+            {
+              label: "Remaining",
+              value: "0.00",
+              type: "text",
+            },
+          ],
+          action: { label: "Delete", color: "red", type: "button" },
+          type: "expense",
+        },
+        {
+          id: generateUniqueId(),
+          fields: [
+            {
+              label: "Offering",
+              value: "0.00",
+              type: "text",
+            },
+          ],
+          status: [
+            {
+              label: "Planned",
+              value: "0.00",
+              type: "text",
+            },
+            {
+              label: "Remaining",
+              value: "0.00",
+              type: "text",
+            },
+          ],
+          action: { label: "Delete", color: "red", type: "button" },
+          type: "expense",
+        },
+        {
+          id: generateUniqueId(),
+          fields: [
+            {
+              label: "Tithes",
+              value: "0.00",
+              type: "text",
+            },
+          ],
+          status: [
+            {
+              label: "Planned",
+              value: "0.00",
+              type: "text",
+            },
+            {
+              label: "Remaining",
+              value: "0.00",
+              type: "text",
+            },
+          ],
+          action: { label: "Delete", color: "red", type: "button" },
+          type: "expense",
+        },
+      ],
+    },
+  ]);
+
+  const handleFieldChange = (groupIndex, itemIndex, fieldIndex, value) => {
+    console.log("handleFieldChange =>", value);
+    console.log("groupIndex", groupIndex);
+    console.log("itemIndex", itemIndex);
+    console.log("fieldIndex", fieldIndex);
+    // Validate indices
+    if (
+      groupIndex < 0 ||
+      groupIndex >= budgetGroups.length ||
+      itemIndex < 0 ||
+      itemIndex >= budgetGroups[groupIndex].budgetGroupItems.length ||
+      fieldIndex < 0 ||
+      fieldIndex >=
+        budgetGroups[groupIndex].budgetGroupItems[itemIndex].fields.length
+    ) {
+      console.error("Invalid indices for handleFieldChange");
+      return;
+    }
+    // Update budgetGroups state
+    const updatedGroups = [...budgetGroups];
+    updatedGroups[groupIndex].budgetGroupItems[itemIndex].fields[
+      fieldIndex
+    ].value = formatBudgetItemAmount(value);
+    setBudgetGroups(updatedGroups);
+    // Update income state if the group is "Income"
+    if (budgetGroups[groupIndex].name === "Income") {
+      setIncome({
+        ...income,
+        [updatedGroups[groupIndex].budgetGroupItems[itemIndex].fields[
+          fieldIndex
+        ].label.toLowerCase()]: formatBudgetItemAmount(value),
+      });
+    }
   };
 
   // This useEffect hook updates the fullyear state
@@ -62,38 +175,33 @@ function Budget() {
 
   // This useEffect hook updates the progress state whenever the income state changes
   useEffect(() => {
+    console.log("useEffect[income] =>", income);
+    console.log(
+      "useEffect[planned && received] => ",
+      income.planned > 0 && income.received > 0
+    );
     const { planned, received } = income;
-    if (planned && received) {
+    if (planned > 0 && received > 0) {
       setProgress((received / planned) * 100);
+    } else {
+      setProgress(0);
     }
   }, [income]);
 
-  const toggleGroupContent = (event) => {
-    event.preventDefault();
-    setHideContent((prevHideContent) => !prevHideContent);
-  };
+    // Calculate progress for each budget group
+    const calculateProgress = (group) => {
+      if (group.name === "Income") {
+        const { planned, received } = income;
+        if (planned > 0 && received > 0) {
+          return (received / planned) * 100;
+        }
+        return 0;
+      }
+      // Add other group-specific progress calculations if needed
+      return 0;
+    };
 
-  console.log("showDeleteButton", showDeleteButton);
-
-  const toggleDeleteButton = (event) => {
-    event.preventDefault();
-    setShowDeleteButton((prevShowDeleteButton) => !prevShowDeleteButton);
-  };
-  const deleteGroupHandler = (event) => {
-    console.log("delete group:", event.target.previousSibling.textContent);
-  };
-  const groupHeaderTitleHandler = (event) => {
-    event.preventDefault();
-    console.log("event", event);
-    console.log("event", event.target.tagName);
-    if (event.target.tagName === "H3") {
-      toggleDeleteButton(event);
-    }
-    if (event.target.tagName === "BUTTON") {
-      deleteGroupHandler(event);
-    }
-  };
-
+  console.log("progress => ", progress);
   return (
     <section>
       <Hero
@@ -103,159 +211,16 @@ function Budget() {
         received={income.received}
       />
       <BudgetForm className="form">
-        <div className="group-container">
-          <div className="group-header">
-            <div
-              className="group-header-title"
-              role="button"
-              onClick={groupHeaderTitleHandler}
-            >
-              <h3>Income</h3>
-              {showDeleteButton && (
-                <Button
-                  classModifier="transparent"
-                  color="red"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                >
-                  <FontAwesomeIcon
-                    icon={faTrashCan}
-                    size="1x"
-                    title="delete budget group"
-                  />
-                </Button>
-              )}
-            </div>
-
-            <Button
-              classModifier="transparent"
-              onClickHandler={(e) => {
-                toggleGroupContent(e);
-              }}
-            >
-              <FontAwesomeIcon
-                icon={hideContent ? faChevronUp : faChevronDown}
-                size="1x"
-                title="budget group collapse toggle"
-              />
-            </Button>
-          </div>
-          <div
-            className={`group-content ${
-              hideContent ? "group-content--hidden" : ""
-            }`}
-          >
-            <div className="group-item">
-              <div className="group-item-fields">
-                <TextField
-                  label="Planned"
-                  id="planned"
-                  inputName="planned"
-                  onChange={onIncomeChange}
-                  defaultVal={income.planned}
-                  placeholder={income.planned}
-                />
-              </div>
-              <div className="group-item-fields">
-                <TextField
-                  label="Received"
-                  id="received"
-                  inputName="received"
-                  onChange={onIncomeChange}
-                  defaultVal={income.received}
-                  placeholder={income.received}
-                />
-              </div>
-            </div>
-          </div>
-          <ProgressBar percentage={progress} />
-        </div>
-
-        <BudgetGroup
-          budgetGroup={{
-            name: "Giving",
-            budgetGroupItem: [
-              {
-                id: generateUniqueId(),
-                label: "Charity",
-                type: "expense",
-              },
-            ],
-          }}
-        />
-        <BudgetGroup
-          budgetGroup={{
-            name: "Savings",
-            budgetGroupItem: [
-              {
-                id: generateUniqueId(),
-                label: "Emergency Fund",
-                type: "fund",
-              },
-            ],
-          }}
-        />
-        <BudgetGroup
-          budgetGroup={{
-            name: "Housing",
-            budgetGroupItem: [
-              {
-                id: generateUniqueId(),
-                label: "Rent / Mortgage",
-                type: "fund",
-              },
-            ],
-          }}
-        />
-        <BudgetGroup
-          budgetGroup={{
-            name: "Utilities",
-            budgetGroupItem: [
-              {
-                id: generateUniqueId(),
-                label: "Gas",
-                type: "fund",
-              },
-            ],
-          }}
-        />
-        <BudgetGroup
-          budgetGroup={{
-            name: "Food",
-            budgetGroupItem: [
-              {
-                id: generateUniqueId(),
-                label: "Groceries",
-                type: "fund",
-              },
-            ],
-          }}
-        />
-        <BudgetGroup
-          budgetGroup={{
-            name: "Transport",
-            budgetGroupItem: [
-              {
-                id: generateUniqueId(),
-                label: "TFL",
-                type: "fund",
-              },
-            ],
-          }}
-        />
-        <BudgetGroup
-          budgetGroup={{
-            name: "Insurance",
-            budgetGroupItem: [
-              {
-                id: generateUniqueId(),
-                label: "Life",
-                type: "fund",
-              },
-            ],
-          }}
-        />
+        {budgetGroups.map((group, groupIndex) => (
+          <BudgetGroup
+            key={group.name}
+            budgetGroup={group}
+            progress={calculateProgress(group)} // Pass progress for Income group, 0 for others
+            onChangeHandler={(itemIndex, fieldIndex, value) =>
+              handleFieldChange(groupIndex, itemIndex, fieldIndex, value)
+            }
+          />
+        ))}
       </BudgetForm>
     </section>
   );

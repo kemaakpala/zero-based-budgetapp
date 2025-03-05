@@ -5,8 +5,10 @@ import BudgetGroupActions from "./BudgetGroupActions";
 import BudgetGroupItem from "./BudgetGroupItem";
 import ProgressBar from "../ProgressBar";
 
-const BudgetGroup = ({ budgetGroup, budgetGroupIndex, budgetGroupTotal }) => {
-  const { name, budgetGroupItem } = budgetGroup;
+const BudgetGroup = ({ budgetGroup, progress, onChangeHandler }) => {
+  const { name, budgetGroupItems } = budgetGroup;
+  console.log("name", name);
+  console.log("BudgetGroup[progress] => ", progress);
   const [hideContent, setHideContent] = useState(false);
   const [showDeleteButton, setShowDeleteButton] = useState(false);
 
@@ -20,12 +22,12 @@ const BudgetGroup = ({ budgetGroup, budgetGroupIndex, budgetGroupTotal }) => {
     setShowDeleteButton((prevShowDeleteButton) => !prevShowDeleteButton);
   };
   const deleteGroupHandler = (event) => {
-    console.log("delete group:", event.target.previousSibling.textContent);
+    // console.log("delete group:", event.target.previousSibling.textContent);
   };
   const groupHeaderTitleClickHandler = (event) => {
     event.preventDefault();
-    console.log("event", event);
-    console.log("event", event.target.tagName);
+    // console.log("event", event);
+    // console.log("event", event.target.tagName);
     if (event.target.tagName === "H3") {
       toggleDeleteButton(event);
     }
@@ -50,10 +52,11 @@ const BudgetGroup = ({ budgetGroup, budgetGroupIndex, budgetGroupTotal }) => {
       >
         <BudgetGroupItem
           budgetGroupName={name}
-          budgetGroupItem={budgetGroupItem}
+          budgetGroupItems={budgetGroupItems}
+          onChangeHandler={onChangeHandler}
         />
       </div>
-      <ProgressBar percentage="0" />
+      <ProgressBar percentage={progress} />
       <BudgetGroupActions />
     </div>
   );
