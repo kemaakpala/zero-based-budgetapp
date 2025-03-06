@@ -7,6 +7,108 @@ import {
   getFullYear,
 } from "../../utils/utils";
 
+export const incomeData = {
+  name: "Income",
+  budgetGroupItems: [
+    {
+      id: generateUniqueId(),
+      fields: [
+        {
+          label: "Planned",
+          value: 0,
+          placeholder: 0,
+          type: "text",
+        },
+        {
+          label: "Received",
+          value: 0,
+          placeholder: 0,
+          type: "text",
+        },
+      ],
+      action: { label: "Delete", color: "red", type: "button" },
+      type: "income",
+    },
+  ],
+};
+export const GivingData = {
+  name: "Giving",
+  budgetGroupItems: [
+    {
+      id: generateUniqueId(),
+      fields: [
+        {
+          label: "Charity",
+          value: "0.00",
+          type: "text",
+        },
+      ],
+      status: [
+        {
+          label: "Planned",
+          value: "0.00",
+          type: "text",
+        },
+        {
+          label: "Remaining",
+          value: "0.00",
+          type: "text",
+        },
+      ],
+      action: { label: "Delete", color: "red", type: "button" },
+      type: "expense",
+    },
+    {
+      id: generateUniqueId(),
+      fields: [
+        {
+          label: "Offering",
+          value: "0.00",
+          type: "text",
+        },
+      ],
+      status: [
+        {
+          label: "Planned",
+          value: "0.00",
+          type: "text",
+        },
+        {
+          label: "Remaining",
+          value: "0.00",
+          type: "text",
+        },
+      ],
+      action: { label: "Delete", color: "red", type: "button" },
+      type: "expense",
+    },
+    {
+      id: generateUniqueId(),
+      fields: [
+        {
+          label: "Tithes",
+          value: "0.00",
+          type: "text",
+        },
+      ],
+      status: [
+        {
+          label: "Planned",
+          value: "0.00",
+          type: "text",
+        },
+        {
+          label: "Remaining",
+          value: "0.00",
+          type: "text",
+        },
+      ],
+      action: { label: "Delete", color: "red", type: "button" },
+      type: "expense",
+    },
+  ],
+};
+
 function Budget() {
   const [income, setIncome] = useState({
     planned: formatBudgetItemAmount(0),
@@ -17,114 +119,15 @@ function Budget() {
   const [fullyear, setFullYear] = useState(getFullYear());
 
   const [budgetGroups, setBudgetGroups] = useState([
-    {
-      name: "Income",
-      budgetGroupItems: [
-        {
-          id: generateUniqueId(),
-          fields: [
-            {
-              label: "Planned",
-              value: income.planned,
-              placeholder: income.planned,
-              type: "text",
-            },
-            {
-              label: "Received",
-              value: income.received,
-              placeholder: income.received,
-              type: "text",
-            },
-          ],
-          action: { label: "Delete", color: "red", type: "button" },
-          type: "income",
-        },
-      ],
-    },
-    {
-      name: "Giving",
-      budgetGroupItems: [
-        {
-          id: generateUniqueId(),
-          fields: [
-            {
-              label: "Charity",
-              value: "0.00",
-              type: "text",
-            },
-          ],
-          status: [
-            {
-              label: "Planned",
-              value: "0.00",
-              type: "text",
-            },
-            {
-              label: "Remaining",
-              value: "0.00",
-              type: "text",
-            },
-          ],
-          action: { label: "Delete", color: "red", type: "button" },
-          type: "expense",
-        },
-        {
-          id: generateUniqueId(),
-          fields: [
-            {
-              label: "Offering",
-              value: "0.00",
-              type: "text",
-            },
-          ],
-          status: [
-            {
-              label: "Planned",
-              value: "0.00",
-              type: "text",
-            },
-            {
-              label: "Remaining",
-              value: "0.00",
-              type: "text",
-            },
-          ],
-          action: { label: "Delete", color: "red", type: "button" },
-          type: "expense",
-        },
-        {
-          id: generateUniqueId(),
-          fields: [
-            {
-              label: "Tithes",
-              value: "0.00",
-              type: "text",
-            },
-          ],
-          status: [
-            {
-              label: "Planned",
-              value: "0.00",
-              type: "text",
-            },
-            {
-              label: "Remaining",
-              value: "0.00",
-              type: "text",
-            },
-          ],
-          action: { label: "Delete", color: "red", type: "button" },
-          type: "expense",
-        },
-      ],
-    },
+    { ...incomeData },
+    { ...GivingData },
   ]);
 
   const handleFieldChange = (groupIndex, itemIndex, fieldIndex, value) => {
-    console.log("handleFieldChange =>", value);
-    console.log("groupIndex", groupIndex);
-    console.log("itemIndex", itemIndex);
-    console.log("fieldIndex", fieldIndex);
+    // console.log("handleFieldChange =>", value);
+    // console.log("groupIndex", groupIndex);
+    // console.log("itemIndex", itemIndex);
+    // console.log("fieldIndex", fieldIndex);
     // Validate indices
     if (
       groupIndex < 0 ||
@@ -188,18 +191,18 @@ function Budget() {
     }
   }, [income]);
 
-    // Calculate progress for each budget group
-    const calculateProgress = (group) => {
-      if (group.name === "Income") {
-        const { planned, received } = income;
-        if (planned > 0 && received > 0) {
-          return (received / planned) * 100;
-        }
-        return 0;
+  // Calculate progress for each budget group
+  const calculateProgress = (group) => {
+    if (group.name === "Income") {
+      const { planned, received } = income;
+      if (planned > 0 && received > 0) {
+        return (received / planned) * 100;
       }
-      // Add other group-specific progress calculations if needed
       return 0;
-    };
+    }
+    // Add other group-specific progress calculations if needed
+    return 0;
+  };
 
   console.log("progress => ", progress);
   return (

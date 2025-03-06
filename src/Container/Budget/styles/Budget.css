@@ -98,10 +98,10 @@ section {
 }
 
 .group-actions__button--red {
-  color:#793733;
+  color: #793733;
 }
-.group-actions__button--green{
-  color:#397933;
+.group-actions__button--green {
+  color: #397933;
 }
 
 .group-actions__button--bg-red {
@@ -112,6 +112,7 @@ section {
   background-color: #397933;
 }
 
-button > i, [data-prefix='fas'] {
+button > i,
+[data-prefix="fas"] {
   pointer-events: none;
 }

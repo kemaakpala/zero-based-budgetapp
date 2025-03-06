@@ -1,4 +1,11 @@
-const Hero = ({ currency = "£", month="January", income=0.00, planned=0.00, received=0.00, totalSpent=0.00 }) => (
+const Hero = ({
+  currency = "£",
+  month = "January",
+  income = 0.0,
+  planned = 0.0,
+  received = 0.0,
+  totalSpent = 0.0,
+}) => (
   <div className="hero-container">
     <h2>Income for {month}</h2>
     <h2>
