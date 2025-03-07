@@ -9,12 +9,37 @@ import "./styles/BudgetGroupItem.css";
 const BudgetGroupItem = ({
   budgetGroupName,
   budgetGroupItems,
-  progress,
   onChangeHandler,
 }) => {
   console.log("budgetGroupItems", budgetGroupItems);
   return budgetGroupItems.map((item, itemIndex) => {
     const { id, fields, status, action, type } = item;
+    // Calculate progress for each budget group
+    const calculateProgress = (group) => {
+      console.log(`calculateProgress[group: ${group.type}]`, group);
+      if (group.type === "income") {
+        const { planned, received } = group.fields.reduce(
+          (acc, field) => {
+            if (field.label.toLowerCase() === "planned") {
+              acc.planned = parseFloat(field.value);
+            }
+            if (field.label.toLowerCase() === "received") {
+              acc.received = parseFloat(field.value);
+            }
+            return acc;
+          },
+          { planned: 0, received: 0 }
+        );
+        if (planned > 0 && received > 0) {
+          return (received / planned) * 100;
+        }
+        return 0;
+      }
+      // Add other group-specific progress calculations if needed
+      return 0;
+    };
+    const progress = calculateProgress(item);
+    console.log("BudgetGroup[progress] => ", calculateProgress(item));
     return (
       <>
         <div className="group-item">

@@ -196,35 +196,16 @@ function Budget() {
     }
   }, [income]);
 
-  // This useEffect hook updates the progress state whenever the income state changes
-  useEffect(() => {
-    console.log("useEffect[income] =>", income);
-    console.log(
-      "useEffect[planned && received] => ",
-      income.planned > 0 && income.received > 0
-    );
-    const { planned, received } = income;
-    if (planned > 0 && received > 0) {
-      setProgress((received / planned) * 100);
-    } else {
-      setProgress(0);
-    }
-  }, [income]);
+  // // This useEffect hook updates the progress state whenever the income state changes
+  // useEffect(() => {
+  //   const { planned, received } = income;
+  //   if (planned > 0 && received > 0) {
+  //     setProgress((received / planned) * 100);
+  //   } else {
+  //     setProgress(0);
+  //   }
+  // }, [income]);
 
-  // Calculate progress for each budget group
-  const calculateProgress = (group) => {
-    if (group.name === "Income") {
-      const { planned, received } = income;
-      if (planned > 0 && received > 0) {
-        return (received / planned) * 100;
-      }
-      return 0;
-    }
-    // Add other group-specific progress calculations if needed
-    return 0;
-  };
-  console.log("group => ", budgetGroups);
-  console.log("progress => ", progress);
   // Calculate total income
   const calculateTotalIncomeByType = (groups, type = "planned") => {
     const incomeGroup = groups.find((group) => group.name === "Income");
@@ -253,11 +234,12 @@ function Budget() {
     budgetGroups,
     TYPE.received
   );
+  const totalIncome = totalPlannedIncome + totalReceivedIncome;
   return (
     <section>
       <Hero
         month={fullyear}
-        income={formatBudgetItemAmount(totalPlannedIncome)}
+        income={formatBudgetItemAmount(totalIncome)}
         planned={formatBudgetItemAmount(totalPlannedIncome)}
         received={formatBudgetItemAmount(totalReceivedIncome)}
       />
@@ -266,7 +248,6 @@ function Budget() {
           <BudgetGroup
             key={group.name}
             budgetGroup={group}
-            progress={calculateProgress(group)} // Calculate progress for each group
             onChangeHandler={(itemIndex, fieldIndex, value) =>
               handleFieldChange(groupIndex, itemIndex, fieldIndex, value)
             }

@@ -4,10 +4,9 @@ import BudgetGroupHeader from "./BudgetGroupHeader";
 import BudgetGroupActions from "./BudgetGroupActions";
 import BudgetGroupItem from "./BudgetGroupItem";
 
-const BudgetGroup = ({ budgetGroup, progress, onChangeHandler }) => {
+const BudgetGroup = ({ budgetGroup, onChangeHandler }) => {
   const { name, budgetGroupItems } = budgetGroup;
   console.log("name", name);
-  console.log("BudgetGroup[progress] => ", progress);
   const [hideContent, setHideContent] = useState(false);
   const [showDeleteButton, setShowDeleteButton] = useState(false);
 
@@ -52,7 +51,6 @@ const BudgetGroup = ({ budgetGroup, progress, onChangeHandler }) => {
         <BudgetGroupItem
           budgetGroupName={name}
           budgetGroupItems={budgetGroupItems}
-          progress={progress}
           onChangeHandler={onChangeHandler}
         />
       </div>
