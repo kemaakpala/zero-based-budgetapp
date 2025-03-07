@@ -6,10 +6,30 @@ import {
   formatBudgetItemAmount,
   getFullYear,
 } from "../../utils/utils";
+import { TYPE } from "../../utils/constants";
 
 export const incomeData = {
   name: "Income",
   budgetGroupItems: [
+    {
+      id: generateUniqueId(),
+      fields: [
+        {
+          label: "Planned",
+          value: 0,
+          placeholder: 0,
+          type: "text",
+        },
+        {
+          label: "Received",
+          value: 0,
+          placeholder: 0,
+          type: "text",
+        },
+      ],
+      action: { label: "Delete", color: "red", type: "button" },
+      type: "income",
+    },
     {
       id: generateUniqueId(),
       fields: [
@@ -203,22 +223,50 @@ function Budget() {
     // Add other group-specific progress calculations if needed
     return 0;
   };
-
+  console.log("group => ", budgetGroups);
   console.log("progress => ", progress);
+  // Calculate total income
+  const calculateTotalIncomeByType = (groups, type = "planned") => {
+    const incomeGroup = groups.find((group) => group.name === "Income");
+    if (!incomeGroup) return 0;
+
+    return incomeGroup.budgetGroupItems.reduce((total, item) => {
+      return (
+        total +
+        item.fields.reduce((sum, field) => {
+          return (
+            sum +
+            parseFloat(
+              field.label.toLowerCase() === type.toLowerCase() ? field.value : 0
+            )
+          );
+        }, 0)
+      );
+    }, 0);
+  };
+
+  const totalPlannedIncome = calculateTotalIncomeByType(
+    budgetGroups,
+    TYPE.planned
+  );
+  const totalReceivedIncome = calculateTotalIncomeByType(
+    budgetGroups,
+    TYPE.received
+  );
   return (
     <section>
       <Hero
         month={fullyear}
-        income={income.planned}
-        planned={income.planned}
-        received={income.received}
+        income={formatBudgetItemAmount(totalPlannedIncome)}
+        planned={formatBudgetItemAmount(totalPlannedIncome)}
+        received={formatBudgetItemAmount(totalReceivedIncome)}
       />
       <BudgetForm className="form">
         {budgetGroups.map((group, groupIndex) => (
           <BudgetGroup
             key={group.name}
             budgetGroup={group}
-            progress={calculateProgress(group)} // Pass progress for Income group, 0 for others
+            progress={calculateProgress(group)} // Calculate progress for each group
             onChangeHandler={(itemIndex, fieldIndex, value) =>
               handleFieldChange(groupIndex, itemIndex, fieldIndex, value)
             }

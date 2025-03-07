@@ -3,7 +3,6 @@ import "./styles/BudgetGroup.css";
 import BudgetGroupHeader from "./BudgetGroupHeader";
 import BudgetGroupActions from "./BudgetGroupActions";
 import BudgetGroupItem from "./BudgetGroupItem";
-import ProgressBar from "../ProgressBar";
 
 const BudgetGroup = ({ budgetGroup, progress, onChangeHandler }) => {
   const { name, budgetGroupItems } = budgetGroup;
@@ -53,10 +52,10 @@ const BudgetGroup = ({ budgetGroup, progress, onChangeHandler }) => {
         <BudgetGroupItem
           budgetGroupName={name}
           budgetGroupItems={budgetGroupItems}
+          progress={progress}
           onChangeHandler={onChangeHandler}
         />
       </div>
-      <ProgressBar percentage={progress} />
       <BudgetGroupActions />
     </div>
   );

@@ -1,3 +1,9 @@
+/* remove pointer events from button icons */
+button > i,
+[data-prefix="fas"] {
+  pointer-events: none;
+}
+
 /* Base button class with minimal styling */
 .group-actions__button {
   text-decoration: none;
