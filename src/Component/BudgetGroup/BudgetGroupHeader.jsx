@@ -24,7 +24,7 @@ const BudgetGroupHeader = ({
       >
         <h3>{budgetGroupName}</h3>
         {showDeleteButtonFlag && (
-          <Button classModifier="transparent" color="red">
+          <Button variation="transparent" color="red">
             <FontAwesomeIcon
               icon={faTrashCan}
               size="1x"
@@ -36,7 +36,7 @@ const BudgetGroupHeader = ({
           </Button>
         )}
       </div>
-      <Button classModifier="transparent" onClickHandler={handleToggle}>
+      <Button variation="transparent" onClickHandler={handleToggle}>
         <FontAwesomeIcon
           icon={hideContentFlag ? faChevronUp : faChevronDown}
           size="1x"

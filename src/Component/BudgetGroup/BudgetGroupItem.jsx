@@ -17,24 +17,37 @@ const BudgetGroupItem = ({
     // Calculate progress for each budget group
     const calculateProgress = (group) => {
       console.log(`calculateProgress[group: ${group.type}]`, group);
-      if (group.type === "income") {
-        const { planned, received } = group.fields.reduce(
-          (acc, field) => {
-            if (field.label.toLowerCase() === "planned") {
-              acc.planned = parseFloat(field.value);
-            }
-            if (field.label.toLowerCase() === "received") {
-              acc.received = parseFloat(field.value);
-            }
-            return acc;
-          },
-          { planned: 0, received: 0 }
-        );
-        if (planned > 0 && received > 0) {
-          return (received / planned) * 100;
+      console.log("[...group.fields, ...group?.status || []] => ", [
+        ...group.fields,
+        ...(group.status || []),
+      ]);
+      // if (group.type === "income") {
+      const { planned, received } = [
+        ...group.fields,
+        ...(group.status || []),
+      ].reduce(
+        (acc, groupItem) => {
+          if (groupItem.label.toLowerCase() === "planned") {
+            acc.planned = parseFloat(groupItem.value);
+          }
+          if (groupItem.label.toLowerCase() === "received") {
+            acc.received = parseFloat(groupItem.value);
+          }
+          // if (field.label.tolowerCase() === "remaining") {
+          //   acc.remaining = parseFloat(field.value);
+          // }
+          return acc;
+        },
+        {
+          planned: 0,
+          received: 0, // remaining: 0
         }
-        return 0;
+      );
+      if (planned > 0 && received > 0) {
+        return (received / planned) * 100;
       }
+      return 0;
+      // }
       // Add other group-specific progress calculations if needed
       return 0;
     };
@@ -87,7 +100,7 @@ const BudgetGroupItem = ({
             <div className="group-item-action">
               <Button
                 className="group-item-action__Button"
-                classModifier="transparent"
+                variation="transparent"
                 color={action.color}
               >
                 <FontAwesomeIcon

@@ -1,6 +1,6 @@
 import Button from "../Button/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const BudgetGroupActions = ({
   budgetGroup,
@@ -9,8 +9,11 @@ const BudgetGroupActions = ({
 }) => {
   return (
     <div className="group-actions">
-      <Button className="form-control group-actions__Button">
-        Add Item
+      <Button
+        className="form-control group-actions__Button"
+        variation="transparent"
+      >
+        <FontAwesomeIcon icon={faPlus} /> Add Item
       </Button>
     </div>
   );

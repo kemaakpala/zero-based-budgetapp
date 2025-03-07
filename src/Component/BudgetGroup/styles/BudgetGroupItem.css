@@ -1,3 +1,20 @@
-.group-item {
+/**
+  * TODO: fix styling for BudgetGroupItems
+**/
+.group-item,
+.group-item-fields,
+.group-item-status,
+.group-item-action {
   display: flex;
+  flex: 1;
+}
+.group-item-fields,
+.group-item-status {
+  flex-direction: column;
+}
+.group-item-status__header {
+  margin: 0;
+}
+.group-item-action {
+  align-items: flex-end;
 }

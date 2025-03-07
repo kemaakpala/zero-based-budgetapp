@@ -1,3 +1,10 @@
+.group-container,
+.group-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
 .group-container {
   display: flex;
   flex-direction: column;
@@ -6,16 +13,10 @@
   justify-content: left;
   align-content: flex-start;
   flex-wrap: wrap;
-  width: 100%;
   margin-bottom: 1rem;
   padding: 1rem;
   border-radius: 0.5rem;
   border: 1px solid red;
-}
-
-.group-content {
-  display: flex;
-  flex-direction: column;
 }
 
 .group-content--hidden {
