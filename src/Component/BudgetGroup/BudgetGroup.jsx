@@ -8,17 +8,12 @@ const BudgetGroup = ({ budgetGroup, onChangeHandler }) => {
   const { name, budgetGroupItems } = budgetGroup;
   console.log("name", name);
   const [hideContent, setHideContent] = useState(false);
-  const [showPopOver, setShowShowPopOver] = useState(false);
 
   const clickHandler = (event) => {
     event.preventDefault();
     setHideContent((prevHideContent) => !prevHideContent);
   };
 
-  const popOverHandler = (event) => {
-    event.preventDefault();
-    setShowShowPopOver((prevShowPopOver) => !prevShowPopOver);
-  };
   const deleteGroupHandler = (event) => {
     // console.log("delete group:", event.target.previousSibling.textContent);
   };
@@ -33,10 +28,8 @@ const BudgetGroup = ({ budgetGroup, onChangeHandler }) => {
       <BudgetGroupHeader
         budgetGroupName={name}
         handleToggle={clickHandler}
-        handlePopOver={popOverHandler}
         handleHeaderClick={groupHeaderTitleClickHandler}
         hideContentFlag={hideContent}
-        showPopOver={showPopOver}
       />
       <div
         className={`group-content ${
@@ -47,6 +40,7 @@ const BudgetGroup = ({ budgetGroup, onChangeHandler }) => {
           budgetGroupName={name}
           budgetGroupItems={budgetGroupItems}
           onChangeHandler={onChangeHandler}
+          hideContentFlag={hideContent}
         />
       </div>
       <BudgetGroupActions />

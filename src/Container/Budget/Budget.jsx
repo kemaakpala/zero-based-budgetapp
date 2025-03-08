@@ -36,7 +36,6 @@ export const incomeData = {
           type: "text",
         },
       ],
-      action: { label: "Delete", color: "red", type: "button" },
       type: "income",
     },
     {
@@ -64,7 +63,6 @@ export const incomeData = {
           type: "text",
         },
       ],
-      action: { label: "Delete", color: "red", type: "button" },
       type: "income",
     },
   ],
@@ -93,7 +91,6 @@ export const GivingData = {
           type: "text",
         },
       ],
-      action: { label: "Delete", color: "red", type: "button" },
       type: "expense",
     },
     {
@@ -117,7 +114,6 @@ export const GivingData = {
           type: "text",
         },
       ],
-      action: { label: "Delete", color: "red", type: "button" },
       type: "expense",
     },
     {

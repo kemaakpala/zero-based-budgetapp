@@ -1,26 +1,41 @@
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEllipsisVertical,
+  faCoins,
+  faTrashCan,
+} from "@fortawesome/free-solid-svg-icons";
 import Button from "../Button/Button";
 import TextField from "../TextField/TextField";
 import ProgressBar from "../ProgressBar";
 import { removeSpace } from "../../utils/utils";
 import "./styles/BudgetGroupItem.css";
+import PopOverMenu from "../PopOverMenu/PopOverMenu";
 
 const BudgetGroupItem = ({
   budgetGroupName,
   budgetGroupItems,
   onChangeHandler,
 }) => {
-  console.log("budgetGroupItems", budgetGroupItems);
+  const [showPopOver, setShowShowPopOver] = useState({});
+
+  const popOverHandler = (event, id) => {
+    event.preventDefault();
+    setShowShowPopOver((prevShowPopOver) => ({
+      ...prevShowPopOver,
+      [id]: !prevShowPopOver[id],
+    }));
+  };
+
   return budgetGroupItems.map((item, itemIndex) => {
-    const { id, fields, status, action, type } = item;
+    const { id, fields, status, type } = item;
     // Calculate progress for each budget group
     const calculateProgress = (group) => {
-      console.log(`calculateProgress[group: ${group.type}]`, group);
-      console.log("[...group.fields, ...group?.status || []] => ", [
-        ...group.fields,
-        ...(group.status || []),
-      ]);
+      // console.log(`calculateProgress[group: ${group.type}]`, group);
+      // console.log("[...group.fields, ...group?.status || []] => ", [
+      //   ...group.fields,
+      //   ...(group.status || []),
+      // ]);
       // if (group.type === "income") {
       const { planned, received } = [
         ...group.fields,
@@ -52,7 +67,7 @@ const BudgetGroupItem = ({
       return 0;
     };
     const progress = calculateProgress(item);
-    console.log("BudgetGroup[progress] => ", calculateProgress(item));
+    // console.log("BudgetGroup[progress] => ", calculateProgress(item));
     return (
       <>
         <div className="group-item">
@@ -96,21 +111,29 @@ const BudgetGroupItem = ({
                 </div>
               );
             })}
-          {action && (
-            <div className="group-item-action">
-              <Button
-                className="group-item-action__Button"
-                variation="transparent"
-                color={action.color}
-              >
-                <FontAwesomeIcon
-                  icon={faTrashCan}
-                  size="1x"
-                  title="delete budget item"
-                />
-              </Button>
-            </div>
-          )}
+
+          <div className="group-item-action">
+            <Button
+              className="group-item-action__Button"
+              variation="transparent"
+              onClickHandler={(e) => popOverHandler(e, id)}
+            >
+              <FontAwesomeIcon
+                icon={faEllipsisVertical}
+                size="1x"
+                title="open pop over menu"
+              />
+            </Button>
+
+            {showPopOver[id] && (
+              <PopOverMenu
+                menuList={[
+                  { icon: faCoins, title: `Add ${type}` },
+                  { icon: faTrashCan, title: `Delete ${type} Item` },
+                ]}
+              />
+            )}
+          </div>
         </div>
         <ProgressBar percentage={progress} />
       </>

@@ -26,4 +26,5 @@
 }
 .group-item-action {
   align-items: flex-end;
+  position: relative;
 }
