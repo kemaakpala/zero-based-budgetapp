@@ -104,7 +104,9 @@ export const GivingData = {
       fields: [
         {
           label: "Offering",
-          value: "0.00",
+          value: "",
+          placeholder: "Enter name",
+          name: "nametithes",
           type: "text",
         },
         {
@@ -129,13 +131,15 @@ export const GivingData = {
       fields: [
         {
           label: "Tithes",
-          value: "0.00",
+          value: "",
+          placeholder: "Enter name",
+          name: "nametithes",
           type: "text",
         },
         {
           label: "Planned",
           value: 0,
-          name: "plannedIncome",
+          name: "plannedTithes",
           placeholder: 0,
           type: "text",
         },
@@ -147,7 +151,6 @@ export const GivingData = {
           type: "text",
         },
       ],
-      action: { label: "Delete", color: "red", type: "button" },
       type: "expense",
     },
   ],
