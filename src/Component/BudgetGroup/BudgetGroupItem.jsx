@@ -68,7 +68,7 @@ const BudgetGroupItem = ({
                     className="group-item-fields__label"
                     htmlFor={grouptItemID}
                   >
-                    {field.label}:{" "}
+                    {field.label !== "" && `${field.label}:`}
                   </label>
                   <TextField
                     id={grouptItemID}

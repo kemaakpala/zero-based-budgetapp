@@ -1,6 +1,10 @@
 /**
   * TODO: fix styling for BudgetGroupItems
 **/
+.group-item {
+  width: 100%;
+  column-gap: 0.5rem;
+}
 .group-item,
 .group-item-fields,
 .group-item-status,
@@ -8,11 +12,16 @@
   display: flex;
   flex: 1;
 }
+.group-item > :first-child {
+  flex: 0 1 50%;
+}
 .group-item-fields,
 .group-item-status {
-  flex-direction: column;
+  flex-direction: column; /* stack the children */
+  width: calc((95% - 0.5rem) / 3);
 }
-.group-item-status__header {
+.group-item-status__header,
+.group-item-status__text {
   margin: 0;
 }
 .group-item-action {

@@ -1,9 +1,10 @@
 .group-header {
   display: flex;
-  justify-content: space-between;
+  flex: 1;
   align-items: center;
   margin-bottom: 1rem;
   width: 100%;
+  column-gap: 0.5rem;
 }
 .group-header h1,
 .group-header h2,
@@ -12,13 +13,33 @@
 .group-header h5 {
   margin-top: 0;
   margin-bottom: 0;
+  max-width: 100%;
 }
-
-.group-header-title {
+.group-header-column {
   display: flex;
-  align-items: center;
+  /* width: calc((95% - 0.5rem) / 4); */
+  justify-content: flex-end;
+  font-size: 1rem;
+  max-width: 50%;
 }
 
 .group-header-title button {
   margin-left: 1rem;
+}
+
+.group-header-column.group-header-title {
+  align-items: center;
+  flex: 0 1 50%;
+  justify-content: flex-start;
+}
+
+.group-header-column.group-header-field-title {
+  flex: 0 1 25%;
+  justify-content: space-between;
+  font-size: 0.95rem;
+}
+
+.group-header-column:last-child {
+  justify-content: flex-end;
+  position: relative;
 }

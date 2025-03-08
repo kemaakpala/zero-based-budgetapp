@@ -15,15 +15,24 @@ export const incomeData = {
       id: generateUniqueId(),
       fields: [
         {
-          label: "Planned",
-          value: 0,
-          placeholder: 0,
+          label: "",
+          value: "Paycheck 1",
+          placeholder: "Enter name",
+          name: "itemName",
           type: "text",
         },
         {
-          label: "Received",
+          label: "",
           value: 0,
+          name: "planned",
           placeholder: 0,
+          type: "text",
+        },
+      ],
+      status: [
+        {
+          label: "",
+          value: "0.00",
           type: "text",
         },
       ],
@@ -34,15 +43,24 @@ export const incomeData = {
       id: generateUniqueId(),
       fields: [
         {
-          label: "Planned",
-          value: 0,
-          placeholder: 0,
+          label: "",
+          value: "",
+          placeholder: "Enter name",
+          name: "itemName",
           type: "text",
         },
         {
-          label: "Received",
+          label: "",
           value: 0,
+          name: "planned",
           placeholder: 0,
+          type: "text",
+        },
+      ],
+      status: [
+        {
+          label: "",
+          value: "0.00",
           type: "text",
         },
       ],
