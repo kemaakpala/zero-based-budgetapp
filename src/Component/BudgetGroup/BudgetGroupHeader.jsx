@@ -13,6 +13,7 @@ import "./styles/BudgetGroupHeader.css";
 
 const BudgetGroupHeader = ({
   budgetGroupName,
+  columns,
   handleToggle,
   hideContentFlag,
   handleHeaderClick,
@@ -39,12 +40,11 @@ const BudgetGroupHeader = ({
           />
         </Button>
       </div>
-      <div className="group-header-column group-header-field-title">
-        <h3>Planned</h3>
-      </div>
-      <div className="group-header-column group-header-field-title">
-        <h3>Received</h3>
-      </div>
+      {columns.map(({ name }) => (
+        <div className="group-header-column group-header-field-title">
+          <h3 className="size1">{name}</h3>
+        </div>
+      ))}
       <div className="group-header-column">
         <Button variation="transparent" onClickHandler={popOverHandler}>
           <FontAwesomeIcon

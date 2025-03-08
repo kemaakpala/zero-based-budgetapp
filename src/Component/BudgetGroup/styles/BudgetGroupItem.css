@@ -20,11 +20,18 @@
   flex-direction: column; /* stack the children */
   width: calc((95% - 0.5rem) / 3);
 }
-.group-item-status__header,
+
+.group-item-fields__label {
+  visibility: hidden;
+  height: 0;
+}
+
 .group-item-status__text {
   margin: 0;
 }
+
 .group-item-action {
-  align-items: flex-end;
+  align-items: flex-start;
   position: relative;
+  justify-content: flex-end;
 }

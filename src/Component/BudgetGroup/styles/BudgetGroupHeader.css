@@ -15,6 +15,9 @@
   margin-bottom: 0;
   max-width: 100%;
 }
+.size1 {
+  font-size: 1rem;
+}
 .group-header-column {
   display: flex;
   /* width: calc((95% - 0.5rem) / 4); */

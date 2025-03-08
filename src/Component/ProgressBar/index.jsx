@@ -1,7 +1,7 @@
 import "./styles/progressBar.css";
 const ProgressBar = ({ percentage }) => {
   return (
-    <div className="group-item group-item-progress">
+    <div className="group-item-progress">
       <div className="progress">
         <div
           className="progress-bar"

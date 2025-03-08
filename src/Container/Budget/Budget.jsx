@@ -10,29 +10,30 @@ import { TYPE } from "../../utils/constants";
 
 export const incomeData = {
   name: "Income",
+  columns: [{ name: "Planned" }, { name: "Received" }],
   budgetGroupItems: [
     {
       id: generateUniqueId(),
       fields: [
         {
-          label: "",
+          label: "Income name",
           value: "Paycheck 1",
           placeholder: "Enter name",
-          name: "itemName",
+          name: "nameIncome",
           type: "text",
         },
         {
-          label: "",
+          label: "Planned",
           value: 0,
-          name: "planned",
+          name: "plannedIncome",
           placeholder: 0,
           type: "text",
         },
-      ],
-      status: [
         {
-          label: "",
-          value: "0.00",
+          label: "Received",
+          value: 0,
+          name: "receivedIncome",
+          placeholder: 0,
           type: "text",
         },
       ],
@@ -42,24 +43,24 @@ export const incomeData = {
       id: generateUniqueId(),
       fields: [
         {
-          label: "",
+          label: "Income name",
           value: "",
           placeholder: "Enter name",
-          name: "itemName",
+          name: "nameIncome",
           type: "text",
         },
         {
-          label: "",
+          label: "Planned",
           value: 0,
-          name: "planned",
+          name: "plannedIncome",
           placeholder: 0,
           type: "text",
         },
-      ],
-      status: [
         {
-          label: "",
-          value: "0.00",
+          label: "Received",
+          value: 0,
+          name: "receivedIncome",
+          placeholder: 0,
           type: "text",
         },
       ],
@@ -69,22 +70,27 @@ export const incomeData = {
 };
 export const GivingData = {
   name: "Giving",
+  columns: [{ name: "Planned" }, { name: "Remaining" }],
   budgetGroupItems: [
     {
       id: generateUniqueId(),
       fields: [
         {
           label: "Charity",
-          value: "0.00",
+          value: "",
+          placeholder: "Enter name",
+          name: "nameIncome",
+          type: "text",
+        },
+        {
+          label: "Planned",
+          value: 0,
+          name: "plannedIncome",
+          placeholder: 0,
           type: "text",
         },
       ],
       status: [
-        {
-          label: "Planned",
-          value: "0.00",
-          type: "text",
-        },
         {
           label: "Remaining",
           value: "0.00",
@@ -101,13 +107,15 @@ export const GivingData = {
           value: "0.00",
           type: "text",
         },
-      ],
-      status: [
         {
           label: "Planned",
-          value: "0.00",
+          value: 0,
+          name: "plannedIncome",
+          placeholder: 0,
           type: "text",
         },
+      ],
+      status: [
         {
           label: "Remaining",
           value: "0.00",
@@ -124,13 +132,15 @@ export const GivingData = {
           value: "0.00",
           type: "text",
         },
-      ],
-      status: [
         {
           label: "Planned",
-          value: "0.00",
+          value: 0,
+          name: "plannedIncome",
+          placeholder: 0,
           type: "text",
         },
+      ],
+      status: [
         {
           label: "Remaining",
           value: "0.00",
@@ -149,7 +159,6 @@ function Budget() {
     received: formatBudgetItemAmount(0),
   });
 
-  const [progress, setProgress] = useState(0);
   const [fullyear, setFullYear] = useState(getFullYear());
 
   const [budgetGroups, setBudgetGroups] = useState([
@@ -209,16 +218,6 @@ function Budget() {
       });
     }
   }, [income]);
-
-  // // This useEffect hook updates the progress state whenever the income state changes
-  // useEffect(() => {
-  //   const { planned, received } = income;
-  //   if (planned > 0 && received > 0) {
-  //     setProgress((received / planned) * 100);
-  //   } else {
-  //     setProgress(0);
-  //   }
-  // }, [income]);
 
   // Calculate total income
   const calculateTotalIncomeByType = (groups, type = "planned") => {

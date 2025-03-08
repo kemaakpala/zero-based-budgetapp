@@ -36,7 +36,6 @@ const BudgetGroupItem = ({
       //   ...group.fields,
       //   ...(group.status || []),
       // ]);
-      // if (group.type === "income") {
       const { planned, received } = [
         ...group.fields,
         ...(group.status || []),
@@ -106,7 +105,6 @@ const BudgetGroupItem = ({
               )}_${type}_${id}`;
               return (
                 <div className="group-item-status" key={grouptItemID}>
-                  <h4 className="group-item-status__header">{label}</h4>
                   <p className="group-item-status__text">£{value}</p>
                 </div>
               );

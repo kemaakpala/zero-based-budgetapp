@@ -5,8 +5,9 @@ import BudgetGroupActions from "./BudgetGroupActions";
 import BudgetGroupItem from "./BudgetGroupItem";
 
 const BudgetGroup = ({ budgetGroup, onChangeHandler }) => {
-  const { name, budgetGroupItems } = budgetGroup;
+  const { name, columns, budgetGroupItems } = budgetGroup;
   console.log("name", name);
+  console.log("columns", columns);
   const [hideContent, setHideContent] = useState(false);
 
   const clickHandler = (event) => {
@@ -27,6 +28,7 @@ const BudgetGroup = ({ budgetGroup, onChangeHandler }) => {
     <div className="group-container">
       <BudgetGroupHeader
         budgetGroupName={name}
+        columns={columns}
         handleToggle={clickHandler}
         handleHeaderClick={groupHeaderTitleClickHandler}
         hideContentFlag={hideContent}
