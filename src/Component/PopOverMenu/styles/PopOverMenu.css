@@ -11,4 +11,7 @@
   top: 0;
   transform: translate(-65%, 20%);
   list-style: none;
+  background-color: var(--clr-surface-a20);
+  border: 1px solid var(--clr-surface-a10);
+  z-index: 1;
 }

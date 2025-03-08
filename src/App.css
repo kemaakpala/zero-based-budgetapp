@@ -1,11 +1,46 @@
+:root {
+  /** Base colors */
+  --clr-dark-a0: #000000;
+  --clr-light-a0: #ffffff;
+
+  /** Dark theme primary colors */
+  --clr-primary-a0: #21f6ac;
+  --clr-primary-a10: #55f8b5;
+  --clr-primary-a20: #74f9be;
+  --clr-primary-a30: #8dfbc7;
+  --clr-primary-a40: #a3fcd1;
+  --clr-primary-a50: #b7fdda;
+
+  /** Dark theme surface colors */
+  --clr-surface-a0: #01017e;
+  --clr-surface-a10: #341d8d;
+  --clr-surface-a20: #52389b;
+  --clr-surface-a30: #6c52aa;
+  --clr-surface-a40: #856db8;
+  --clr-surface-a50: #9d88c6;
+
+  /** Dark theme tonal surface colors */
+  --clr-surface-tonal-a0: #30368a;
+  --clr-surface-tonal-a10: #4a4997;
+  --clr-surface-tonal-a20: #615ea4;
+  --clr-surface-tonal-a30: #7873b1;
+  --clr-surface-tonal-a40: #8e89be;
+  --clr-surface-tonal-a50: #a59fcb;
+}
+
+/** Examples */
+/* .bg-primary {
+  color: var(--clr-primary-a50);
+  background-color: var(--clr-surface-a0);
+} */
 .App {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  /* grid-template-rows: auto auto auto 40px;
-   */
   grid-auto-rows: auto;
   grid-gap: 8px;
   height: 100%;
+  background-color: var(--clr-surface-a0);
+  color: var(--clr-light-a0);
 }
 
 .App > *:not(aside) {
@@ -18,7 +53,14 @@
   justify-content: space-between;
 } */
 .form-control {
-  /* styles for the form-control block */
+  background-color: var(--clr-surface-a20);
+  border: 1px solid var(--clr-surface-a20);
+  color: var(--clr-light-a0);
+  font-weight: bold;
+  font-size: 0.875rem;
+}
+.form-control::placeholder {
+  color: var(--clr-surface-a50);
 }
 
 .form-control--error {
@@ -27,4 +69,8 @@
 
 .form-control--disabled {
   /* styles for form-control elements with the disabled modifier */
+}
+
+svg[data-prefix="fas"] {
+  color: var(--clr-primary-a30);
 }

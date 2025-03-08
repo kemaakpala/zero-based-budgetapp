@@ -9,6 +9,7 @@ button > i,
   text-decoration: none;
   border: none;
   cursor: pointer;
+  color: var(--clr-light-a0);
 }
 
 /* Modifier class for transparent button */

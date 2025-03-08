@@ -16,13 +16,16 @@ section {
   padding: 1rem;
 }
 
+.hero-container {
+  border: 1px solid var(--clr-surface-a30);
+}
+
 .hero-container,
 .form {
   width: 100%;
   max-width: 450px;
 }
 .hero-container {
-  border: 1px solid red;
   padding: 1rem;
   border-radius: 0.5rem;
   margin-bottom: 1rem;
