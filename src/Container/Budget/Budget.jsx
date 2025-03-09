@@ -17,7 +17,7 @@ export const incomeData = {
       fields: [
         {
           label: "Income name",
-          value: "Paycheck 1",
+          value: "",
           placeholder: "Enter name",
           name: "nameIncome",
           type: "text",
@@ -250,7 +250,9 @@ function Budget() {
     budgetGroups,
     TYPE.received
   );
-  const totalIncome = totalPlannedIncome + totalReceivedIncome;
+  const totalIncome = totalReceivedIncome
+    ? totalReceivedIncome
+    : totalPlannedIncome;
   return (
     <section>
       <Hero

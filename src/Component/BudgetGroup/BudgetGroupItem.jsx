@@ -128,9 +128,19 @@ const BudgetGroupItem = ({
 
             {showPopOver[id] && (
               <PopOverMenu
+                width="8.3875rem"
+                left="-2.8125rem"
                 menuList={[
-                  { icon: faCoins, title: `Add ${type}` },
-                  { icon: faTrashCan, title: `Delete ${type} Item` },
+                  {
+                    icon: faCoins,
+                    title: `Add ${type}`,
+                    description: `Add ${type}`,
+                  },
+                  {
+                    icon: faTrashCan,
+                    title: `Delete ${type} Item`,
+                    description: `Delete ${type}`,
+                  },
                 ]}
               />
             )}

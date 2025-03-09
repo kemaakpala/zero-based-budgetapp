@@ -56,8 +56,16 @@ const BudgetGroupHeader = ({
         {showPopOver && (
           <PopOverMenu
             menuList={[
-              { icon: faPen, title: "Edit budget group" },
-              { icon: faTrashCan, title: "Delete budget group" },
+              {
+                icon: faPen,
+                title: `Edit budget ${budgetGroupName} group`,
+                description: "Edit",
+              },
+              {
+                icon: faTrashCan,
+                title: `Delete ${budgetGroupName} group`,
+                description: "Delete",
+              },
             ]}
           />
         )}

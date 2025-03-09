@@ -49,6 +49,7 @@
   color: var(--clr-light-a0);
   font-weight: bold;
   font-size: 0.875rem;
+  border-radius: 0.25rem;
 }
 .form-control::placeholder {
   color: var(--clr-surface-a50);

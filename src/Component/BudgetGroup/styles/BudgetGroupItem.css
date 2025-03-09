@@ -24,6 +24,7 @@
 
 .group-item-status__text {
   margin: 0 0 0 0.5rem;
+  font-size: 0.875rem;
 }
 .group-item-column:last-child {
   justify-content: flex-start;
