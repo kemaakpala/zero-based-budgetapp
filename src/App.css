@@ -28,11 +28,6 @@
   --clr-surface-tonal-a50: #a59fcb;
 }
 
-/** Examples */
-/* .bg-primary {
-  color: var(--clr-primary-a50);
-  background-color: var(--clr-surface-a0);
-} */
 .App {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -48,10 +43,6 @@
   flex-direction: column;
 }
 
-/* .App > header {
-  flex-direction: row;
-  justify-content: space-between;
-} */
 .form-control {
   background-color: var(--clr-surface-a20);
   border: 1px solid var(--clr-surface-a20);
