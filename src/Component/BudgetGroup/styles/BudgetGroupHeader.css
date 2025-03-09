@@ -38,7 +38,6 @@
 
 .group-header-column.group-header-field-title {
   flex: 0 1 25%;
-  justify-content: space-between;
   font-size: 0.95rem;
 }
 

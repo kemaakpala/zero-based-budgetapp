@@ -77,7 +77,7 @@ const BudgetGroupItem = ({
                 label
               )}_${type}_${id}`;
               return (
-                <div className="group-item-fields">
+                <div className="group-item-column group-item-fields">
                   <label
                     className="group-item-fields__label"
                     htmlFor={grouptItemID}
@@ -104,13 +104,16 @@ const BudgetGroupItem = ({
                 label
               )}_${type}_${id}`;
               return (
-                <div className="group-item-status" key={grouptItemID}>
+                <div
+                  className="group-item-column group-item-status"
+                  key={grouptItemID}
+                >
                   <p className="group-item-status__text">£{value}</p>
                 </div>
               );
             })}
 
-          <div className="group-item-action">
+          <div className="group-item-column group-item-action">
             <Button
               className="group-item-action__Button"
               variation="transparent"
