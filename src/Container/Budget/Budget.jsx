@@ -39,33 +39,6 @@ export const incomeData = {
       ],
       type: "income",
     },
-    {
-      id: generateUniqueId(),
-      fields: [
-        {
-          label: "Income name",
-          value: "",
-          placeholder: "Enter name",
-          name: "nameIncome",
-          type: "text",
-        },
-        {
-          label: "Planned",
-          value: formatBudgetItemAmount(0),
-          name: "plannedIncome",
-          placeholder: formatBudgetItemAmount(0),
-          type: "text",
-        },
-        {
-          label: "Received",
-          value: formatBudgetItemAmount(0),
-          name: "receivedIncome",
-          placeholder: formatBudgetItemAmount(0),
-          type: "text",
-        },
-      ],
-      type: "income",
-    },
   ],
 };
 export const GivingData = {
@@ -161,6 +134,8 @@ function Budget() {
     planned: formatBudgetItemAmount(0),
     received: formatBudgetItemAmount(0),
   });
+  const [plannedIncome, setPlannedIncome] = useState(0);
+  const [receivedIncome, setReceivedIncome] = useState(0);
 
   const [fullyear, setFullYear] = useState(getFullYear());
 
@@ -168,6 +143,8 @@ function Budget() {
     { ...incomeData },
     { ...GivingData },
   ]);
+
+  const [budgetTotal, setBudgetTotal] = useState(0);
 
   const handleFieldChange = (groupIndex, itemIndex, fieldIndex, value) => {
     // console.log("handleFieldChange =>", value);
@@ -204,6 +181,19 @@ function Budget() {
     }
   };
 
+  const handleZeroBudgetCalulation = (
+    totalArg,
+    group,
+    groupIndex,
+    itemIndex,
+    fieldIndex,
+    value
+  ) => {
+    if (group.name.toLowerCase() !== "income") {
+      setBudgetTotal((prevTotal) => prevTotal - parseFloat(value));
+    }
+  };
+
   // This useEffect hook updates the fullyear state
   useEffect(() => {
     setFullYear(getFullYear());
@@ -222,7 +212,7 @@ function Budget() {
     }
   }, [income]);
 
-  // Calculate total income
+  // Calculate budgetTotal income
   const calculateTotalIncomeByType = (groups, type = "planned") => {
     const incomeGroup = groups.find((group) => group.name === "Income");
     if (!incomeGroup) return 0;
@@ -242,24 +232,28 @@ function Budget() {
     }, 0);
   };
 
-  const totalPlannedIncome = calculateTotalIncomeByType(
-    budgetGroups,
-    TYPE.planned
-  );
-  const totalReceivedIncome = calculateTotalIncomeByType(
-    budgetGroups,
-    TYPE.received
-  );
-  const totalIncome = totalReceivedIncome
-    ? totalReceivedIncome
-    : totalPlannedIncome;
+  useEffect(() => {
+    const tPlannedIncome = calculateTotalIncomeByType(
+      budgetGroups,
+      TYPE.planned
+    );
+    setPlannedIncome(tPlannedIncome);
+    const tReceivedIncome = calculateTotalIncomeByType(
+      budgetGroups,
+      TYPE.received
+    );
+    setReceivedIncome(tReceivedIncome);
+    const tIncome = tReceivedIncome ? tReceivedIncome : tPlannedIncome;
+    setBudgetTotal(tIncome);
+  }, [budgetGroups]);
+
   return (
     <section>
       <Hero
         month={fullyear}
-        income={formatBudgetItemAmount(totalIncome)}
-        planned={formatBudgetItemAmount(totalPlannedIncome)}
-        received={formatBudgetItemAmount(totalReceivedIncome)}
+        income={formatBudgetItemAmount(budgetTotal)}
+        planned={formatBudgetItemAmount(plannedIncome)}
+        received={formatBudgetItemAmount(receivedIncome)}
       />
       <BudgetForm className="form">
         {budgetGroups.map((group, groupIndex) => (
@@ -268,6 +262,16 @@ function Budget() {
             budgetGroup={group}
             onChangeHandler={(itemIndex, fieldIndex, value) =>
               handleFieldChange(groupIndex, itemIndex, fieldIndex, value)
+            }
+            onBlurHandler={(itemIndex, fieldIndex, value) =>
+              handleZeroBudgetCalulation(
+                budgetTotal,
+                group,
+                groupIndex,
+                itemIndex,
+                fieldIndex,
+                value
+              )
             }
           />
         ))}

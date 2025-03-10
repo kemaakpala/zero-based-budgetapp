@@ -7,9 +7,11 @@ const TextField = ({
   placeholder,
   variant,
   onChange,
+  onBlur,
   defaultVal,
 }) => {
   const onChangeHandler = (e) => onChange(e);
+  const onBlurHandler = (e) => onBlur(e);
   const renderLabel = () => {
     if (!label) return null;
     return (
@@ -28,6 +30,7 @@ const TextField = ({
         name={inputName}
         placeholder={placeholder}
         onChange={onChangeHandler}
+        onBlur={onBlurHandler}
         defaultValue={defaultVal}
       />
     </>

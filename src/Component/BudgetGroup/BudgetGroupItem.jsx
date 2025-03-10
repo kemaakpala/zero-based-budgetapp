@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEllipsisVertical,
@@ -16,6 +17,7 @@ const BudgetGroupItem = ({
   budgetGroupName,
   budgetGroupItems,
   onChangeHandler,
+  onBlurHandler,
 }) => {
   const [showPopOver, setShowShowPopOver] = useState({});
 
@@ -31,11 +33,6 @@ const BudgetGroupItem = ({
     const { id, fields, status, type } = item;
     // Calculate progress for each budget group
     const calculateProgress = (group) => {
-      // console.log(`calculateProgress[group: ${group.type}]`, group);
-      // console.log("[...group.fields, ...group?.status || []] => ", [
-      //   ...group.fields,
-      //   ...(group.status || []),
-      // ]);
       const { planned, received } = [
         ...group.fields,
         ...(group.status || []),
@@ -61,12 +58,9 @@ const BudgetGroupItem = ({
         return (received / planned) * 100;
       }
       return 0;
-      // }
-      // Add other group-specific progress calculations if needed
-      return 0;
     };
     const progress = calculateProgress(item);
-    // console.log("BudgetGroup[progress] => ", calculateProgress(item));
+
     return (
       <>
         <div className="group-item">
@@ -94,6 +88,9 @@ const BudgetGroupItem = ({
                     onChange={(e) =>
                       onChangeHandler(itemIndex, fieldIndex, e.target.value)
                     }
+                    onBlur={(e) => {
+                      onBlurHandler(itemIndex, fieldIndex, e.target.value);
+                    }}
                   />
                 </div>
               );
@@ -150,6 +147,33 @@ const BudgetGroupItem = ({
       </>
     );
   });
+};
+
+BudgetGroupItem.propTypes = {
+  budgetGroupName: PropTypes.string.isRequired,
+  budgetGroupItems: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      fields: PropTypes.arrayOf(
+        PropTypes.shape({
+          label: PropTypes.string,
+          value: PropTypes.string,
+          placeholder: PropTypes.string,
+          type: PropTypes.string,
+        })
+      ),
+      status: PropTypes.arrayOf(
+        PropTypes.shape({
+          label: PropTypes.string,
+          value: PropTypes.string,
+          type: PropTypes.string,
+        })
+      ),
+      type: PropTypes.string,
+    })
+  ).isRequired,
+  onChangeHandler: PropTypes.func.isRequired,
+  onBlurHandler: PropTypes.func.isRequired,
 };
 
 export default BudgetGroupItem;

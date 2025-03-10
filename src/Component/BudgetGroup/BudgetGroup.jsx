@@ -1,13 +1,12 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import "./styles/BudgetGroup.css";
 import BudgetGroupHeader from "./BudgetGroupHeader";
 import BudgetGroupActions from "./BudgetGroupActions";
 import BudgetGroupItem from "./BudgetGroupItem";
 
-const BudgetGroup = ({ budgetGroup, onChangeHandler }) => {
+const BudgetGroup = ({ budgetGroup, onChangeHandler, onBlurHandler }) => {
   const { name, columns, budgetGroupItems } = budgetGroup;
-  console.log("name", name);
-  console.log("columns", columns);
   const [hideContent, setHideContent] = useState(false);
 
   const clickHandler = (event) => {
@@ -15,9 +14,6 @@ const BudgetGroup = ({ budgetGroup, onChangeHandler }) => {
     setHideContent((prevHideContent) => !prevHideContent);
   };
 
-  const deleteGroupHandler = (event) => {
-    // console.log("delete group:", event.target.previousSibling.textContent);
-  };
   const groupHeaderTitleClickHandler = (event) => {
     event.preventDefault();
     // console.log("event", event);
@@ -42,6 +38,7 @@ const BudgetGroup = ({ budgetGroup, onChangeHandler }) => {
           budgetGroupName={name}
           budgetGroupItems={budgetGroupItems}
           onChangeHandler={onChangeHandler}
+          onBlurHandler={onBlurHandler}
           hideContentFlag={hideContent}
         />
       </div>
@@ -49,4 +46,6 @@ const BudgetGroup = ({ budgetGroup, onChangeHandler }) => {
     </div>
   );
 };
+
+BudgetGroup.propTypes = {};
 export default BudgetGroup;
