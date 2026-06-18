@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Hero, BudgetForm, BudgetGroup, TransactionLog } from "../../Component";
 import "./styles/Budget.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -23,6 +23,19 @@ const loadBudgetData = (monthKey) => {
       console.error("Error parsing budget data", e);
     }
   }
+  const savedDefaults = localStorage.getItem("budget_app_defaults");
+  if (savedDefaults) {
+    try {
+      const parsed = JSON.parse(savedDefaults);
+      return {
+        startingSalary: parsed.startingSalary || 5000.0,
+        budgetGroups: JSON.parse(JSON.stringify(parsed.budgetGroups)),
+        transactions: [],
+      };
+    } catch (e) {
+      console.error("Error parsing default budget template", e);
+    }
+  }
   return {
     startingSalary: 5000.0,
     budgetGroups: JSON.parse(JSON.stringify(DEFAULT_BUDGET_GROUPS)),
@@ -36,6 +49,14 @@ const saveBudgetData = (monthKey, state) => {
 
 function Budget() {
   const { month } = useParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const setupCompleted = localStorage.getItem("budget_app_setup_completed");
+    if (setupCompleted !== "true") {
+      navigate("/settings", { replace: true });
+    }
+  }, [navigate]);
 
   // Route fallback logic if URL param is blank
   const getCurrentMonthYearString = () => {

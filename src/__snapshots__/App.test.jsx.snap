@@ -42,6 +42,27 @@ exports[`renders learn react link 1`] = `
         </svg>
       </div>
       <div
+        class="budget-settings-container"
+      >
+        <a
+          class="menu-icon-link"
+          data-discover="true"
+          href="/settings"
+          title="Budget Setup Wizard"
+        >
+          <svg
+            title="budget settings"
+          >
+            <title>
+              budget settings
+            </title>
+            <path
+              d=""
+            />
+          </svg>
+        </a>
+      </div>
+      <div
         class="budget-search-container"
       >
         <svg

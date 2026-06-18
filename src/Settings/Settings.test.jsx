@@ -1,0 +1,78 @@
+import React from "react";
+import { render, screen, fireEvent } from "@testing-library/react";
+import Settings from "./Settings";
+
+const mockNavigate = vi.fn();
+
+vi.mock("react-router-dom", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
+
+describe("Settings Onboarding Wizard", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    localStorage.clear();
+  });
+
+  it("walks through the 3-step setup wizard and saves config", () => {
+    render(<Settings />);
+
+    // STEP 1: Starting Salary
+    expect(screen.getByText("Set Your Starting Monthly Income")).toBeInTheDocument();
+    
+    // Check input displays default value of 5000
+    const salaryInput = screen.getByPlaceholderText("0.00");
+    expect(salaryInput.value).toBe("5000");
+
+    // Change input value to 3500
+    fireEvent.change(salaryInput, { target: { value: "3500" } });
+    expect(salaryInput.value).toBe("3500");
+
+    // Click "Next" to go to Step 2
+    const nextBtn1 = screen.getByRole("button", { name: /Next/i });
+    fireEvent.click(nextBtn1);
+
+    // STEP 2: Categories
+    expect(screen.getByText("Customize Budget Categories")).toBeInTheDocument();
+    
+    // Check default groups are rendered (e.g. Housing)
+    expect(screen.getByDisplayValue("Housing")).toBeInTheDocument();
+
+    // Add a new custom group
+    const groupInput = screen.getByPlaceholderText(/New Group/i);
+    fireEvent.change(groupInput, { target: { value: "Subscriptions" } });
+    
+    const addGroupBtn = screen.getByRole("button", { name: /Add Group/i });
+    fireEvent.click(addGroupBtn);
+
+    // Verify custom group is added
+    expect(screen.getByDisplayValue("Subscriptions")).toBeInTheDocument();
+
+    // Click "Next" to go to Step 3
+    const nextBtn2 = screen.getByRole("button", { name: /Next/i });
+    fireEvent.click(nextBtn2);
+
+    // STEP 3: Confirm Setup
+    expect(screen.getByText("Confirm Your Budget Setup")).toBeInTheDocument();
+    expect(screen.getByText("£3500.00")).toBeInTheDocument();
+    expect(screen.getByText("5 groups")).toBeInTheDocument(); // 4 defaults + 1 custom
+
+    // Click "Save & Start Budgeting"
+    const finishBtn = screen.getByRole("button", { name: /Save & Start Budgeting/i });
+    fireEvent.click(finishBtn);
+
+    // Assert saving logic
+    expect(localStorage.getItem("budget_app_setup_completed")).toBe("true");
+    
+    const savedDefaults = JSON.parse(localStorage.getItem("budget_app_defaults"));
+    expect(savedDefaults.startingSalary).toBe(3500);
+    expect(savedDefaults.budgetGroups.some(g => g.name === "Subscriptions")).toBe(true);
+
+    // Assert redirect
+    expect(mockNavigate).toHaveBeenCalled();
+  });
+});

@@ -30,14 +30,12 @@
 .budget-summary-container {
   grid-column: 10 / 11;
 }
-.menu > :last-child {
+.budget-settings-container {
+  grid-column: 11 / 12;
+}
+.budget-search-container {
   grid-column: 12 / -1;
 }
-
-/* aside {
-  display: none;
-  grid-column: -2 / -1;
-} */
 
 .divider {
   border: 1px solid #000000;
@@ -47,10 +45,26 @@
 
 .user-profile-container,
 .budget-summary-container,
-.budget-search-container {
-  width: 1rem;
-  height: 1rem;
+.budget-search-container,
+.budget-settings-container {
+  width: 1.25rem;
+  height: 1.25rem;
   border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-icon-link {
+  color: #495057;
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-icon-link:hover {
+  color: #1a73e8;
 }
 .user-profile-container img {
   width: 100%;

@@ -4,6 +4,7 @@ import { faUserCircle } from "@fortawesome/free-regular-svg-icons";
 import {
   faChartPie,
   faMagnifyingGlass,
+  faGear,
 } from "@fortawesome/free-solid-svg-icons";
 
 import "./Layout.css";
@@ -43,6 +44,15 @@ export default function Layout() {
               size="1x"
               title="budget summary"
             />
+          </div>
+          <div className="budget-settings-container">
+            <Link to="/settings" title="Budget Setup Wizard" className="menu-icon-link">
+              <FontAwesomeIcon
+                icon={faGear}
+                size="1x"
+                title="budget settings"
+              />
+            </Link>
           </div>
           <div className="budget-search-container">
             <FontAwesomeIcon
