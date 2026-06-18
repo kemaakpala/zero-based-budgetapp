@@ -3,7 +3,7 @@ import { RouterProvider } from "react-router-dom";
 import browserRouter from "./Routes/router";
 import App from "./App";
 
-jest.mock("@fortawesome/react-fontawesome", () => ({
+vi.mock("@fortawesome/react-fontawesome", () => ({
   FontAwesomeIcon: ({ icon, ...props }) => (
     <svg {...props}>
       <title>{props.title}</title>

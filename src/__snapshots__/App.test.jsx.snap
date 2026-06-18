@@ -1,0 +1,192 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`renders learn react link 1`] = `
+<div
+  class="App"
+>
+  <header
+    class="App-header"
+  >
+    <nav
+      class="menu"
+    >
+      <h1>
+        Every Pound (£)
+      </h1>
+      <div
+        class="user-profile-container"
+      >
+        <svg
+          title="user profile image"
+        >
+          <title>
+            user profile image
+          </title>
+          <path
+            d=""
+          />
+        </svg>
+      </div>
+      <div
+        class="budget-summary-container"
+      >
+        <svg
+          title="budget summary"
+        >
+          <title>
+            budget summary
+          </title>
+          <path
+            d=""
+          />
+        </svg>
+      </div>
+      <div
+        class="budget-search-container"
+      >
+        <svg
+          title="budget search"
+        >
+          <title>
+            budget search
+          </title>
+          <path
+            d=""
+          />
+        </svg>
+      </div>
+    </nav>
+    <hr
+      class="divider"
+    />
+    <nav
+      class="months-nav"
+    >
+      <ul
+        class="months-list"
+      >
+        <li>
+          <a
+            class="month-link "
+            data-discover="true"
+            href="/January-2026"
+          >
+            Jan
+          </a>
+        </li>
+        <li>
+          <a
+            class="month-link "
+            data-discover="true"
+            href="/February-2026"
+          >
+            Feb
+          </a>
+        </li>
+        <li>
+          <a
+            class="month-link "
+            data-discover="true"
+            href="/March-2026"
+          >
+            Mar
+          </a>
+        </li>
+        <li>
+          <a
+            class="month-link "
+            data-discover="true"
+            href="/April-2026"
+          >
+            Apr
+          </a>
+        </li>
+        <li>
+          <a
+            class="month-link "
+            data-discover="true"
+            href="/May-2026"
+          >
+            May
+          </a>
+        </li>
+        <li>
+          <a
+            class="month-link "
+            data-discover="true"
+            href="/June-2026"
+          >
+            Jun
+          </a>
+        </li>
+        <li>
+          <a
+            class="month-link "
+            data-discover="true"
+            href="/July-2026"
+          >
+            Jul
+          </a>
+        </li>
+        <li>
+          <a
+            class="month-link "
+            data-discover="true"
+            href="/August-2026"
+          >
+            Aug
+          </a>
+        </li>
+        <li>
+          <a
+            class="month-link "
+            data-discover="true"
+            href="/September-2026"
+          >
+            Sep
+          </a>
+        </li>
+        <li>
+          <a
+            class="month-link "
+            data-discover="true"
+            href="/October-2026"
+          >
+            Oct
+          </a>
+        </li>
+        <li>
+          <a
+            class="month-link "
+            data-discover="true"
+            href="/November-2026"
+          >
+            Nov
+          </a>
+        </li>
+        <li>
+          <a
+            class="month-link "
+            data-discover="true"
+            href="/December-2026"
+          >
+            Dec
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+  <main
+    class="App-main"
+  />
+  <footer
+    class="App-footer"
+  >
+    <hr />
+    <p>
+      © 
+      2026
+    </p>
+  </footer>
+</div>
+`;

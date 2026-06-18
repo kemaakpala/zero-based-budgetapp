@@ -4,11 +4,15 @@ import { generateUniqueId, formatBudgetItemAmount, removeSpace, getFullYear } fr
 describe('utils', () => {
   beforeAll(() => {
     const crypto = require('crypto');
-    global.crypto = {
-      getRandomValues: function (buffer) {
-        return crypto.randomFillSync(buffer);
-      }
-    };
+    Object.defineProperty(global, 'crypto', {
+      value: {
+        getRandomValues: function (buffer) {
+          return crypto.randomFillSync(buffer);
+        }
+      },
+      writable: true,
+      configurable: true
+    });
   });
 
   it('should test that space is removed', () => {

@@ -5,7 +5,16 @@ import BudgetGroupHeader from "./BudgetGroupHeader";
 import BudgetGroupActions from "./BudgetGroupActions";
 import BudgetGroupItem from "./BudgetGroupItem";
 
-const BudgetGroup = ({ budgetGroup, onChangeHandler, onBlurHandler }) => {
+const BudgetGroup = ({
+  budgetGroup,
+  groupIndex,
+  onChangeHandler,
+  onBlurHandler,
+  onAddTransactionClick,
+  onViewTransactionsClick,
+  onDeleteItemClick,
+  onAddItemClick,
+}) => {
   const { name, columns, budgetGroupItems } = budgetGroup;
   const [hideContent, setHideContent] = useState(false);
 
@@ -16,8 +25,6 @@ const BudgetGroup = ({ budgetGroup, onChangeHandler, onBlurHandler }) => {
 
   const groupHeaderTitleClickHandler = (event) => {
     event.preventDefault();
-    // console.log("event", event);
-    // console.log("event", event.target.tagName);
   };
 
   return (
@@ -36,13 +43,17 @@ const BudgetGroup = ({ budgetGroup, onChangeHandler, onBlurHandler }) => {
       >
         <BudgetGroupItem
           budgetGroupName={name}
+          groupIndex={groupIndex}
           budgetGroupItems={budgetGroupItems}
           onChangeHandler={onChangeHandler}
           onBlurHandler={onBlurHandler}
+          onAddTransactionClick={onAddTransactionClick}
+          onViewTransactionsClick={onViewTransactionsClick}
+          onDeleteItemClick={onDeleteItemClick}
           hideContentFlag={hideContent}
         />
       </div>
-      <BudgetGroupActions />
+      <BudgetGroupActions onAddItemClick={onAddItemClick} />
     </div>
   );
 };

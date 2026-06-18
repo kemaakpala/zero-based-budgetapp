@@ -5,6 +5,7 @@ import {
   faEllipsisVertical,
   faCoins,
   faTrashCan,
+  faList,
 } from "@fortawesome/free-solid-svg-icons";
 import Button from "../Button/Button";
 import TextField from "../TextField/TextField";
@@ -15,9 +16,13 @@ import PopOverMenu from "../PopOverMenu/PopOverMenu";
 
 const BudgetGroupItem = ({
   budgetGroupName,
+  groupIndex,
   budgetGroupItems,
   onChangeHandler,
   onBlurHandler,
+  onAddTransactionClick,
+  onViewTransactionsClick,
+  onDeleteItemClick,
 }) => {
   const [showPopOver, setShowShowPopOver] = useState({});
 
@@ -29,40 +34,25 @@ const BudgetGroupItem = ({
     }));
   };
 
+  const closePopOver = (id) => {
+    setShowShowPopOver((prevShowPopOver) => ({
+      ...prevShowPopOver,
+      [id]: false,
+    }));
+  };
+
   return budgetGroupItems.map((item, itemIndex) => {
-    const { id, fields, status, type } = item;
-    // Calculate progress for each budget group
-    const calculateProgress = (group) => {
-      const { planned, received } = [
-        ...group.fields,
-        ...(group.status || []),
-      ].reduce(
-        (acc, groupItem) => {
-          if (groupItem.label.toLowerCase() === "planned") {
-            acc.planned = parseFloat(groupItem.value);
-          }
-          if (groupItem.label.toLowerCase() === "received") {
-            acc.received = parseFloat(groupItem.value);
-          }
-          // if (field.label.tolowerCase() === "remaining") {
-          //   acc.remaining = parseFloat(field.value);
-          // }
-          return acc;
-        },
-        {
-          planned: 0,
-          received: 0, // remaining: 0
-        }
-      );
-      if (planned > 0 && received > 0) {
-        return (received / planned) * 100;
-      }
-      return 0;
-    };
-    const progress = calculateProgress(item);
+    const { id, fields, status } = item;
+    
+    // Calculate progress for this budget item
+    const assignedField = fields.find((f) => f.label.toLowerCase() === "assigned");
+    const assigned = assignedField ? parseFloat(assignedField.value) || 0 : 0;
+    const spent = item.spent || 0;
+    const progress = assigned > 0 ? (spent / assigned) * 100 : 0;
+    const isOverspent = spent > assigned;
 
     return (
-      <>
+      <React.Fragment key={id}>
         <div className="group-item">
           {fields.length > 0 &&
             fields.map((field, fieldIndex) => {
@@ -70,8 +60,12 @@ const BudgetGroupItem = ({
               const grouptItemID = `${budgetGroupName}_${removeSpace(
                 label
               )}_${type}_${id}`;
+              
+              // Determine if we should show a numeric field prefix
+              const isNameField = label.toLowerCase() !== "assigned" && label.toLowerCase() !== "planned" && label.toLowerCase() !== "received";
+
               return (
-                <div className="group-item-column group-item-fields">
+                <div className="group-item-column group-item-fields" key={grouptItemID}>
                   <label
                     className="group-item-fields__label"
                     htmlFor={grouptItemID}
@@ -86,10 +80,10 @@ const BudgetGroupItem = ({
                     defaultVal={value}
                     placeholder={placeholder}
                     onChange={(e) =>
-                      onChangeHandler(itemIndex, fieldIndex, e.target.value)
+                      onChangeHandler(groupIndex, itemIndex, fieldIndex, e.target.value)
                     }
                     onBlur={(e) => {
-                      onBlurHandler(itemIndex, fieldIndex, e.target.value);
+                      onBlurHandler(groupIndex, itemIndex, fieldIndex, e.target.value);
                     }}
                   />
                 </div>
@@ -100,12 +94,17 @@ const BudgetGroupItem = ({
               const grouptItemID = `${budgetGroupName}_${removeSpace(
                 label
               )}_${type}_${id}`;
+              const numericValue = parseFloat(value) || 0;
+              const isNegative = numericValue < 0;
+              
               return (
                 <div
                   className="group-item-column group-item-status"
                   key={grouptItemID}
                 >
-                  <p className="group-item-status__text">£{value}</p>
+                  <p className={`group-item-status__text ${isNegative ? "group-item-status__text--negative" : ""}`}>
+                    £{value}
+                  </p>
                 </div>
               );
             })}
@@ -125,32 +124,50 @@ const BudgetGroupItem = ({
 
             {showPopOver[id] && (
               <PopOverMenu
-                width="8.3875rem"
-                left="-2.8125rem"
+                width="11.5rem"
+                left="-6.0rem"
                 menuList={[
                   {
                     icon: faCoins,
-                    title: `Add ${type}`,
-                    description: `Add ${type}`,
+                    title: `Add Transaction`,
+                    description: `Add Transaction`,
+                    action: () => {
+                      closePopOver(id);
+                      onAddTransactionClick(groupIndex, itemIndex, item);
+                    }
+                  },
+                  {
+                    icon: faList,
+                    title: `View Transactions`,
+                    description: `View Transactions`,
+                    action: () => {
+                      closePopOver(id);
+                      onViewTransactionsClick(groupIndex, itemIndex, item);
+                    }
                   },
                   {
                     icon: faTrashCan,
-                    title: `Delete ${type} Item`,
-                    description: `Delete ${type}`,
+                    title: `Delete Item`,
+                    description: `Delete Item`,
+                    action: () => {
+                      closePopOver(id);
+                      onDeleteItemClick(groupIndex, itemIndex);
+                    }
                   },
                 ]}
               />
             )}
           </div>
         </div>
-        <ProgressBar percentage={progress} />
-      </>
+        <ProgressBar percentage={progress} isOverspent={isOverspent} />
+      </React.Fragment>
     );
   });
 };
 
 BudgetGroupItem.propTypes = {
   budgetGroupName: PropTypes.string.isRequired,
+  groupIndex: PropTypes.number.isRequired,
   budgetGroupItems: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
@@ -174,6 +191,9 @@ BudgetGroupItem.propTypes = {
   ).isRequired,
   onChangeHandler: PropTypes.func.isRequired,
   onBlurHandler: PropTypes.func.isRequired,
+  onAddTransactionClick: PropTypes.func.isRequired,
+  onViewTransactionsClick: PropTypes.func.isRequired,
+  onDeleteItemClick: PropTypes.func.isRequired,
 };
 
 export default BudgetGroupItem;

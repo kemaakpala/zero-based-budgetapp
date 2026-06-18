@@ -1,281 +1,469 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { Hero, BudgetForm, BudgetGroup } from "../../Component";
 import "./styles/Budget.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import {
   generateUniqueId,
   formatBudgetItemAmount,
-  getFullYear,
+  calculatePayday,
+  getBudgetCycleRange,
+  formatDate,
+  DEFAULT_BUDGET_GROUPS,
 } from "../../utils/utils";
-import { TYPE } from "../../utils/constants";
 
-export const incomeData = {
-  name: "Income",
-  columns: [{ name: "Planned" }, { name: "Received" }],
-  budgetGroupItems: [
-    {
-      id: generateUniqueId(),
-      fields: [
-        {
-          label: "Income name",
-          value: "",
-          placeholder: "Enter name",
-          name: "nameIncome",
-          type: "text",
-        },
-        {
-          label: "Planned",
-          value: formatBudgetItemAmount(0),
-          name: "plannedIncome",
-          placeholder: formatBudgetItemAmount(0),
-          type: "text",
-        },
-        {
-          label: "Received",
-          value: formatBudgetItemAmount(0),
-          name: "receivedIncome",
-          placeholder: formatBudgetItemAmount(0),
-          type: "text",
-        },
-      ],
-      type: "income",
-    },
-  ],
+// Loader for budget data
+const loadBudgetData = (monthKey) => {
+  const data = localStorage.getItem(`budget_app_data_${monthKey}`);
+  if (data) {
+    try {
+      return JSON.parse(data);
+    } catch (e) {
+      console.error("Error parsing budget data", e);
+    }
+  }
+  return {
+    startingSalary: 5000.0,
+    budgetGroups: JSON.parse(JSON.stringify(DEFAULT_BUDGET_GROUPS)),
+    transactions: [],
+  };
 };
-export const GivingData = {
-  name: "Giving",
-  columns: [{ name: "Planned" }, { name: "Remaining" }],
-  budgetGroupItems: [
-    {
-      id: generateUniqueId(),
-      fields: [
-        {
-          label: "Charity",
-          value: "",
-          placeholder: "Enter name",
-          name: "nameIncome",
-          type: "text",
-        },
-        {
-          label: "Planned",
-          value: formatBudgetItemAmount(0),
-          name: "plannedIncome",
-          placeholder: formatBudgetItemAmount(0),
-          type: "text",
-        },
-      ],
-      status: [
-        {
-          label: "Remaining",
-          value: "0.00",
-          type: "text",
-        },
-      ],
-      type: "expense",
-    },
-    {
-      id: generateUniqueId(),
-      fields: [
-        {
-          label: "Offering",
-          value: "",
-          placeholder: "Enter name",
-          name: "nametithes",
-          type: "text",
-        },
-        {
-          label: "Planned",
-          value: formatBudgetItemAmount(0),
-          name: "plannedIncome",
-          placeholder: formatBudgetItemAmount(0),
-          type: "text",
-        },
-      ],
-      status: [
-        {
-          label: "Remaining",
-          value: formatBudgetItemAmount(0),
-          type: "text",
-        },
-      ],
-      type: "expense",
-    },
-    {
-      id: generateUniqueId(),
-      fields: [
-        {
-          label: "Tithes",
-          value: "",
-          placeholder: "Enter name",
-          name: "nametithes",
-          type: "text",
-        },
-        {
-          label: "Planned",
-          value: formatBudgetItemAmount(0),
-          name: "plannedTithes",
-          placeholder: formatBudgetItemAmount(0),
-          type: "text",
-        },
-      ],
-      status: [
-        {
-          label: "Remaining",
-          value: formatBudgetItemAmount(0),
-          type: "text",
-        },
-      ],
-      type: "expense",
-    },
-  ],
+
+const saveBudgetData = (monthKey, state) => {
+  localStorage.setItem(`budget_app_data_${monthKey}`, JSON.stringify(state));
 };
 
 function Budget() {
-  const [income, setIncome] = useState({
-    planned: formatBudgetItemAmount(0),
-    received: formatBudgetItemAmount(0),
-  });
-  const [plannedIncome, setPlannedIncome] = useState(0);
-  const [receivedIncome, setReceivedIncome] = useState(0);
+  const { month } = useParams();
 
-  const [fullyear, setFullYear] = useState(getFullYear());
+  // Route fallback logic if URL param is blank
+  const getCurrentMonthYearString = () => {
+    const date = new Date();
+    const monthName = date.toLocaleString("default", { month: "long" });
+    const yearVal = date.getFullYear();
+    return `${monthName}-${yearVal}`;
+  };
 
-  const [budgetGroups, setBudgetGroups] = useState([
-    { ...incomeData },
-    { ...GivingData },
-  ]);
+  const monthKey = month || getCurrentMonthYearString();
+  const [monthName, yearStr] = monthKey.split("-");
+  const year = parseInt(yearStr) || new Date().getFullYear();
 
-  const [budgetTotal, setBudgetTotal] = useState(0);
+  const monthsList = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  let monthIndex = monthsList.indexOf(monthName);
+  if (monthIndex === -1) {
+    monthIndex = new Date().getMonth();
+  }
+
+  const monthLabel = `${monthName} ${year}`;
+  const range = getBudgetCycleRange(year, monthIndex);
+  const cycleRangeLabel = `${formatDate(range.start)} - ${formatDate(range.end)}`;
+
+  // Core State
+  const [startingSalary, setStartingSalary] = useState(0);
+  const [budgetGroups, setBudgetGroups] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+  const [viewMode, setViewMode] = useState("remaining"); // 'remaining' or 'spent'
+
+  // Modal States
+  const [activeAddTransactionItem, setActiveAddTransactionItem] =
+    useState(null);
+  const [activeViewTransactionsItem, setActiveViewTransactionsItem] =
+    useState(null);
+  const [txName, setTxName] = useState("");
+  const [txAmount, setTxAmount] = useState("");
+
+  // Sync state with url parameter
+  useEffect(() => {
+    const data = loadBudgetData(monthKey);
+    setStartingSalary(data.startingSalary);
+    setBudgetGroups(data.budgetGroups);
+    setTransactions(data.transactions);
+  }, [monthKey]);
+
+  // Handle updates
+  const handleStartingSalaryChange = (newVal) => {
+    setStartingSalary(newVal);
+    saveBudgetData(monthKey, {
+      startingSalary: newVal,
+      budgetGroups,
+      transactions,
+    });
+  };
 
   const handleFieldChange = (groupIndex, itemIndex, fieldIndex, value) => {
-    // console.log("handleFieldChange =>", value);
-    // console.log("groupIndex", groupIndex);
-    // console.log("itemIndex", itemIndex);
-    // console.log("fieldIndex", fieldIndex);
-    // Validate indices
+    const updatedGroups = [...budgetGroups];
+    const field =
+      updatedGroups[groupIndex].budgetGroupItems[itemIndex].fields[fieldIndex];
+
     if (
-      groupIndex < 0 ||
-      groupIndex >= budgetGroups.length ||
-      itemIndex < 0 ||
-      itemIndex >= budgetGroups[groupIndex].budgetGroupItems.length ||
-      fieldIndex < 0 ||
-      fieldIndex >=
-        budgetGroups[groupIndex].budgetGroupItems[itemIndex].fields.length
+      field.label.toLowerCase() === "assigned" ||
+      field.label.toLowerCase() === "planned"
     ) {
-      console.error("Invalid indices for handleFieldChange");
+      field.value = formatBudgetItemAmount(value);
+    } else {
+      field.value = value;
+    }
+
+    setBudgetGroups(updatedGroups);
+    saveBudgetData(monthKey, {
+      startingSalary,
+      budgetGroups: updatedGroups,
+      transactions,
+    });
+  };
+
+  const handleAddItem = (groupIndex) => {
+    const updatedGroups = [...budgetGroups];
+    const newItem = {
+      id: generateUniqueId(),
+      fields: [
+        { label: "Name", value: "New Item", type: "text" },
+        { label: "Assigned", value: "0.00", type: "text" },
+      ],
+      status: [{ label: "Remaining", value: "0.00", type: "text" }],
+      type: "expense",
+    };
+    updatedGroups[groupIndex].budgetGroupItems.push(newItem);
+    setBudgetGroups(updatedGroups);
+    saveBudgetData(monthKey, {
+      startingSalary,
+      budgetGroups: updatedGroups,
+      transactions,
+    });
+  };
+
+  const handleDeleteItem = (groupIndex, itemIndex) => {
+    const updatedGroups = [...budgetGroups];
+    const itemToDelete = updatedGroups[groupIndex].budgetGroupItems[itemIndex];
+    updatedGroups[groupIndex].budgetGroupItems.splice(itemIndex, 1);
+
+    // Clean up orphan transactions
+    const updatedTransactions = transactions.filter(
+      (tx) => tx.budgetItemId !== itemToDelete.id
+    );
+
+    setBudgetGroups(updatedGroups);
+    setTransactions(updatedTransactions);
+    saveBudgetData(monthKey, {
+      startingSalary,
+      budgetGroups: updatedGroups,
+      transactions: updatedTransactions,
+    });
+  };
+
+  const handleAddGroup = () => {
+    const newGroupName = prompt("Enter new group name:");
+    if (!newGroupName) return;
+    const updatedGroups = [
+      ...budgetGroups,
+      {
+        name: newGroupName,
+        columns: [{ name: "Assigned" }, { name: "Remaining" }],
+        budgetGroupItems: [],
+      },
+    ];
+    setBudgetGroups(updatedGroups);
+    saveBudgetData(monthKey, {
+      startingSalary,
+      budgetGroups: updatedGroups,
+      transactions,
+    });
+  };
+
+  // Transaction logic
+  const handleAddTransaction = (name, amount, budgetItemId) => {
+    if (!name.trim() || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
+      alert("Please enter a valid payee name and numeric amount.");
       return;
     }
-    // Update budgetGroups state
-    const updatedGroups = [...budgetGroups];
-    updatedGroups[groupIndex].budgetGroupItems[itemIndex].fields[
-      fieldIndex
-    ].value = formatBudgetItemAmount(value);
-    setBudgetGroups(updatedGroups);
-    // Update income state if the group is "Income"
-    if (budgetGroups[groupIndex].name === "Income") {
-      setIncome({
-        ...income,
-        [updatedGroups[groupIndex].budgetGroupItems[itemIndex].fields[
-          fieldIndex
-        ].label.toLowerCase()]: formatBudgetItemAmount(value),
-      });
+    const newTx = {
+      id: generateUniqueId(),
+      name: name.trim(),
+      amount: parseFloat(amount) || 0,
+      budgetItemId,
+      date: new Date().toISOString(),
+    };
+    const updatedTransactions = [...transactions, newTx];
+    setTransactions(updatedTransactions);
+    saveBudgetData(monthKey, {
+      startingSalary,
+      budgetGroups,
+      transactions: updatedTransactions,
+    });
+  };
+
+  const handleDeleteTransaction = (txId) => {
+    const updatedTransactions = transactions.filter((tx) => tx.id !== txId);
+    setTransactions(updatedTransactions);
+    saveBudgetData(monthKey, {
+      startingSalary,
+      budgetGroups,
+      transactions: updatedTransactions,
+    });
+
+    // If the view modal is open, update the active item's transactions list
+    if (activeViewTransactionsItem) {
+      setActiveViewTransactionsItem((prev) => (prev ? { ...prev } : null));
     }
   };
 
-  const handleZeroBudgetCalulation = (
-    totalArg,
-    group,
-    groupIndex,
-    itemIndex,
-    fieldIndex,
-    value
-  ) => {
-    if (group.name.toLowerCase() !== "income") {
-      setBudgetTotal((prevTotal) => prevTotal - parseFloat(value));
-    }
-  };
-
-  // This useEffect hook updates the fullyear state
-  useEffect(() => {
-    setFullYear(getFullYear());
-  }, [fullyear]);
-
-  // This useEffect hook updates the income state
-  useEffect(() => {
-    const { planned, received } = income;
-    const formattedPlanned = formatBudgetItemAmount(planned);
-    const formattedReceived = formatBudgetItemAmount(received);
-    if (planned !== formattedPlanned || received !== formattedReceived) {
-      setIncome({
-        planned: formattedPlanned,
-        received: formattedReceived,
-      });
-    }
-  }, [income]);
-
-  // Calculate budgetTotal income
-  const calculateTotalIncomeByType = (groups, type = "planned") => {
-    const incomeGroup = groups.find((group) => group.name === "Income");
-    if (!incomeGroup) return 0;
-
-    return incomeGroup.budgetGroupItems.reduce((total, item) => {
-      return (
-        total +
-        item.fields.reduce((sum, field) => {
-          return (
-            sum +
-            parseFloat(
-              field.label.toLowerCase() === type.toLowerCase() ? field.value : 0
-            )
-          );
-        }, 0)
+  // Derive values on render (Single Source of Truth)
+  const enrichedBudgetGroups = budgetGroups.map((group) => ({
+    ...group,
+    columns: [
+      { name: "Assigned" },
+      { name: viewMode === "remaining" ? "Remaining" : "Spent" },
+    ],
+    budgetGroupItems: group.budgetGroupItems.map((item) => {
+      const itemTransactions = transactions.filter(
+        (tx) => tx.budgetItemId === item.id
       );
-    }, 0);
-  };
+      const spent = itemTransactions.reduce((sum, tx) => sum + tx.amount, 0);
 
-  useEffect(() => {
-    const tPlannedIncome = calculateTotalIncomeByType(
-      budgetGroups,
-      TYPE.planned
+      const assignedField = item.fields.find(
+        (f) => f.label.toLowerCase() === "assigned"
+      );
+      const assigned =
+        assignedField ? parseFloat(assignedField.value) || 0 : 0;
+      const remaining = assigned - spent;
+
+      return {
+        ...item,
+        spent,
+        remaining,
+        status: item.status
+          ? item.status.map((st) => {
+              if (
+                st.label.toLowerCase() === "remaining" ||
+                st.label.toLowerCase() === "spent"
+              ) {
+                return {
+                  ...st,
+                  label: viewMode === "remaining" ? "Remaining" : "Spent",
+                  value:
+                    viewMode === "remaining"
+                      ? remaining.toFixed(2)
+                      : spent.toFixed(2),
+                };
+              }
+              return st;
+            })
+          : [],
+      };
+    }),
+  }));
+
+  const totalAssigned = budgetGroups.reduce((total, group) => {
+    return (
+      total +
+      group.budgetGroupItems.reduce((gTotal, item) => {
+        const assignedField = item.fields.find(
+          (f) => f.label.toLowerCase() === "assigned"
+        );
+        const assigned =
+          assignedField ? parseFloat(assignedField.value) || 0 : 0;
+        return gTotal + assigned;
+      }, 0)
     );
-    setPlannedIncome(tPlannedIncome);
-    const tReceivedIncome = calculateTotalIncomeByType(
-      budgetGroups,
-      TYPE.received
-    );
-    setReceivedIncome(tReceivedIncome);
-    const tIncome = tReceivedIncome ? tReceivedIncome : tPlannedIncome;
-    setBudgetTotal(tIncome);
-  }, [budgetGroups]);
+  }, 0);
+
+  const unassignedSalary = startingSalary - totalAssigned;
+
+  // Render variables for modals
+  const activeItemTransactions = activeViewTransactionsItem
+    ? transactions.filter(
+        (tx) => tx.budgetItemId === activeViewTransactionsItem.id
+      )
+    : [];
 
   return (
     <section>
       <Hero
-        month={fullyear}
-        income={formatBudgetItemAmount(budgetTotal)}
-        planned={formatBudgetItemAmount(plannedIncome)}
-        received={formatBudgetItemAmount(receivedIncome)}
+        monthLabel={monthLabel}
+        cycleRangeLabel={cycleRangeLabel}
+        startingSalary={startingSalary}
+        unassignedSalary={unassignedSalary}
+        onStartingSalaryChange={handleStartingSalaryChange}
+        viewMode={viewMode}
+        onViewModeToggle={setViewMode}
       />
-      <BudgetForm className="form">
-        {budgetGroups.map((group, groupIndex) => (
+
+      <BudgetForm className="form" onAddGroupClick={handleAddGroup}>
+        {enrichedBudgetGroups.map((group, groupIndex) => (
           <BudgetGroup
             key={group.name}
+            groupIndex={groupIndex}
             budgetGroup={group}
-            onChangeHandler={(itemIndex, fieldIndex, value) =>
-              handleFieldChange(groupIndex, itemIndex, fieldIndex, value)
-            }
-            onBlurHandler={(itemIndex, fieldIndex, value) =>
-              handleZeroBudgetCalulation(
-                budgetTotal,
-                group,
-                groupIndex,
-                itemIndex,
-                fieldIndex,
-                value
-              )
-            }
+            onChangeHandler={handleFieldChange}
+            onBlurHandler={() => {}}
+            onAddTransactionClick={(gIdx, iIdx, item) => {
+              setActiveAddTransactionItem(item);
+              setTxName("");
+              setTxAmount("");
+            }}
+            onViewTransactionsClick={(gIdx, iIdx, item) => {
+              setActiveViewTransactionsItem(item);
+            }}
+            onDeleteItemClick={handleDeleteItem}
+            onAddItemClick={() => handleAddItem(groupIndex)}
           />
         ))}
       </BudgetForm>
+
+      {/* Add Transaction Modal */}
+      {activeAddTransactionItem && (
+        <div
+          className="modal-overlay"
+          onClick={() => setActiveAddTransactionItem(null)}
+        >
+          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Add Transaction</h3>
+              <button
+                className="btn-close-modal"
+                onClick={() => setActiveAddTransactionItem(null)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="form-group">
+                <label>Budget Item</label>
+                <input
+                  type="text"
+                  value={
+                    activeAddTransactionItem.fields.find(
+                      (f) => f.label.toLowerCase() === "name"
+                    )?.value || ""
+                  }
+                  disabled
+                />
+              </div>
+              <div className="form-group">
+                <label>Payee / Description</label>
+                <input
+                  type="text"
+                  value={txName}
+                  onChange={(e) => setTxName(e.target.value)}
+                  placeholder="e.g. Tesco, Rent payment"
+                  autoFocus
+                />
+              </div>
+              <div className="form-group">
+                <label>Amount (£)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={txAmount}
+                  onChange={(e) => setTxAmount(e.target.value)}
+                  placeholder="0.00"
+                />
+              </div>
+            </div>
+            <div className="modal-actions">
+              <button
+                className="btn-modal btn-modal-cancel"
+                onClick={() => setActiveAddTransactionItem(null)}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn-modal btn-modal-submit"
+                onClick={() => {
+                  handleAddTransaction(
+                    txName,
+                    txAmount,
+                    activeAddTransactionItem.id
+                  );
+                  setActiveAddTransactionItem(null);
+                }}
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View Transactions Modal */}
+      {activeViewTransactionsItem && (
+        <div
+          className="modal-overlay"
+          onClick={() => setActiveViewTransactionsItem(null)}
+        >
+          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Transactions List</h3>
+              <button
+                className="btn-close-modal"
+                onClick={() => setActiveViewTransactionsItem(null)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="form-group">
+                <label>
+                  Budget Item:{" "}
+                  {activeViewTransactionsItem.fields.find(
+                    (f) => f.label.toLowerCase() === "name"
+                  )?.value || ""}
+                </label>
+              </div>
+              {activeItemTransactions.length === 0 ? (
+                <p className="no-transactions">No transactions recorded yet.</p>
+              ) : (
+                <ul className="tx-list">
+                  {activeItemTransactions.map((tx) => (
+                    <li key={tx.id} className="tx-item">
+                      <div className="tx-info">
+                        <span className="tx-name">{tx.name}</span>
+                        <span className="tx-date">
+                          {new Date(tx.date).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <div className="tx-amount-delete">
+                        <span className="tx-amount">
+                          £{tx.amount.toFixed(2)}
+                        </span>
+                        <button
+                          className="btn-delete-tx"
+                          onClick={() => handleDeleteTransaction(tx.id)}
+                          title="Delete Transaction"
+                        >
+                          <FontAwesomeIcon icon={faTrashCan} size="sm" />
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <div className="modal-actions">
+              <button
+                className="btn-modal btn-modal-submit"
+                onClick={() => setActiveViewTransactionsItem(null)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

@@ -35,3 +35,8 @@
 .group-item-action {
   position: relative;
 }
+
+.group-item-status__text--negative {
+  color: #f44336;
+  font-weight: 600;
+}

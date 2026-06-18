@@ -61,3 +61,49 @@
 hr {
   width: 100%;
 }
+
+.months-nav {
+  padding: 0.75rem 1rem;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  overflow-x: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.months-list {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: 800px;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+.month-link {
+  text-decoration: none;
+  color: #6c757d;
+  font-weight: 500;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.month-link:hover {
+  background-color: #e9ecef;
+  color: #212529;
+}
+
+.month-link--active {
+  background-color: #1a73e8;
+  color: #ffffff !important;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(26, 115, 232, 0.25);
+}
+

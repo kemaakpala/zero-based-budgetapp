@@ -1,42 +1,136 @@
+import React, { useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPen, faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+
 const Hero = ({
   currency = "£",
-  month = "January",
-  income = 0.0,
-  planned = 0.0,
-  received = 0.0,
-  totalSpent = 0.0,
-}) => (
-  <div className="hero-container">
-    <h2>Income for {month}</h2>
-    <h2>
-      <span>{currency}</span>
-      <span>{income}</span>
-    </h2>
-    <div>
-      <div className="hero-planned-amount">
-        <h3>Planned</h3>
-        <h3 className="amount">
-          <span>{currency}</span>
-          <span>{planned}</span>
-        </h3>
+  monthLabel = "",
+  cycleRangeLabel = "",
+  startingSalary = 0,
+  unassignedSalary = 0,
+  onStartingSalaryChange,
+  viewMode = "remaining",
+  onViewModeToggle,
+}) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(startingSalary.toString());
+
+  useEffect(() => {
+    setEditValue(startingSalary.toString());
+  }, [startingSalary]);
+
+  const handleSave = () => {
+    const parsed = parseFloat(editValue);
+    if (!isNaN(parsed) && parsed >= 0) {
+      onStartingSalaryChange(parsed);
+      setIsEditing(false);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSave();
+    } else if (e.key === "Escape") {
+      setEditValue(startingSalary.toString());
+      setIsEditing(false);
+    }
+  };
+
+  const isOverallocated = unassignedSalary < 0;
+
+  return (
+    <div className="hero-container">
+      <div className="hero-header">
+        <div className="hero-meta">
+          <h2>Budget for {monthLabel}</h2>
+          {cycleRangeLabel && <p className="cycle-range">{cycleRangeLabel}</p>}
+        </div>
+        
+        {/* Toggle Switch */}
+        <div className="view-mode-toggle">
+          <button
+            type="button"
+            className={`toggle-btn ${viewMode === "remaining" ? "active" : ""}`}
+            onClick={() => onViewModeToggle("remaining")}
+          >
+            Remaining
+          </button>
+          <button
+            type="button"
+            className={`toggle-btn ${viewMode === "spent" ? "active" : ""}`}
+            onClick={() => onViewModeToggle("spent")}
+          >
+            Spent
+          </button>
+        </div>
       </div>
-      <div className="hero-received-amount">
-        <h3>Received</h3>
-        <h3 className="amount">
-          <span>{currency}</span>
-          <span>{received}</span>
-        </h3>
+
+      <div className="hero-grid">
+        {/* Starting Salary Block */}
+        <div className="hero-block starting-salary-block">
+          <h3>Starting Salary</h3>
+          {isEditing ? (
+            <div className="salary-edit-form">
+              <span className="currency-prefix">{currency}</span>
+              <input
+                type="number"
+                step="0.01"
+                className="salary-input"
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                autoFocus
+              />
+              <button type="button" className="btn-icon btn-save" onClick={handleSave}>
+                <FontAwesomeIcon icon={faCheck} size="sm" />
+              </button>
+              <button
+                type="button"
+                className="btn-icon btn-cancel"
+                onClick={() => {
+                  setEditValue(startingSalary.toString());
+                  setIsEditing(false);
+                }}
+              >
+                <FontAwesomeIcon icon={faXmark} size="sm" />
+              </button>
+            </div>
+          ) : (
+            <div className="salary-display">
+              <h2 className="amount">
+                <span>{currency}</span>
+                <span>{parseFloat(startingSalary).toFixed(2)}</span>
+              </h2>
+              <button
+                type="button"
+                className="btn-edit-salary"
+                onClick={() => setIsEditing(true)}
+                title="Edit Starting Salary"
+              >
+                <FontAwesomeIcon icon={faPen} size="xs" />
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Unassigned Salary Block */}
+        <div className={`hero-block unassigned-salary-block ${isOverallocated ? "overallocated" : ""}`}>
+          <h3>{isOverallocated ? "Over-allocated" : "Left to Assign"}</h3>
+          <h2 className="amount">
+            <span>{currency}</span>
+            <span>{parseFloat(unassignedSalary).toFixed(2)}</span>
+          </h2>
+          <p className="zero-budget-caption">
+            {isOverallocated
+              ? "You've assigned more than your salary!"
+              : unassignedSalary === 0
+              ? "Every pound has a job. Well done!"
+              : "Give every pound a job."}
+          </p>
+        </div>
       </div>
-      {/* TODO: need to figure out how to calculate this and if we want the remaining amount to be here */}
-      {/* <div className="hero-remaining-amount">
-        <h3>Remaining</h3>
-        <h3 className="amount">
-          <span>{currency}</span>
-          <span>{planned - totalSpent}</span>
-        </h3>
-      </div> */}
     </div>
-  </div>
-);
+  );
+};
 
 export default Hero;

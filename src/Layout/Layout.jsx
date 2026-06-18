@@ -1,4 +1,4 @@
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCircle } from "@fortawesome/free-regular-svg-icons";
 import {
@@ -10,7 +10,7 @@ import "./Layout.css";
 export default function Layout() {
   const months = [
     "January",
-    "Febuary",
+    "February",
     "March",
     "April",
     "May",
@@ -22,6 +22,8 @@ export default function Layout() {
     "November",
     "December",
   ];
+  const location = useLocation();
+  const currentPath = location.pathname;
   const year = new Date(Date.now()).getFullYear();
   return (
     <>
@@ -51,15 +53,26 @@ export default function Layout() {
           </div>
         </nav>
         <hr className="divider" />
-        {/* <nav>
-          <ul>
-            {months.map((month) => (
-              <li>
-                <Link to={month}>{month}</Link>
-              </li>
-            ))}
+        <nav className="months-nav">
+          <ul className="months-list">
+            {months.map((month) => {
+              const monthPath = `/${month}-${year}`;
+              const isActive = currentPath === monthPath;
+              return (
+                <li key={month}>
+                  <Link
+                    to={monthPath}
+                    className={`month-link ${
+                      isActive ? "month-link--active" : ""
+                    }`}
+                  >
+                    {month.substring(0, 3)}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
-        </nav> */}
+        </nav>
       </header>
       <main className="App-main">
         <Outlet />

@@ -27,8 +27,12 @@ function PopOverMenu({ menuList, width, left }) {
             <MenuItem key={menuItem.title}>
               <Button
                 variation="transparent"
-                // Prevents the default action but does not handle the click event
-                onClickHandler={(e) => e.preventDefault()}
+                onClickHandler={(e) => {
+                  e.preventDefault();
+                  if (menuItem.action) {
+                    menuItem.action();
+                  }
+                }}
               >
                 <FontAwesomeIcon
                   icon={menuItem.icon}

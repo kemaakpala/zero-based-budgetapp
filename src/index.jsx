@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import 'normalize.css';
 import './index.css';
-import { RouterProvider } from 'react-router-dom';
+import { RouterProvider, Navigate } from 'react-router-dom';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import ErrorPage from './Error/Error';
@@ -10,17 +10,31 @@ import Settings from './Settings/Settings';
 import Budget from './Container/Budget/Budget';
 import browserRouter from './Routes/router';
 
+const getCurrentMonthYearString = () => {
+  const date = new Date();
+  const month = date.toLocaleString("default", { month: "long" });
+  const year = date.getFullYear();
+  return `${month}-${year}`;
+};
+
 const router = browserRouter({
   path: "/",
   element: <App />,
   errorElement: <ErrorPage />,
-  children: [{
-    path: "settings",
-    element: <Settings />
-  }, {
-    path: "/:month",
-    element: <Budget />
-  }]
+  children: [
+    {
+      index: true,
+      element: <Navigate to={`/${getCurrentMonthYearString()}`} replace />
+    },
+    {
+      path: "settings",
+      element: <Settings />
+    },
+    {
+      path: "/:month",
+      element: <Budget />
+    }
+  ]
 })
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

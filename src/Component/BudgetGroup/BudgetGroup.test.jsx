@@ -2,16 +2,19 @@ import { render, screen, userEvent } from "@testing-library/react";
 import BudgetGroup from "./BudgetGroup";
 
 // Mock the BudgetGroupItem component
-jest.mock("./BudgetGroupItem", () => () => (
-  <div>
-    <div>Planned</div>
-    <div>Received</div>
-    <button>Delete</button>
-  </div>
-));
+vi.mock("./BudgetGroupItem", () => ({
+  default: () => (
+    <div>
+      <div>Planned</div>
+      <div>Received</div>
+      <button>Delete</button>
+    </div>
+  )
+}));
 
 export const BudgetGroupData = {
   name: "Budget Group",
+  columns: [{ name: "Planned" }, { name: "Received" }],
   budgetGroupItems: [
     {
       id: 1,
@@ -41,11 +44,11 @@ describe("BudgetGroup", () => {
   });
   it("test budget group renders Planned", () => {
     render(<BudgetGroup budgetGroup={BudgetGroupData} />);
-    expect(screen.getByText("Planned")).toBeInTheDocument();
+    expect(screen.getAllByText("Planned")[0]).toBeInTheDocument();
   });
   it("test budget group renders Received", () => {
     render(<BudgetGroup budgetGroup={BudgetGroupData} />);
-    expect(screen.getByText("Received")).toBeInTheDocument();
+    expect(screen.getAllByText("Received")[0]).toBeInTheDocument();
   });
   it("test budget group renders Delete", () => {
     render(<BudgetGroup budgetGroup={BudgetGroupData} />);
@@ -61,6 +64,6 @@ describe("BudgetGroup", () => {
     render(<BudgetGroup budgetGroup={BudgetGroupData} />);
     const button = screen.getByText("Budget Group");
     button.click();
-    expect(screen.getByText("Planned")).toBeInTheDocument();
+    expect(screen.getAllByText("Planned")[0]).toBeInTheDocument();
   });
 });

@@ -1,13 +1,15 @@
 import "./styles/progressBar.css";
-const ProgressBar = ({ percentage }) => {
+const ProgressBar = ({ percentage, isOverspent }) => {
   return (
     <div className="group-item-progress">
       <div className="progress">
         <div
-          className="progress-bar"
+          className={`progress-bar ${
+            isOverspent ? "progress-bar--overspent" : ""
+          }`}
           role="progressbar"
           style={{
-            width: `${percentage}%`,
+            width: `${Math.min(100, percentage)}%`,
           }}
           aria-valuenow={percentage}
           aria-valuemin="0"

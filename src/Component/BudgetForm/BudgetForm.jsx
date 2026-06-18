@@ -1,9 +1,9 @@
 import BudgetFormActions from "./BudgetFormActions";
 
-const BudgetForm = ({ children }) => (
-  <form className="form">
+const BudgetForm = ({ children, onAddGroupClick }) => (
+  <form className="form" onSubmit={(e) => e.preventDefault()}>
     {children}
-    <BudgetFormActions />
+    <BudgetFormActions onAddGroupClick={onAddGroupClick} />
   </form>
 );
 
