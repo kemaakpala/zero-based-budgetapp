@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Hero, BudgetForm, BudgetGroup } from "../../Component";
+import { Hero, BudgetForm, BudgetGroup, TransactionLog } from "../../Component";
 import "./styles/Budget.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
@@ -221,6 +221,23 @@ function Budget() {
     }
   };
 
+  const handleDeleteMultipleTransactions = (txIds) => {
+    const updatedTransactions = transactions.filter(
+      (tx) => !txIds.includes(tx.id)
+    );
+    setTransactions(updatedTransactions);
+    saveBudgetData(monthKey, {
+      startingSalary,
+      budgetGroups,
+      transactions: updatedTransactions,
+    });
+
+    // If the view modal is open, update the active item's transactions list
+    if (activeViewTransactionsItem) {
+      setActiveViewTransactionsItem((prev) => (prev ? { ...prev } : null));
+    }
+  };
+
   // Derive values on render (Single Source of Truth)
   const enrichedBudgetGroups = budgetGroups.map((group) => ({
     ...group,
@@ -323,6 +340,13 @@ function Budget() {
           />
         ))}
       </BudgetForm>
+
+      <TransactionLog
+        transactions={transactions}
+        budgetGroups={budgetGroups}
+        onDeleteTransaction={handleDeleteTransaction}
+        onDeleteMultipleTransactions={handleDeleteMultipleTransactions}
+      />
 
       {/* Add Transaction Modal */}
       {activeAddTransactionItem && (
