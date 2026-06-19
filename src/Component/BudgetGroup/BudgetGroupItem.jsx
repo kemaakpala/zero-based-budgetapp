@@ -42,53 +42,64 @@ const BudgetGroupItem = ({
   };
 
   return budgetGroupItems.map((item, itemIndex) => {
-    const { id, fields, status } = item;
+    const { id, name, assigned, spent = 0, status } = item;
     
     // Calculate progress for this budget item
-    const assignedField = fields.find((f) => f.label.toLowerCase() === "assigned");
-    const assigned = assignedField ? parseFloat(assignedField.value) || 0 : 0;
-    const spent = item.spent || 0;
     const progress = assigned > 0 ? (spent / assigned) * 100 : 0;
     const isOverspent = spent > assigned;
 
     return (
       <React.Fragment key={id}>
         <div className="group-item">
-          {fields.length > 0 &&
-            fields.map((field, fieldIndex) => {
-              const { label, value, placeholder, type } = field;
-              const grouptItemID = `${budgetGroupName}_${removeSpace(
-                label
-              )}_${type}_${id}`;
-              
-              // Determine if we should show a numeric field prefix
-              const isNameField = label.toLowerCase() !== "assigned" && label.toLowerCase() !== "planned" && label.toLowerCase() !== "received";
+          {/* Name Field */}
+          <div className="group-item-column group-item-fields">
+            <label
+              className="group-item-fields__label"
+              htmlFor={`${budgetGroupName}_Name_text_${id}`}
+            >
+              Name:
+            </label>
+            <TextField
+              id={`${budgetGroupName}_Name_text_${id}`}
+              className="form-control group-item-fields__input"
+              type="text"
+              name={`${budgetGroupName}_Name_text_${id}`}
+              defaultVal={name}
+              placeholder="Item Name"
+              onChange={(e) =>
+                onChangeHandler(id, "name", e.target.value)
+              }
+              onBlur={(e) => {
+                onBlurHandler(id, "name", e.target.value);
+              }}
+            />
+          </div>
 
-              return (
-                <div className="group-item-column group-item-fields" key={grouptItemID}>
-                  <label
-                    className="group-item-fields__label"
-                    htmlFor={grouptItemID}
-                  >
-                    {field.label !== "" && `${field.label}:`}
-                  </label>
-                  <TextField
-                    id={grouptItemID}
-                    className="form-control group-item-fields__input"
-                    type={type}
-                    name={grouptItemID}
-                    defaultVal={value}
-                    placeholder={placeholder}
-                    onChange={(e) =>
-                      onChangeHandler(groupIndex, itemIndex, fieldIndex, e.target.value)
-                    }
-                    onBlur={(e) => {
-                      onBlurHandler(groupIndex, itemIndex, fieldIndex, e.target.value);
-                    }}
-                  />
-                </div>
-              );
-            })}
+          {/* Assigned Field */}
+          <div className="group-item-column group-item-fields">
+            <label
+              className="group-item-fields__label"
+              htmlFor={`${budgetGroupName}_Assigned_text_${id}`}
+            >
+              Assigned:
+            </label>
+            <TextField
+              id={`${budgetGroupName}_Assigned_text_${id}`}
+              className="form-control group-item-fields__input"
+              type="text"
+              name={`${budgetGroupName}_Assigned_text_${id}`}
+              defaultVal={assigned.toString()}
+              placeholder="0.00"
+              onChange={(e) =>
+                onChangeHandler(id, "assigned", e.target.value)
+              }
+              onBlur={(e) => {
+                onBlurHandler(id, "assigned", e.target.value);
+              }}
+            />
+          </div>
+
+          {/* Derived Status Display */}
           {status?.length > 0 &&
             status.map(({ label, value, type }) => {
               const grouptItemID = `${budgetGroupName}_${removeSpace(
@@ -109,6 +120,7 @@ const BudgetGroupItem = ({
               );
             })}
 
+          {/* Popover Action Button */}
           <div className="group-item-column group-item-action">
             <Button
               className="group-item-action__Button"
@@ -151,7 +163,7 @@ const BudgetGroupItem = ({
                     description: `Delete Item`,
                     action: () => {
                       closePopOver(id);
-                      onDeleteItemClick(groupIndex, itemIndex);
+                      onDeleteItemClick(id);
                     }
                   },
                 ]}
@@ -171,14 +183,8 @@ BudgetGroupItem.propTypes = {
   budgetGroupItems: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
-      fields: PropTypes.arrayOf(
-        PropTypes.shape({
-          label: PropTypes.string,
-          value: PropTypes.string,
-          placeholder: PropTypes.string,
-          type: PropTypes.string,
-        })
-      ),
+      name: PropTypes.string.isRequired,
+      assigned: PropTypes.number.isRequired,
       status: PropTypes.arrayOf(
         PropTypes.shape({
           label: PropTypes.string,

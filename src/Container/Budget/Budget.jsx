@@ -100,10 +100,10 @@ function Budget() {
     dispatch({ type: "SET_STARTING_SALARY", payload: newVal });
   };
 
-  const handleFieldChange = (groupIndex, itemIndex, fieldIndex, value) => {
+  const handleFieldChange = (itemId, fieldName, value) => {
     dispatch({
-      type: "UPDATE_FIELD",
-      payload: { groupIndex, itemIndex, fieldIndex, value },
+      type: "UPDATE_ITEM_FIELD",
+      payload: { itemId, fieldName, value },
     });
   };
 
@@ -111,8 +111,8 @@ function Budget() {
     dispatch({ type: "ADD_ITEM", payload: { groupIndex } });
   };
 
-  const handleDeleteItem = (groupIndex, itemIndex) => {
-    dispatch({ type: "DELETE_ITEM", payload: { groupIndex, itemIndex } });
+  const handleDeleteItem = (itemId) => {
+    dispatch({ type: "DELETE_ITEM", payload: itemId });
   };
 
   const handleAddGroup = () => {

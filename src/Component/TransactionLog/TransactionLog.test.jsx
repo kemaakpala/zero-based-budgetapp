@@ -26,7 +26,8 @@ describe("TransactionLog", () => {
       budgetGroupItems: [
         {
           id: "item-rent",
-          fields: [{ label: "Name", value: "Rent / Mortgage" }],
+          name: "Rent / Mortgage",
+          assigned: 1200.0,
         },
       ],
     },
@@ -35,7 +36,8 @@ describe("TransactionLog", () => {
       budgetGroupItems: [
         {
           id: "item-groceries",
-          fields: [{ label: "Name", value: "Groceries" }],
+          name: "Groceries",
+          assigned: 100.0,
         },
       ],
     },

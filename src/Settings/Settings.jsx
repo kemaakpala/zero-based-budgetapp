@@ -80,11 +80,8 @@ export default function Settings() {
     const updated = [...budgetGroups];
     const newItem = {
       id: generateUniqueId(),
-      fields: [
-        { label: "Name", value: itemName.trim(), type: "text" },
-        { label: "Assigned", value: "0.00", type: "text" },
-      ],
-      status: [{ label: "Remaining", value: "0.00", type: "text" }],
+      name: itemName.trim(),
+      assigned: 0,
       type: "expense",
     };
     updated[groupIndex].budgetGroupItems.push(newItem);
@@ -100,12 +97,7 @@ export default function Settings() {
   const handleRenameItem = (groupIndex, itemIndex, newName) => {
     if (!newName.trim()) return;
     const updated = [...budgetGroups];
-    const nameField = updated[groupIndex].budgetGroupItems[itemIndex].fields.find(
-      (f) => f.label.toLowerCase() === "name"
-    );
-    if (nameField) {
-      nameField.value = newName.trim();
-    }
+    updated[groupIndex].budgetGroupItems[itemIndex].name = newName.trim();
     setBudgetGroups(updated);
   };
 
@@ -262,8 +254,7 @@ export default function Settings() {
 
                     <div className="group-items-list">
                       {group.budgetGroupItems.map((item, itemIndex) => {
-                        const nameField = item.fields.find((f) => f.label.toLowerCase() === "name");
-                        const itemName = nameField ? nameField.value : "Unnamed Item";
+                        const itemName = item.name || "Unnamed Item";
                         return (
                           <div key={item.id} className="item-row">
                             <input

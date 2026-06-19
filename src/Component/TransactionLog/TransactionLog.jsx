@@ -32,11 +32,8 @@ const TransactionLog = ({
       for (const group of budgetGroups) {
         for (const item of group.budgetGroupItems) {
           if (item.id === itemId) {
-            const nameField = item.fields.find(
-              (f) => f.label.toLowerCase() === "name"
-            );
             const details = {
-              itemName: nameField ? nameField.value : "Unnamed Item",
+              itemName: item.name || "Unnamed Item",
               groupName: group.name,
             };
             cache[itemId] = details;
@@ -53,12 +50,9 @@ const TransactionLog = ({
     const options = [];
     budgetGroups.forEach((group) => {
       group.budgetGroupItems.forEach((item) => {
-        const nameField = item.fields.find(
-          (f) => f.label.toLowerCase() === "name"
-        );
         options.push({
           id: item.id,
-          name: nameField ? nameField.value : "Unnamed Item",
+          name: item.name || "Unnamed Item",
           groupName: group.name,
         });
       });
@@ -339,12 +333,8 @@ TransactionLog.propTypes = {
       budgetGroupItems: PropTypes.arrayOf(
         PropTypes.shape({
           id: PropTypes.string.isRequired,
-          fields: PropTypes.arrayOf(
-            PropTypes.shape({
-              label: PropTypes.string.isRequired,
-              value: PropTypes.string.isRequired,
-            })
-          ).isRequired,
+          name: PropTypes.string.isRequired,
+          assigned: PropTypes.number.isRequired,
         })
       ).isRequired,
     })

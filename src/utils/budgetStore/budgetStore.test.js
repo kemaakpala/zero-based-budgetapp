@@ -29,11 +29,8 @@ describe("BudgetCycleStore Modules", () => {
           budgetGroupItems: [
             {
               id: "h1",
-              fields: [
-                { label: "Name", value: "Rent / Mortgage", type: "text" },
-                { label: "Assigned", value: "1000.00", type: "text" },
-              ],
-              status: [{ label: "Remaining", value: "1000.00", type: "text" }],
+              name: "Rent / Mortgage",
+              assigned: 1000.0,
               type: "expense",
             },
           ],
@@ -60,12 +57,12 @@ describe("BudgetCycleStore Modules", () => {
       expect(result.startingSalary).toBe(5000.0);
     });
 
-    it("handles UPDATE_FIELD", () => {
+    it("handles UPDATE_ITEM_FIELD", () => {
       const result = budgetReducer(initialState, {
-        type: "UPDATE_FIELD",
-        payload: { groupIndex: 0, itemIndex: 0, fieldIndex: 1, value: "1200.00" },
+        type: "UPDATE_ITEM_FIELD",
+        payload: { itemId: "h1", fieldName: "assigned", value: "1200.00" },
       });
-      expect(result.budgetGroups[0].budgetGroupItems[0].fields[1].value).toBe("1200.00");
+      expect(result.budgetGroups[0].budgetGroupItems[0].assigned).toBe(1200.0);
     });
 
     it("handles ADD_ITEM", () => {
@@ -74,7 +71,8 @@ describe("BudgetCycleStore Modules", () => {
         payload: { groupIndex: 0 },
       });
       expect(result.budgetGroups[0].budgetGroupItems.length).toBe(2);
-      expect(result.budgetGroups[0].budgetGroupItems[1].fields[0].value).toBe("New Item");
+      expect(result.budgetGroups[0].budgetGroupItems[1].name).toBe("New Item");
+      expect(result.budgetGroups[0].budgetGroupItems[1].assigned).toBe(0);
     });
 
     it("handles DELETE_ITEM and cleans up associated transactions", () => {
@@ -87,7 +85,7 @@ describe("BudgetCycleStore Modules", () => {
       };
       const result = budgetReducer(stateWithTx, {
         type: "DELETE_ITEM",
-        payload: { groupIndex: 0, itemIndex: 0 },
+        payload: "h1",
       });
       expect(result.budgetGroups[0].budgetGroupItems.length).toBe(0);
       expect(result.transactions.length).toBe(1);
@@ -180,11 +178,8 @@ describe("BudgetCycleStore Modules", () => {
           budgetGroupItems: [
             {
               id: "h1",
-              fields: [
-                { label: "Name", value: "Rent", type: "text" },
-                { label: "Assigned", value: "1000.00", type: "text" },
-              ],
-              status: [{ label: "Remaining", value: "1000.00", type: "text" }],
+              name: "Rent",
+              assigned: 1000.0,
               type: "expense",
             },
           ],
@@ -216,17 +211,13 @@ describe("BudgetCycleStore Modules", () => {
             budgetGroupItems: [
               {
                 id: "h1",
-                fields: [
-                  { label: "Name", value: "Rent" },
-                  { label: "Assigned", value: "1000.00" },
-                ],
+                name: "Rent",
+                assigned: 1000.0,
               },
               {
                 id: "h2",
-                fields: [
-                  { label: "Name", value: "Power" },
-                  { label: "Assigned", value: "200.00" },
-                ],
+                name: "Power",
+                assigned: 200.0,
               },
             ],
           },

@@ -49,35 +49,23 @@ export const getEnrichedGroups = (budgetGroups = [], transactions = [], viewMode
       );
       const spent = itemTransactions.reduce((sum, tx) => sum + tx.amount, 0);
 
-      const assignedField = item.fields.find(
-        (f) => f.label.toLowerCase() === "assigned"
-      );
-      const assigned =
-        assignedField ? parseFloat(assignedField.value) || 0 : 0;
+      const assigned = parseFloat(item.assigned) || 0;
       const remaining = assigned - spent;
 
       return {
         ...item,
         spent,
         remaining,
-        status: item.status
-          ? item.status.map((st) => {
-              if (
-                st.label.toLowerCase() === "remaining" ||
-                st.label.toLowerCase() === "spent"
-              ) {
-                return {
-                  ...st,
-                  label: viewMode === "remaining" ? "Remaining" : "Spent",
-                  value:
-                    viewMode === "remaining"
-                      ? remaining.toFixed(2)
-                      : spent.toFixed(2),
-                };
-              }
-              return st;
-            })
-          : [],
+        status: [
+          {
+            label: viewMode === "remaining" ? "Remaining" : "Spent",
+            value:
+              viewMode === "remaining"
+                ? remaining.toFixed(2)
+                : spent.toFixed(2),
+            type: "text",
+          },
+        ],
       };
     }),
   }));
@@ -99,11 +87,7 @@ export const calculateSummary = (state) => {
     return (
       total +
       group.budgetGroupItems.reduce((gTotal, item) => {
-        const assignedField = item.fields.find(
-          (f) => f.label.toLowerCase() === "assigned"
-        );
-        const assigned =
-          assignedField ? parseFloat(assignedField.value) || 0 : 0;
+        const assigned = parseFloat(item.assigned) || 0;
         return gTotal + assigned;
       }, 0)
     );

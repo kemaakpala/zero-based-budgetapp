@@ -18,21 +18,8 @@ export const BudgetGroupData = {
   budgetGroupItems: [
     {
       id: 1,
-      fields: [
-        {
-          label: "Planned",
-          value: 0,
-          placeholder: 0,
-          type: "text",
-        },
-        {
-          label: "Received",
-          value: 0,
-          placeholder: 0,
-          type: "text",
-        },
-      ],
-      action: { label: "Delete", color: "red", type: "button" },
+      name: "Item Name",
+      assigned: 0,
       type: "budgetGroup",
     },
   ],

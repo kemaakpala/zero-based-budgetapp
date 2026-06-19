@@ -11,18 +11,24 @@ export const budgetReducer = (state, action) => {
         startingSalary: action.payload,
       };
 
-    case "UPDATE_FIELD": {
-      const { groupIndex, itemIndex, fieldIndex, value } = action.payload;
+    case "UPDATE_ITEM_FIELD": {
+      const { itemId, fieldName, value } = action.payload;
       const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
-      const field = updatedGroups[groupIndex].budgetGroupItems[itemIndex].fields[fieldIndex];
 
-      if (
-        field.label.toLowerCase() === "assigned" ||
-        field.label.toLowerCase() === "planned"
-      ) {
-        field.value = formatBudgetItemAmount(value);
-      } else {
-        field.value = value;
+      let found = false;
+      for (const group of updatedGroups) {
+        for (const item of group.budgetGroupItems) {
+          if (item.id === itemId) {
+            if (fieldName === "assigned") {
+              item.assigned = parseFloat(formatBudgetItemAmount(value)) || 0;
+            } else {
+              item[fieldName] = value;
+            }
+            found = true;
+            break;
+          }
+        }
+        if (found) break;
       }
 
       return {
@@ -36,11 +42,8 @@ export const budgetReducer = (state, action) => {
       const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
       const newItem = {
         id: generateUniqueId(),
-        fields: [
-          { label: "Name", value: "New Item", type: "text" },
-          { label: "Assigned", value: "0.00", type: "text" },
-        ],
-        status: [{ label: "Remaining", value: "0.00", type: "text" }],
+        name: "New Item",
+        assigned: 0,
         type: "expense",
       };
       updatedGroups[groupIndex].budgetGroupItems.push(newItem);
@@ -51,15 +54,23 @@ export const budgetReducer = (state, action) => {
     }
 
     case "DELETE_ITEM": {
-      const { groupIndex, itemIndex } = action.payload;
+      const itemId = action.payload;
       const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
-      const itemToDelete = updatedGroups[groupIndex].budgetGroupItems[itemIndex];
-      updatedGroups[groupIndex].budgetGroupItems.splice(itemIndex, 1);
+
+      let itemToDelete = null;
+      for (const group of updatedGroups) {
+        const index = group.budgetGroupItems.findIndex((item) => item.id === itemId);
+        if (index !== -1) {
+          itemToDelete = group.budgetGroupItems[index];
+          group.budgetGroupItems.splice(index, 1);
+          break;
+        }
+      }
 
       // Clean up orphaned transactions
-      const updatedTransactions = state.transactions.filter(
-        (tx) => tx.budgetItemId !== itemToDelete.id
-      );
+      const updatedTransactions = itemToDelete
+        ? state.transactions.filter((tx) => tx.budgetItemId !== itemToDelete.id)
+        : state.transactions;
 
       return {
         ...state,

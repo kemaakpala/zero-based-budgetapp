@@ -81,29 +81,20 @@ export const DEFAULT_BUDGET_GROUPS = [
     budgetGroupItems: [
       {
         id: "h1",
-        fields: [
-          { label: "Name", value: "Rent / Mortgage", type: "text" },
-          { label: "Assigned", value: "0.00", type: "text" }
-        ],
-        status: [{ label: "Remaining", value: "0.00", type: "text" }],
+        name: "Rent / Mortgage",
+        assigned: 0,
         type: "expense"
       },
       {
         id: "h2",
-        fields: [
-          { label: "Name", value: "Electricity", type: "text" },
-          { label: "Assigned", value: "0.00", type: "text" }
-        ],
-        status: [{ label: "Remaining", value: "0.00", type: "text" }],
+        name: "Electricity",
+        assigned: 0,
         type: "expense"
       },
       {
         id: "h3",
-        fields: [
-          { label: "Name", value: "Water", type: "text" },
-          { label: "Assigned", value: "0.00", type: "text" }
-        ],
-        status: [{ label: "Remaining", value: "0.00", type: "text" }],
+        name: "Water",
+        assigned: 0,
         type: "expense"
       }
     ]
@@ -114,20 +105,14 @@ export const DEFAULT_BUDGET_GROUPS = [
     budgetGroupItems: [
       {
         id: "f1",
-        fields: [
-          { label: "Name", value: "Groceries", type: "text" },
-          { label: "Assigned", value: "0.00", type: "text" }
-        ],
-        status: [{ label: "Remaining", value: "0.00", type: "text" }],
+        name: "Groceries",
+        assigned: 0,
         type: "expense"
       },
       {
         id: "f2",
-        fields: [
-          { label: "Name", value: "Dining Out", type: "text" },
-          { label: "Assigned", value: "0.00", type: "text" }
-        ],
-        status: [{ label: "Remaining", value: "0.00", type: "text" }],
+        name: "Dining Out",
+        assigned: 0,
         type: "expense"
       }
     ]
@@ -138,20 +123,14 @@ export const DEFAULT_BUDGET_GROUPS = [
     budgetGroupItems: [
       {
         id: "g1",
-        fields: [
-          { label: "Name", value: "Charity", type: "text" },
-          { label: "Assigned", value: "0.00", type: "text" }
-        ],
-        status: [{ label: "Remaining", value: "0.00", type: "text" }],
+        name: "Charity",
+        assigned: 0,
         type: "expense"
       },
       {
         id: "g2",
-        fields: [
-          { label: "Name", value: "Offering", type: "text" },
-          { label: "Assigned", value: "0.00", type: "text" }
-        ],
-        status: [{ label: "Remaining", value: "0.00", type: "text" }],
+        name: "Offering",
+        assigned: 0,
         type: "expense"
       }
     ]
@@ -162,20 +141,14 @@ export const DEFAULT_BUDGET_GROUPS = [
     budgetGroupItems: [
       {
         id: "t1",
-        fields: [
-          { label: "Name", value: "Fuel", type: "text" },
-          { label: "Assigned", value: "0.00", type: "text" }
-        ],
-        status: [{ label: "Remaining", value: "0.00", type: "text" }],
+        name: "Fuel",
+        assigned: 0,
         type: "expense"
       },
       {
         id: "t2",
-        fields: [
-          { label: "Name", value: "Public Transit", type: "text" },
-          { label: "Assigned", value: "0.00", type: "text" }
-        ],
-        status: [{ label: "Remaining", value: "0.00", type: "text" }],
+        name: "Public Transit",
+        assigned: 0,
         type: "expense"
       }
     ]
