@@ -25,6 +25,8 @@ export default function Settings() {
         return {
           startingSalary: parsed.startingSalary || 5000.0,
           budgetGroups: parsed.budgetGroups || JSON.parse(JSON.stringify(DEFAULT_BUDGET_GROUPS)),
+          paydayDay: parsed.paydayDay ?? 20,
+          weekendBehavior: parsed.weekendBehavior ?? "preceding-friday",
         };
       } catch (e) {
         console.error("Error parsing defaults", e);
@@ -33,6 +35,8 @@ export default function Settings() {
     return {
       startingSalary: 5000.0,
       budgetGroups: JSON.parse(JSON.stringify(DEFAULT_BUDGET_GROUPS)),
+      paydayDay: 20,
+      weekendBehavior: "preceding-friday",
     };
   };
 
@@ -41,6 +45,8 @@ export default function Settings() {
   const [currentStep, setCurrentStep] = useState(1);
   const [startingSalary, setStartingSalary] = useState(initialData.startingSalary);
   const [budgetGroups, setBudgetGroups] = useState(initialData.budgetGroups);
+  const [paydayDay, setPaydayDay] = useState(initialData.paydayDay);
+  const [weekendBehavior, setWeekendBehavior] = useState(initialData.weekendBehavior);
   const [newGroupName, setNewGroupName] = useState("");
 
   // Auto-focus logic or helpers
@@ -107,6 +113,8 @@ export default function Settings() {
     const defaults = {
       startingSalary,
       budgetGroups,
+      paydayDay,
+      weekendBehavior,
     };
     localStorage.setItem("budget_app_defaults", JSON.stringify(defaults));
     localStorage.setItem("budget_app_setup_completed", "true");
@@ -126,6 +134,8 @@ export default function Settings() {
       startingSalary,
       budgetGroups: JSON.parse(JSON.stringify(budgetGroups)),
       transactions: existingMonthData ? JSON.parse(existingMonthData).transactions || [] : [],
+      paydayDay,
+      weekendBehavior,
     };
     localStorage.setItem(`budget_app_data_${currentMonthKey}`, JSON.stringify(newMonthData));
 
@@ -198,6 +208,48 @@ export default function Settings() {
                     £{preset.toLocaleString()}
                   </button>
                 ))}
+              </div>
+            </div>
+
+            <hr className="wizard-step-divider" />
+            
+            <div className="payday-settings-container">
+              <h3>Budget Cycle & Payday Settings</h3>
+              <p className="wizard-description">
+                Your budget cycle starts on your payday and ends the day before your next payday.
+              </p>
+              
+              <div className="payday-fields-grid">
+                <div className="form-group">
+                  <label htmlFor="payday-day-select">Monthly Payday Day</label>
+                  <select
+                    id="payday-day-select"
+                    value={paydayDay}
+                    onChange={(e) => setPaydayDay(parseInt(e.target.value))}
+                    className="wizard-select"
+                  >
+                    {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                      <option key={day} value={day}>
+                        {day}
+                        {day === 1 || day === 21 || day === 31 ? "st" : day === 2 || day === 22 ? "nd" : day === 3 || day === 23 ? "rd" : "th"}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div className="form-group">
+                  <label htmlFor="payday-weekend-select">Weekend Payday Behavior</label>
+                  <select
+                    id="payday-weekend-select"
+                    value={weekendBehavior}
+                    onChange={(e) => setWeekendBehavior(e.target.value)}
+                    className="wizard-select"
+                  >
+                    <option value="preceding-friday">Preceding Friday (Early)</option>
+                    <option value="following-monday">Following Monday (Late)</option>
+                    <option value="exact">Exact Day (No Shift)</option>
+                  </select>
+                </div>
               </div>
             </div>
           </div>
@@ -318,6 +370,19 @@ export default function Settings() {
               <div className="summary-row">
                 <span className="summary-label">Total Budget Items:</span>
                 <span className="summary-value">{totalItems} items</span>
+              </div>
+              <div className="summary-row">
+                <span className="summary-label">Payday Date:</span>
+                <span className="summary-value">
+                  {paydayDay}
+                  {paydayDay === 1 || paydayDay === 21 || paydayDay === 31 ? "st" : paydayDay === 2 || paydayDay === 22 ? "nd" : paydayDay === 3 || paydayDay === 23 ? "rd" : "th"} of the month
+                </span>
+              </div>
+              <div className="summary-row">
+                <span className="summary-label">Weekend Strategy:</span>
+                <span className="summary-value">
+                  {weekendBehavior === "preceding-friday" ? "Preceding Friday" : weekendBehavior === "following-monday" ? "Following Monday" : "Exact Day"}
+                </span>
               </div>
             </div>
 

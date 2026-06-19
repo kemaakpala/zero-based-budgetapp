@@ -149,16 +149,22 @@ describe("BudgetCycleStore Modules", () => {
       const data1 = loadBudgetData("June-2026", adapter);
       expect(data1.startingSalary).toBe(5000.0);
       expect(data1.budgetGroups.length).toBeGreaterThan(0);
+      expect(data1.paydayDay).toBe(20);
+      expect(data1.weekendBehavior).toBe("preceding-friday");
 
       // Test custom templates
       const defaults = {
         startingSalary: 4500.0,
         budgetGroups: [{ name: "CustomGroup", budgetGroupItems: [] }],
+        paydayDay: 25,
+        weekendBehavior: "following-monday",
       };
       adapter.set("budget_app_defaults", JSON.stringify(defaults));
       const data2 = loadBudgetData("June-2026", adapter);
       expect(data2.startingSalary).toBe(4500.0);
       expect(data2.budgetGroups[0].name).toBe("CustomGroup");
+      expect(data2.paydayDay).toBe(25);
+      expect(data2.weekendBehavior).toBe("following-monday");
     });
 
     it("saves budget data", () => {

@@ -32,6 +32,15 @@ describe("Settings Onboarding Wizard", () => {
     fireEvent.change(salaryInput, { target: { value: "3500" } });
     expect(salaryInput.value).toBe("3500");
 
+    // Change payday settings: Day = 25, Weekend Strategy = "following-monday"
+    const paydaySelect = screen.getByLabelText("Monthly Payday Day");
+    fireEvent.change(paydaySelect, { target: { value: "25" } });
+    expect(paydaySelect.value).toBe("25");
+
+    const weekendSelect = screen.getByLabelText("Weekend Payday Behavior");
+    fireEvent.change(weekendSelect, { target: { value: "following-monday" } });
+    expect(weekendSelect.value).toBe("following-monday");
+
     // Click "Next" to go to Step 2
     const nextBtn1 = screen.getByRole("button", { name: /Next/i });
     fireEvent.click(nextBtn1);
@@ -60,6 +69,8 @@ describe("Settings Onboarding Wizard", () => {
     expect(screen.getByText("Confirm Your Budget Setup")).toBeInTheDocument();
     expect(screen.getByText("£3500.00")).toBeInTheDocument();
     expect(screen.getByText("5 groups")).toBeInTheDocument(); // 4 defaults + 1 custom
+    expect(screen.getByText("25th of the month")).toBeInTheDocument();
+    expect(screen.getByText("Following Monday")).toBeInTheDocument();
 
     // Click "Save & Start Budgeting"
     const finishBtn = screen.getByRole("button", { name: /Save & Start Budgeting/i });
@@ -71,6 +82,8 @@ describe("Settings Onboarding Wizard", () => {
     const savedDefaults = JSON.parse(localStorage.getItem("budget_app_defaults"));
     expect(savedDefaults.startingSalary).toBe(3500);
     expect(savedDefaults.budgetGroups.some(g => g.name === "Subscriptions")).toBe(true);
+    expect(savedDefaults.paydayDay).toBe(25);
+    expect(savedDefaults.weekendBehavior).toBe("following-monday");
 
     // Assert redirect
     expect(mockNavigate).toHaveBeenCalled();

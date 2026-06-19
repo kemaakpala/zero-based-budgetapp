@@ -4,7 +4,14 @@ export const loadBudgetData = (monthKey, storageAdapter) => {
   const data = storageAdapter.get(`budget_app_data_${monthKey}`);
   if (data) {
     try {
-      return JSON.parse(data);
+      const parsed = JSON.parse(data);
+      return {
+        startingSalary: parsed.startingSalary || 5000.0,
+        budgetGroups: parsed.budgetGroups || [],
+        transactions: parsed.transactions || [],
+        paydayDay: parsed.paydayDay ?? 20,
+        weekendBehavior: parsed.weekendBehavior ?? "preceding-friday",
+      };
     } catch (e) {
       console.error("Error parsing budget data", e);
     }
@@ -19,6 +26,8 @@ export const loadBudgetData = (monthKey, storageAdapter) => {
         startingSalary: parsed.startingSalary || 5000.0,
         budgetGroups: JSON.parse(JSON.stringify(parsed.budgetGroups)),
         transactions: [],
+        paydayDay: parsed.paydayDay ?? 20,
+        weekendBehavior: parsed.weekendBehavior ?? "preceding-friday",
       };
     } catch (e) {
       console.error("Error parsing default budget template", e);
@@ -29,6 +38,8 @@ export const loadBudgetData = (monthKey, storageAdapter) => {
     startingSalary: 5000.0,
     budgetGroups: JSON.parse(JSON.stringify(DEFAULT_BUDGET_GROUPS)),
     transactions: [],
+    paydayDay: 20,
+    weekendBehavior: "preceding-friday",
   };
 };
 

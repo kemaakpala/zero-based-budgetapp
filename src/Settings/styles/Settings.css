@@ -548,3 +548,54 @@
 .spacing-left {
   margin-left: 0.35rem;
 }
+
+/* Payday Settings styling */
+.wizard-step-divider {
+  border: 0;
+  border-top: 1px solid #e9ecef;
+  margin: 2rem 0;
+}
+
+.payday-settings-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  text-align: left;
+}
+
+.payday-settings-container h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #212529;
+}
+
+.payday-fields-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 480px) {
+  .payday-fields-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.wizard-select {
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid #ced4da;
+  font-size: 0.95rem;
+  background-color: #ffffff;
+  color: #212529;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+}
+
+.wizard-select:focus {
+  border-color: #1a73e8;
+  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+}

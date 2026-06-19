@@ -9,10 +9,7 @@ import {
   ViewTransactionsModal,
 } from "../../Component";
 import "./styles/Budget.css";
-import {
-  getBudgetCycleRange,
-  formatDate,
-} from "../../utils/utils";
+import { BudgetCycleCalculator } from "../../utils/budgetCycle";
 import {
   budgetReducer,
   LocalStorageAdapter,
@@ -66,16 +63,30 @@ function Budget() {
     monthIndex = new Date().getMonth();
   }
 
-  const monthLabel = `${monthName} ${year}`;
-  const range = getBudgetCycleRange(year, monthIndex);
-  const cycleRangeLabel = `${formatDate(range.start)} - ${formatDate(range.end)}`;
-
   // Core Store Reducer
   const [state, dispatch] = useReducer(budgetReducer, {
     startingSalary: 0,
     budgetGroups: [],
     transactions: [],
+    paydayDay: 20,
+    weekendBehavior: "preceding-friday",
   });
+
+  const cycleCalculator = useMemo(() => {
+    return new BudgetCycleCalculator({
+      paydayDay: state.paydayDay,
+      weekendBehavior: state.weekendBehavior,
+    });
+  }, [state.paydayDay, state.weekendBehavior]);
+
+  const monthLabel = `${monthName} ${year}`;
+  const range = useMemo(() => {
+    return cycleCalculator.getCycleRange(year, monthIndex);
+  }, [cycleCalculator, year, monthIndex]);
+
+  const cycleRangeLabel = useMemo(() => {
+    return cycleCalculator.formatCycleRange(range);
+  }, [cycleCalculator, range]);
 
   const [viewMode, setViewMode] = useState("remaining"); // 'remaining' or 'spent'
 
