@@ -21,58 +21,27 @@ export const getFullYear = () => {
   return `${month} ${year}`;
 };
 
+import defaultCalculator from "./budgetCycle";
+
 /**
  * Calculates the payday for a given year and month index (0-11).
  * Payday is the 20th, or the preceding Friday if the 20th falls on a weekend.
  */
-export const calculatePayday = (year, monthIndex) => {
-  const date = new Date(year, monthIndex, 20);
-  const dayOfWeek = date.getDay(); // 0 = Sunday, 6 = Saturday
-  if (dayOfWeek === 0) {
-    // Sunday -> Friday 18th
-    return new Date(year, monthIndex, 18);
-  } else if (dayOfWeek === 6) {
-    // Saturday -> Friday 19th
-    return new Date(year, monthIndex, 19);
-  }
-  return date;
-};
+export const calculatePayday = (year, monthIndex) =>
+  defaultCalculator.calculatePayday(year, monthIndex);
 
 /**
  * Returns the budget cycle start and end dates for a month.
  * Starts on the month's payday and ends the day before next month's payday.
  */
-export const getBudgetCycleRange = (year, monthIndex) => {
-  const start = calculatePayday(year, monthIndex);
-  
-  // Next month calculation
-  let nextMonthIndex = monthIndex + 1;
-  let nextYear = year;
-  if (nextMonthIndex > 11) {
-    nextMonthIndex = 0;
-    nextYear += 1;
-  }
-  const nextPayday = calculatePayday(nextYear, nextMonthIndex);
-  const end = new Date(nextPayday.getTime() - 24 * 60 * 60 * 1000);
-  
-  return { start, end };
-};
+export const getBudgetCycleRange = (year, monthIndex) =>
+  defaultCalculator.getCycleRange(year, monthIndex);
 
 /**
  * Formats a Date object as Month Day + Suffix, Year (e.g. June 19th, 2026).
  */
-export const formatDate = (date) => {
-  const day = date.getDate();
-  const month = date.toLocaleString("default", { month: "long" });
-  const year = date.getFullYear();
-  
-  let suffix = "th";
-  if (day === 1 || day === 21 || day === 31) suffix = "st";
-  else if (day === 2 || day === 22) suffix = "nd";
-  else if (day === 3 || day === 23) suffix = "rd";
-  
-  return `${month} ${day}${suffix}, ${year}`;
-};
+export const formatDate = (date) =>
+  defaultCalculator.formatDate(date);
 
 export const DEFAULT_BUDGET_GROUPS = [
   {
