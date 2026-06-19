@@ -1,9 +1,14 @@
 import React, { useEffect, useState, useReducer, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Hero, BudgetForm, BudgetGroup, TransactionLog } from "../../Component";
+import {
+  Hero,
+  BudgetForm,
+  BudgetGroup,
+  TransactionLog,
+  AddTransactionModal,
+  ViewTransactionsModal,
+} from "../../Component";
 import "./styles/Budget.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import {
   getBudgetCycleRange,
   formatDate,
@@ -79,8 +84,6 @@ function Budget() {
     useState(null);
   const [activeViewTransactionsItem, setActiveViewTransactionsItem] =
     useState(null);
-  const [txName, setTxName] = useState("");
-  const [txAmount, setTxAmount] = useState("");
 
   // Sync state with url parameter (Cycle loading)
   useEffect(() => {
@@ -181,8 +184,6 @@ function Budget() {
             onBlurHandler={() => {}}
             onAddTransactionClick={(gIdx, iIdx, item) => {
               setActiveAddTransactionItem(item);
-              setTxName("");
-              setTxAmount("");
             }}
             onViewTransactionsClick={(gIdx, iIdx, item) => {
               setActiveViewTransactionsItem(item);
@@ -201,145 +202,24 @@ function Budget() {
       />
 
       {/* Add Transaction Modal */}
-      {activeAddTransactionItem && (
-        <div
-          className="modal-overlay"
-          onClick={() => setActiveAddTransactionItem(null)}
-        >
-          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>Add Transaction</h3>
-              <button
-                className="btn-close-modal"
-                onClick={() => setActiveAddTransactionItem(null)}
-              >
-                ×
-              </button>
-            </div>
-            <div className="modal-body">
-              <div className="form-group">
-                <label>Budget Item</label>
-                <input
-                  type="text"
-                  value={
-                    activeAddTransactionItem.fields.find(
-                      (f) => f.label.toLowerCase() === "name"
-                    )?.value || ""
-                  }
-                  disabled
-                />
-              </div>
-              <div className="form-group">
-                <label>Payee / Description</label>
-                <input
-                  type="text"
-                  value={txName}
-                  onChange={(e) => setTxName(e.target.value)}
-                  placeholder="e.g. Tesco, Rent payment"
-                  autoFocus
-                />
-              </div>
-              <div className="form-group">
-                <label>Amount (£)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={txAmount}
-                  onChange={(e) => setTxAmount(e.target.value)}
-                  placeholder="0.00"
-                />
-              </div>
-            </div>
-            <div className="modal-actions">
-              <button
-                className="btn-modal btn-modal-cancel"
-                onClick={() => setActiveAddTransactionItem(null)}
-              >
-                Cancel
-              </button>
-              <button
-                className="btn-modal btn-modal-submit"
-                onClick={() => {
-                  handleAddTransaction(
-                    txName,
-                    txAmount,
-                    activeAddTransactionItem.id
-                  );
-                  setActiveAddTransactionItem(null);
-                }}
-              >
-                Add
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <AddTransactionModal
+        isOpen={!!activeAddTransactionItem}
+        budgetItem={activeAddTransactionItem}
+        onClose={() => setActiveAddTransactionItem(null)}
+        onSubmit={(name, amount) => {
+          handleAddTransaction(name, amount, activeAddTransactionItem.id);
+          setActiveAddTransactionItem(null);
+        }}
+      />
 
       {/* View Transactions Modal */}
-      {activeViewTransactionsItem && (
-        <div
-          className="modal-overlay"
-          onClick={() => setActiveViewTransactionsItem(null)}
-        >
-          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>Transactions List</h3>
-              <button
-                className="btn-close-modal"
-                onClick={() => setActiveViewTransactionsItem(null)}
-              >
-                ×
-              </button>
-            </div>
-            <div className="modal-body">
-              <div className="form-group">
-                <label>
-                  Budget Item:{" "}
-                  {activeViewTransactionsItem.fields.find(
-                    (f) => f.label.toLowerCase() === "name"
-                  )?.value || ""}
-                </label>
-              </div>
-              {activeItemTransactions.length === 0 ? (
-                <p className="no-transactions">No transactions recorded yet.</p>
-              ) : (
-                <ul className="tx-list">
-                  {activeItemTransactions.map((tx) => (
-                    <li key={tx.id} className="tx-item">
-                      <div className="tx-info">
-                        <span className="tx-name">{tx.name}</span>
-                        <span className="tx-date">
-                          {new Date(tx.date).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <div className="tx-amount-delete">
-                        <span className="tx-amount">
-                          £{tx.amount.toFixed(2)}
-                        </span>
-                        <button
-                          className="btn-delete-tx"
-                          onClick={() => handleDeleteTransaction(tx.id)}
-                          title="Delete Transaction"
-                        >
-                          <FontAwesomeIcon icon={faTrashCan} size="sm" />
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-            <div className="modal-actions">
-              <button
-                className="btn-modal btn-modal-submit"
-                onClick={() => setActiveViewTransactionsItem(null)}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ViewTransactionsModal
+        isOpen={!!activeViewTransactionsItem}
+        budgetItem={activeViewTransactionsItem}
+        transactions={activeItemTransactions}
+        onClose={() => setActiveViewTransactionsItem(null)}
+        onDeleteTransaction={handleDeleteTransaction}
+      />
     </section>
   );
 }
