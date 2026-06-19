@@ -1,4 +1,6 @@
 
+import defaultCalculator from "./budgetCycle";
+
 export const generateUniqueId = () =>
   Array.from(window.crypto.getRandomValues(new Uint8Array(16)))
     .map((b) => b.toString(16).padStart(2, "0"))
@@ -20,8 +22,6 @@ export const getFullYear = () => {
   const year = date.getFullYear();
   return `${month} ${year}`;
 };
-
-import defaultCalculator from "./budgetCycle";
 
 /**
  * Calculates the payday for a given year and month index (0-11).
