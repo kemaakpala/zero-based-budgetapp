@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
 import "./styles/BudgetGroup.css";
 import BudgetGroupHeader from "./BudgetGroupHeader";
 import BudgetGroupActions from "./BudgetGroupActions";
@@ -58,5 +57,4 @@ const BudgetGroup = ({
   );
 };
 
-BudgetGroup.propTypes = {};
 export default BudgetGroup;
