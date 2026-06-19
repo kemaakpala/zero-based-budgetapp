@@ -13,6 +13,8 @@ const BudgetGroup = ({
   onViewTransactionsClick,
   onDeleteItemClick,
   onAddItemClick,
+  onRenameGroupClick,
+  onDeleteGroupClick,
 }) => {
   const { name, columns, budgetGroupItems } = budgetGroup;
   const [hideContent, setHideContent] = useState(false);
@@ -34,6 +36,8 @@ const BudgetGroup = ({
         handleToggle={clickHandler}
         handleHeaderClick={groupHeaderTitleClickHandler}
         hideContentFlag={hideContent}
+        onRenameGroupClick={() => onRenameGroupClick(groupIndex, name)}
+        onDeleteGroupClick={() => onDeleteGroupClick(groupIndex, name)}
       />
       <div
         className={`group-content ${

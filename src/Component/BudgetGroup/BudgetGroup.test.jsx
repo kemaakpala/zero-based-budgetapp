@@ -1,4 +1,4 @@
-import { render, screen, userEvent } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import BudgetGroup from "./BudgetGroup";
 
 // Mock the BudgetGroupItem component
@@ -52,5 +52,47 @@ describe("BudgetGroup", () => {
     const button = screen.getByText("Budget Group");
     button.click();
     expect(screen.getAllByText("Planned")[0]).toBeInTheDocument();
+  });
+
+  it("triggers onRenameGroupClick when Edit is clicked in popover", () => {
+    const onRenameGroupClick = vi.fn();
+    const { container } = render(
+      <BudgetGroup
+        budgetGroup={BudgetGroupData}
+        groupIndex={0}
+        onRenameGroupClick={onRenameGroupClick}
+      />
+    );
+    
+    // Open popover
+    const popoverBtn = container.querySelector(".group-header-column:last-child button");
+    fireEvent.click(popoverBtn);
+    
+    // Find Edit button and click it
+    const editBtn = container.querySelector(".popover-menu-list-item:first-child button");
+    fireEvent.click(editBtn);
+    
+    expect(onRenameGroupClick).toHaveBeenCalledWith(0, "Budget Group");
+  });
+
+  it("triggers onDeleteGroupClick when Delete is clicked in popover", () => {
+    const onDeleteGroupClick = vi.fn();
+    const { container } = render(
+      <BudgetGroup
+        budgetGroup={BudgetGroupData}
+        groupIndex={0}
+        onDeleteGroupClick={onDeleteGroupClick}
+      />
+    );
+    
+    // Open popover
+    const popoverBtn = container.querySelector(".group-header-column:last-child button");
+    fireEvent.click(popoverBtn);
+    
+    // Find Delete button and click it
+    const deleteBtn = container.querySelector(".popover-menu-list-item:last-child button");
+    fireEvent.click(deleteBtn);
+    
+    expect(onDeleteGroupClick).toHaveBeenCalledWith(0, "Budget Group");
   });
 });

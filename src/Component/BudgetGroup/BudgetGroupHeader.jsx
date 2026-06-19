@@ -17,6 +17,8 @@ const BudgetGroupHeader = ({
   handleToggle,
   hideContentFlag,
   handleHeaderClick,
+  onRenameGroupClick,
+  onDeleteGroupClick,
 }) => {
   const [showPopOver, setShowShowPopOver] = useState(false);
   const popOverHandler = (event) => {
@@ -60,11 +62,19 @@ const BudgetGroupHeader = ({
                 icon: faPen,
                 title: `Edit budget ${budgetGroupName} group`,
                 description: "Edit",
+                action: () => {
+                  setShowShowPopOver(false);
+                  onRenameGroupClick();
+                },
               },
               {
                 icon: faTrashCan,
                 title: `Delete ${budgetGroupName} group`,
                 description: "Delete",
+                action: () => {
+                  setShowShowPopOver(false);
+                  onDeleteGroupClick();
+                },
               },
             ]}
           />

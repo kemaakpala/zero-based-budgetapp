@@ -135,6 +135,25 @@ function Budget() {
     dispatch({ type: "ADD_GROUP", payload: { name: newGroupName } });
   };
 
+  const handleRenameGroup = (groupIndex, currentName) => {
+    const newName = prompt("Rename budget group:", currentName);
+    if (newName && newName.trim() && newName.trim() !== currentName) {
+      dispatch({
+        type: "RENAME_GROUP",
+        payload: { groupIndex, newName: newName.trim() },
+      });
+    }
+  };
+
+  const handleDeleteGroup = (groupIndex, groupName) => {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete the "${groupName}" group and all its budget items? This will also remove any related transactions.`
+    );
+    if (confirmed) {
+      dispatch({ type: "DELETE_GROUP", payload: { groupIndex } });
+    }
+  };
+
   const handleAddTransaction = (name, amount, budgetItemId) => {
     if (!name.trim() || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
       alert("Please enter a valid payee name and numeric amount.");
@@ -201,6 +220,8 @@ function Budget() {
             }}
             onDeleteItemClick={handleDeleteItem}
             onAddItemClick={() => handleAddItem(groupIndex)}
+            onRenameGroupClick={handleRenameGroup}
+            onDeleteGroupClick={handleDeleteGroup}
           />
         ))}
       </BudgetForm>

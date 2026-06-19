@@ -101,6 +101,43 @@ describe("BudgetCycleStore Modules", () => {
       expect(result.budgetGroups[1].name).toBe("Savings");
     });
 
+    it("handles DELETE_GROUP and cleans up associated transactions", () => {
+      const stateWithGroupsAndTx = {
+        ...initialState,
+        budgetGroups: [
+          {
+            name: "Group 1",
+            budgetGroupItems: [{ id: "item1", name: "Rent" }],
+          },
+          {
+            name: "Group 2",
+            budgetGroupItems: [{ id: "item2", name: "Groceries" }],
+          },
+        ],
+        transactions: [
+          { id: "tx1", name: "Tesco", amount: 50, budgetItemId: "item2" },
+          { id: "tx2", name: "Landlord", amount: 1000, budgetItemId: "item1" },
+        ],
+      };
+      // Delete Group 2 (index 1)
+      const result = budgetReducer(stateWithGroupsAndTx, {
+        type: "DELETE_GROUP",
+        payload: { groupIndex: 1 },
+      });
+      expect(result.budgetGroups.length).toBe(1);
+      expect(result.budgetGroups[0].name).toBe("Group 1");
+      expect(result.transactions.length).toBe(1);
+      expect(result.transactions[0].id).toBe("tx2"); // Rent transaction remains
+    });
+
+    it("handles RENAME_GROUP", () => {
+      const result = budgetReducer(initialState, {
+        type: "RENAME_GROUP",
+        payload: { groupIndex: 0, newName: "Housing & Utility" },
+      });
+      expect(result.budgetGroups[0].name).toBe("Housing & Utility");
+    });
+
     it("handles ADD_TRANSACTION", () => {
       const result = budgetReducer(initialState, {
         type: "ADD_TRANSACTION",

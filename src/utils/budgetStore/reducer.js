@@ -93,6 +93,38 @@ export const budgetReducer = (state, action) => {
       };
     }
 
+    case "DELETE_GROUP": {
+      const { groupIndex } = action.payload;
+      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+      
+      const itemsInDeletedGroup = updatedGroups[groupIndex]?.budgetGroupItems || [];
+      const deletedItemIds = itemsInDeletedGroup.map((item) => item.id);
+      
+      updatedGroups.splice(groupIndex, 1);
+      
+      const updatedTransactions = state.transactions.filter(
+        (tx) => !deletedItemIds.includes(tx.budgetItemId)
+      );
+      
+      return {
+        ...state,
+        budgetGroups: updatedGroups,
+        transactions: updatedTransactions,
+      };
+    }
+
+    case "RENAME_GROUP": {
+      const { groupIndex, newName } = action.payload;
+      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+      if (updatedGroups[groupIndex]) {
+        updatedGroups[groupIndex].name = newName.trim();
+      }
+      return {
+        ...state,
+        budgetGroups: updatedGroups,
+      };
+    }
+
     case "ADD_TRANSACTION": {
       const { name, amount, budgetItemId } = action.payload;
       const newTx = {
