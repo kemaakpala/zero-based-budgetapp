@@ -1,70 +1,132 @@
-# Getting Started with Create React App
+# Every Pound (£) — Zero-Based Budget App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A personal budgeting app built on the zero-based principle: every pound of income is assigned a job before the month begins. Users set a Starting Salary, organise their spending into Budget Groups and Budget Items, then track actual Transactions against those assignments throughout the Budget Cycle.
 
-## Available Scripts
+## Prerequisites
 
-In the project directory, you can run:
+- **Node.js** v22+ (developed on v22.19)
+- **npm** (ships with Node)
 
-### `npm start`
+## Getting Started
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```bash
+# Install dependencies
+npm install
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+# Start the dev server (http://localhost:3000)
+npm start
+```
 
-### `npm test`
+The app uses localStorage for all persistence — there is no backend or database to configure.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Running Tests
 
-### `npm run build`
+```bash
+# Run the full test suite
+npm test
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- Test runner: **Vitest** with **jsdom**
+- DOM assertions: **@testing-library/react**
+- Tests live alongside their source files (e.g. `Button/Button.test.jsx`)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Testing Philosophy: TDD
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+This project follows **test-driven development**. When building features or fixing bugs:
 
-### `npm run eject`
+1. **Red** — write a failing test that describes the desired behaviour
+2. **Green** — write the minimum code to make it pass
+3. **Refactor** — clean up while keeping tests green
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Write tests before implementation, not after. Test observable behaviour (what the user sees, what the function returns), not implementation details.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+> **AI agents**: Use the `tdd` skill when building features or fixing bugs.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Developer Best Practices
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Project Structure
 
-## Learn More
+```
+src/
+├── Component/          # Presentational components (receive props, render UI)
+│   └── index.jsx       # Barrel export — register new components here
+├── Container/          # Stateful page-level containers (own state, pass it down)
+├── Settings/           # Setup wizard / template editor
+├── Layout/             # App shell (header, nav, footer)
+├── Routes/             # Router configuration
+├── Error/              # Error boundary page
+├── utils/              # Business logic, helpers, constants
+└── mocks/              # Test fixture data
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+For the full architecture rules (state management, derived values, persistence, month isolation), see [`AGENTS.md`](AGENTS.md). Those rules apply to all contributors — human and AI alike.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Adding a New Component
 
-### Code Splitting
+1. Create a folder under `src/Component/` named after the component (e.g. `MyWidget/`)
+2. Add the component file: `MyWidget/MyWidget.jsx`
+3. Add styles in a `styles/` subdirectory: `MyWidget/styles/MyWidget.css`
+4. Add a test file: `MyWidget/MyWidget.test.jsx`
+5. **Register it in the barrel file** at `src/Component/index.jsx` — this is how other parts of the app import components
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### CSS Conventions
 
-### Analyzing the Bundle Size
+- **Vanilla CSS only** — no Tailwind, no CSS-in-JS
+- Stylesheets are **co-located** with their components in a `styles/` subdirectory
+- Global styles and CSS custom properties live in `src/index.css` and `src/App.css`
+- No strict naming convention (e.g. BEM) is enforced, but keep class names descriptive and scoped to the component
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### Formatting
 
-### Making a Progressive Web App
+- **Prettier** handles all code formatting
+- **Husky + lint-staged** runs Prettier automatically on staged files at commit time
+- You don't need to run Prettier manually — just commit and it formats for you
+- If you want to format everything: `npx prettier --write "src/**/*.{js,jsx,css,json,md}"`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### Domain Language
 
-### Advanced Configuration
+The project uses a strict glossary of domain terms (Budget Group, Budget Item, Payee, Remaining, etc.). Before writing code, read [`CONTEXT.md`](CONTEXT.md) so your naming aligns with the established language.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### Architectural Decisions
 
-### Deployment
+Non-obvious design choices are recorded as ADRs in [`docs/adr/`](docs/adr/). Check these before proposing changes to core patterns like data persistence or month initialisation.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### Commit Messages
 
-### `npm run build` fails to minify
+We follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification. Every commit message must follow this structure:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+Common types include:
+- `feat`: A new feature for the user
+- `fix`: A bug fix for the user
+- `docs`: Changes to documentation
+- `style`: Formatting, missing semi-colons, etc. (no production code change)
+- `refactor`: Refactoring production code (no bug fix or new feature)
+- `test`: Adding missing tests or refactoring existing tests
+- `chore`: Updating build tasks, package manager configs, Husky setup, etc. (no production code change)
+
+> **AI agents**: Always format your commit messages using the Conventional Commits specification.
+
+## Workflow
+
+
+- **Branch strategy**: Commit directly to `main` (CI and branch protection are planned for the future)
+- **Commit Messages**: Follow the Conventional Commits specification (see above)
+- **Before committing**: Run `npm test` to make sure you haven't broken anything
+- **Formatting**: Handled automatically by Husky on commit
+
+## Documentation Map
+
+| Document | Purpose |
+|----------|---------|
+| [`CONTEXT.md`](CONTEXT.md) | Domain glossary — the single source of truth for terminology |
+| [`AGENTS.md`](AGENTS.md) | Architecture rules, data shapes, and coding conventions |
+| [`docs/adr/`](docs/adr/) | Architectural Decision Records |
+| [`FUTURE_IMPROVEMENTS.md`](FUTURE_IMPROVEMENTS.md) | Planned features and deferred work |

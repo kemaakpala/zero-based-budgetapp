@@ -25,3 +25,30 @@ The day the user receives their monthly salary. This is defined as the 20th of t
 
 ### Budget Cycle
 The date range for a given month's budget. It begins on that month's **Payday** and ends the day before the next month's **Payday**. All transactions and budget allocations made within this window belong to this cycle.
+
+### Budget Group
+A named container that organizes related **Budget Items** under a common heading (e.g. "Housing", "Food", "Giving"). Each group holds zero or more Budget Items.
+
+### Remaining
+The amount of money left in a **Budget Item's** envelope: **Assigned Amount** minus total **Spent**. This is derived, never stored.
+_Avoid_: Balance, available
+
+### Spent
+The sum of all **Transaction** amounts linked to a **Budget Item**. This is derived, never stored.
+_Avoid_: Used, consumed
+
+### Over-allocated
+The state where total **Assigned Amounts** across all **Budget Items** exceed the **Starting Salary**, causing **Unassigned Salary** to go negative. Violates the zero-based principle.
+_Avoid_: Overspent, over-budget (which would mean spending exceeds assignment, a different concept)
+
+### Weekend Behavior
+The policy applied when a **Payday** falls on a weekend: shift to the preceding Friday, the following Monday, or keep the exact date.
+_Avoid_: Weekend rule, weekend policy
+
+### Budget Template
+A saved configuration of **Starting Salary**, **Budget Groups**, and **Payday** settings. When a **Budget Cycle** has no saved data, it is initialized from this template.
+_Avoid_: Preset, default budget
+
+### Payee
+The entity receiving money in a **Transaction** (e.g. "Tesco", "Landlord").
+_Avoid_: Vendor, merchant, recipient
