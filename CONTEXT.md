@@ -67,3 +67,33 @@ _Avoid_: Preset, default budget
 
 The entity receiving money in a **Transaction** (e.g. "Tesco", "Landlord").
 _Avoid_: Vendor, merchant, recipient
+
+### Debt Item
+
+A specialised **Budget Item** with `type: "debt"` that represents an obligation being paid off over time (e.g. a credit card or personal loan). It carries additional metadata: **Outstanding Balance**, **Minimum Payment**, **Debt Type**, and optionally an interest rate. Debt Items live exclusively in the **Debt Repayment Group**.
+_Avoid_: Liability, loan item
+
+### Outstanding Balance
+
+The total amount still owed on a **Debt Item**. Stored in the **Budget Template** and decremented as a side-effect when payment **Transactions** are recorded. This is the only cross-month state for debts.
+_Avoid_: Remaining balance, amount owed
+
+### Minimum Payment
+
+The minimum required monthly payment for a **Debt Item**, as set by the lender.
+_Avoid_: Minimum due, required payment
+
+### Debt Type
+
+The category of a **Debt Item**: credit card, personal loan, car loan, student loan, overdraft, or other.
+_Avoid_: Loan type, debt category
+
+### Paid Off
+
+The state of a **Debt Item** when its **Outstanding Balance** reaches zero or below. Derived from `outstandingBalance <= 0`, never stored as a flag.
+_Avoid_: Settled, cleared, closed
+
+### Debt Repayment Group
+
+A dedicated, system-level **Budget Group** that contains only **Debt Items**. Created automatically when the user indicates they have debts during setup.
+_Avoid_: Debt group, loans group
