@@ -46,12 +46,12 @@ export default function Settings() {
 
   const [currentStep, setCurrentStep] = useState(1);
   const [startingSalary, setStartingSalary] = useState(
-    initialData.startingSalary,
+    initialData.startingSalary
   );
   const [budgetGroups, setBudgetGroups] = useState(initialData.budgetGroups);
   const [paydayDay, setPaydayDay] = useState(initialData.paydayDay);
   const [weekendBehavior, setWeekendBehavior] = useState(
-    initialData.weekendBehavior,
+    initialData.weekendBehavior
   );
   const [newGroupName, setNewGroupName] = useState("");
 
@@ -134,7 +134,7 @@ export default function Settings() {
     };
     const currentMonthKey = getCurrentMonthYearString();
     const existingMonthData = localStorage.getItem(
-      `budget_app_data_${currentMonthKey}`,
+      `budget_app_data_${currentMonthKey}`
     );
 
     // Always write or prompt? Let's write to current month so user starts with their new setup
@@ -149,7 +149,7 @@ export default function Settings() {
     };
     localStorage.setItem(
       `budget_app_data_${currentMonthKey}`,
-      JSON.stringify(newMonthData),
+      JSON.stringify(newMonthData)
     );
 
     // Redirect to current month's budget page
@@ -159,7 +159,7 @@ export default function Settings() {
   const totalGroups = budgetGroups.length;
   const totalItems = budgetGroups.reduce(
     (acc, g) => acc + g.budgetGroupItems.length,
-    0,
+    0
   );
 
   return (
@@ -380,7 +380,7 @@ export default function Settings() {
                                 handleRenameItem(
                                   groupIndex,
                                   itemIndex,
-                                  e.target.value,
+                                  e.target.value
                                 )
                               }
                               className="item-name-edit"

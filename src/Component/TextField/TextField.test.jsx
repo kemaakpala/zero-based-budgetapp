@@ -9,7 +9,7 @@ describe("TextField", () => {
         label="test"
         inputName="testName"
         placeholder="test placeholder"
-      />,
+      />
     );
     expect(screen.getByLabelText("test")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("test placeholder")).toBeInTheDocument();

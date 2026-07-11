@@ -99,7 +99,7 @@ const BudgetGroupItem = ({
           {status?.length > 0 &&
             status.map(({ label, value, type }) => {
               const grouptItemID = `${budgetGroupName}_${removeSpace(
-                label,
+                label
               )}_${type}_${id}`;
               const numericValue = parseFloat(value) || 0;
               const isNegative = numericValue < 0;
@@ -188,10 +188,10 @@ BudgetGroupItem.propTypes = {
           label: PropTypes.string,
           value: PropTypes.string,
           type: PropTypes.string,
-        }),
+        })
       ),
       type: PropTypes.string,
-    }),
+    })
   ).isRequired,
   onChangeHandler: PropTypes.func.isRequired,
   onBlurHandler: PropTypes.func.isRequired,

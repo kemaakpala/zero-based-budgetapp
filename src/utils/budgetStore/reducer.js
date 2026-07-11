@@ -60,7 +60,7 @@ export const budgetReducer = (state, action) => {
       let itemToDelete = null;
       for (const group of updatedGroups) {
         const index = group.budgetGroupItems.findIndex(
-          (item) => item.id === itemId,
+          (item) => item.id === itemId
         );
         if (index !== -1) {
           itemToDelete = group.budgetGroupItems[index];
@@ -106,7 +106,7 @@ export const budgetReducer = (state, action) => {
       updatedGroups.splice(groupIndex, 1);
 
       const updatedTransactions = state.transactions.filter(
-        (tx) => !deletedItemIds.includes(tx.budgetItemId),
+        (tx) => !deletedItemIds.includes(tx.budgetItemId)
       );
 
       return {
