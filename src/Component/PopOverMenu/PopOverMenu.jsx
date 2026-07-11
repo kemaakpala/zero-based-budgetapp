@@ -57,7 +57,7 @@ PopOverMenu.propTypes = {
       title: PropTypes.string.isRequired,
       icon: PropTypes.object.isRequired,
       description: PropTypes.string,
-    }),
+    })
   ).isRequired,
   width: PropTypes.string.isRequired,
   left: PropTypes.string.isRequired,

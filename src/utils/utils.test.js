@@ -35,7 +35,7 @@ describe("utils", () => {
     expect(getFullYear()).toBeTruthy();
     expect(getFullYear()).toMatch(/^[a-zA-Z]+\s\d{4}$/);
     expect(getFullYear()).toMatch(
-      /January|February|March|April|May|June|July|August|September|October|November|December\s\d{4}/,
+      /January|February|March|April|May|June|July|August|September|October|November|December\s\d{4}/
     );
   });
 });

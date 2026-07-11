@@ -57,14 +57,14 @@ describe("TransactionLog", () => {
         budgetGroups={mockBudgetGroups}
         onDeleteTransaction={mockOnDeleteTransaction}
         onDeleteMultipleTransactions={mockOnDeleteMultipleTransactions}
-      />,
+      />
     );
 
     expect(screen.getByText("Transactions Log")).toBeInTheDocument();
     expect(screen.getByText("2 transactions")).toBeInTheDocument();
     // Content should not be visible (it's conditionally rendered on isOpen)
     expect(
-      screen.queryByPlaceholderText("Search payee..."),
+      screen.queryByPlaceholderText("Search payee...")
     ).not.toBeInTheDocument();
   });
 
@@ -75,7 +75,7 @@ describe("TransactionLog", () => {
         budgetGroups={mockBudgetGroups}
         onDeleteTransaction={mockOnDeleteTransaction}
         onDeleteMultipleTransactions={mockOnDeleteMultipleTransactions}
-      />,
+      />
     );
 
     const headerButton = screen.getByRole("button", {
@@ -105,7 +105,7 @@ describe("TransactionLog", () => {
         budgetGroups={mockBudgetGroups}
         onDeleteTransaction={mockOnDeleteTransaction}
         onDeleteMultipleTransactions={mockOnDeleteMultipleTransactions}
-      />,
+      />
     );
 
     // Open
@@ -125,7 +125,7 @@ describe("TransactionLog", () => {
         budgetGroups={mockBudgetGroups}
         onDeleteTransaction={mockOnDeleteTransaction}
         onDeleteMultipleTransactions={mockOnDeleteMultipleTransactions}
-      />,
+      />
     );
 
     // Open
@@ -149,7 +149,7 @@ describe("TransactionLog", () => {
         budgetGroups={mockBudgetGroups}
         onDeleteTransaction={mockOnDeleteTransaction}
         onDeleteMultipleTransactions={mockOnDeleteMultipleTransactions}
-      />,
+      />
     );
 
     // Open
@@ -159,7 +159,7 @@ describe("TransactionLog", () => {
     fireEvent.click(deleteButtons[0]); // delete Tesco
 
     expect(confirmSpy).toHaveBeenCalledWith(
-      'Delete transaction "Tesco Groceries" for £45.50?',
+      'Delete transaction "Tesco Groceries" for £45.50?'
     );
     expect(mockOnDeleteTransaction).toHaveBeenCalledWith("tx1");
 
@@ -177,7 +177,7 @@ describe("TransactionLog", () => {
         budgetGroups={mockBudgetGroups}
         onDeleteTransaction={mockOnDeleteTransaction}
         onDeleteMultipleTransactions={mockOnDeleteMultipleTransactions}
-      />,
+      />
     );
 
     // Open
@@ -205,7 +205,7 @@ describe("TransactionLog", () => {
     fireEvent.click(batchDeleteBtn);
 
     expect(confirmSpy).toHaveBeenCalledWith(
-      "Are you sure you want to delete 2 selected transaction(s)?",
+      "Are you sure you want to delete 2 selected transaction(s)?"
     );
     expect(mockOnDeleteMultipleTransactions).toHaveBeenCalledWith([
       "tx1",

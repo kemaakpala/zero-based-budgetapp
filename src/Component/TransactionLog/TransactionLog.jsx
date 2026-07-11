@@ -79,7 +79,7 @@ const TransactionLog = ({
   // Handle single row selection
   const handleSelectRow = (txId) => {
     setSelectedTxIds((prev) =>
-      prev.includes(txId) ? prev.filter((id) => id !== txId) : [...prev, txId],
+      prev.includes(txId) ? prev.filter((id) => id !== txId) : [...prev, txId]
     );
   };
 
@@ -91,7 +91,7 @@ const TransactionLog = ({
     if (allSelected) {
       // Uncheck all filtered
       setSelectedTxIds((prev) =>
-        prev.filter((id) => !filteredIds.includes(id)),
+        prev.filter((id) => !filteredIds.includes(id))
       );
     } else {
       // Check all filtered (keeping any other checked items not in the current filter)
@@ -264,7 +264,7 @@ const TransactionLog = ({
                     <tbody>
                       {filteredTransactions.map((tx) => {
                         const { itemName, groupName } = getBudgetItemDetails(
-                          tx.budgetItemId,
+                          tx.budgetItemId
                         );
                         const isChecked = selectedTxIds.includes(tx.id);
 
@@ -300,7 +300,7 @@ const TransactionLog = ({
                                   {
                                     month: "short",
                                     day: "numeric",
-                                  },
+                                  }
                                 )}
                               </span>
                             </td>
@@ -316,7 +316,7 @@ const TransactionLog = ({
                                 onClick={() => {
                                   if (
                                     window.confirm(
-                                      `Delete transaction "${tx.name}" for £${tx.amount.toFixed(2)}?`,
+                                      `Delete transaction "${tx.name}" for £${tx.amount.toFixed(2)}?`
                                     )
                                   ) {
                                     onDeleteTransaction(tx.id);
@@ -350,7 +350,7 @@ TransactionLog.propTypes = {
       amount: PropTypes.number.isRequired,
       budgetItemId: PropTypes.string.isRequired,
       date: PropTypes.string.isRequired,
-    }),
+    })
   ).isRequired,
   budgetGroups: PropTypes.arrayOf(
     PropTypes.shape({
@@ -360,9 +360,9 @@ TransactionLog.propTypes = {
           id: PropTypes.string.isRequired,
           name: PropTypes.string.isRequired,
           assigned: PropTypes.number.isRequired,
-        }),
+        })
       ).isRequired,
-    }),
+    })
   ).isRequired,
   onDeleteTransaction: PropTypes.func.isRequired,
   onDeleteMultipleTransactions: PropTypes.func.isRequired,

@@ -151,7 +151,7 @@ function Budget() {
 
   const handleDeleteGroup = (groupIndex, groupName) => {
     const confirmed = window.confirm(
-      `Are you sure you want to delete the "${groupName}" group and all its budget items? This will also remove any related transactions.`,
+      `Are you sure you want to delete the "${groupName}" group and all its budget items? This will also remove any related transactions.`
     );
     if (confirmed) {
       dispatch({ type: "DELETE_GROUP", payload: { groupIndex } });
@@ -191,7 +191,7 @@ function Budget() {
   const activeItemTransactions = useMemo(() => {
     return activeViewTransactionsItem
       ? state.transactions.filter(
-          (tx) => tx.budgetItemId === activeViewTransactionsItem.id,
+          (tx) => tx.budgetItemId === activeViewTransactionsItem.id
         )
       : [];
   }, [state.transactions, activeViewTransactionsItem]);

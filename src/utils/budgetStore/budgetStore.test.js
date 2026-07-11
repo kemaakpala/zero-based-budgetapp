@@ -246,7 +246,7 @@ describe("BudgetCycleStore Modules", () => {
       const enrichedRemaining = getEnrichedGroups(
         budgetGroups,
         transactions,
-        "remaining",
+        "remaining"
       );
       const itemRemaining = enrichedRemaining[0].budgetGroupItems[0];
       expect(itemRemaining.spent).toBe(800);
@@ -258,7 +258,7 @@ describe("BudgetCycleStore Modules", () => {
       const enrichedSpent = getEnrichedGroups(
         budgetGroups,
         transactions,
-        "spent",
+        "spent"
       );
       const itemSpent = enrichedSpent[0].budgetGroupItems[0];
       expect(itemSpent.status[0].label).toBe("Spent");

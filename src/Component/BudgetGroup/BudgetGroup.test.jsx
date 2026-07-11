@@ -61,18 +61,18 @@ describe("BudgetGroup", () => {
         budgetGroup={BudgetGroupData}
         groupIndex={0}
         onRenameGroupClick={onRenameGroupClick}
-      />,
+      />
     );
 
     // Open popover
     const popoverBtn = container.querySelector(
-      ".group-header-column:last-child button",
+      ".group-header-column:last-child button"
     );
     fireEvent.click(popoverBtn);
 
     // Find Edit button and click it
     const editBtn = container.querySelector(
-      ".popover-menu-list-item:first-child button",
+      ".popover-menu-list-item:first-child button"
     );
     fireEvent.click(editBtn);
 
@@ -86,18 +86,18 @@ describe("BudgetGroup", () => {
         budgetGroup={BudgetGroupData}
         groupIndex={0}
         onDeleteGroupClick={onDeleteGroupClick}
-      />,
+      />
     );
 
     // Open popover
     const popoverBtn = container.querySelector(
-      ".group-header-column:last-child button",
+      ".group-header-column:last-child button"
     );
     fireEvent.click(popoverBtn);
 
     // Find Delete button and click it
     const deleteBtn = container.querySelector(
-      ".popover-menu-list-item:last-child button",
+      ".popover-menu-list-item:last-child button"
     );
     fireEvent.click(deleteBtn);
 

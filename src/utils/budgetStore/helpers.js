@@ -50,7 +50,7 @@ export const saveBudgetData = (monthKey, state, storageAdapter) => {
 export const getEnrichedGroups = (
   budgetGroups = [],
   transactions = [],
-  viewMode = "remaining",
+  viewMode = "remaining"
 ) => {
   return budgetGroups.map((group) => ({
     ...group,
@@ -60,7 +60,7 @@ export const getEnrichedGroups = (
     ],
     budgetGroupItems: group.budgetGroupItems.map((item) => {
       const itemTransactions = transactions.filter(
-        (tx) => tx.budgetItemId === item.id,
+        (tx) => tx.budgetItemId === item.id
       );
       const spent = itemTransactions.reduce((sum, tx) => sum + tx.amount, 0);
 

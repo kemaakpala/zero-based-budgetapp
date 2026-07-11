@@ -23,7 +23,7 @@ describe("Settings Onboarding Wizard", () => {
 
     // STEP 1: Starting Salary
     expect(
-      screen.getByText("Set Your Starting Monthly Income"),
+      screen.getByText("Set Your Starting Monthly Income")
     ).toBeInTheDocument();
 
     // Check input displays default value of 5000
@@ -84,11 +84,11 @@ describe("Settings Onboarding Wizard", () => {
     expect(localStorage.getItem("budget_app_setup_completed")).toBe("true");
 
     const savedDefaults = JSON.parse(
-      localStorage.getItem("budget_app_defaults"),
+      localStorage.getItem("budget_app_defaults")
     );
     expect(savedDefaults.startingSalary).toBe(3500);
     expect(
-      savedDefaults.budgetGroups.some((g) => g.name === "Subscriptions"),
+      savedDefaults.budgetGroups.some((g) => g.name === "Subscriptions")
     ).toBe(true);
     expect(savedDefaults.paydayDay).toBe(25);
     expect(savedDefaults.weekendBehavior).toBe("following-monday");

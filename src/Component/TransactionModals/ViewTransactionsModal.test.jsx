@@ -33,7 +33,7 @@ describe("ViewTransactionsModal", () => {
         transactions={mockTransactions}
         onClose={mockOnClose}
         onDeleteTransaction={mockOnDeleteTransaction}
-      />,
+      />
     );
     expect(container.firstChild).toBeNull();
   });
@@ -46,12 +46,12 @@ describe("ViewTransactionsModal", () => {
         transactions={mockTransactions}
         onClose={mockOnClose}
         onDeleteTransaction={mockOnDeleteTransaction}
-      />,
+      />
     );
 
     expect(screen.getByText("Transactions List")).toBeInTheDocument();
     expect(
-      screen.getByText("Budget Item: Rent / Mortgage"),
+      screen.getByText("Budget Item: Rent / Mortgage")
     ).toBeInTheDocument();
     expect(screen.getByText("Rent July")).toBeInTheDocument();
     expect(screen.getByText("£950.00")).toBeInTheDocument();
@@ -67,11 +67,11 @@ describe("ViewTransactionsModal", () => {
         transactions={[]}
         onClose={mockOnClose}
         onDeleteTransaction={mockOnDeleteTransaction}
-      />,
+      />
     );
 
     expect(
-      screen.getByText("No transactions recorded yet."),
+      screen.getByText("No transactions recorded yet.")
     ).toBeInTheDocument();
   });
 
@@ -83,7 +83,7 @@ describe("ViewTransactionsModal", () => {
         transactions={mockTransactions}
         onClose={mockOnClose}
         onDeleteTransaction={mockOnDeleteTransaction}
-      />,
+      />
     );
 
     const deleteBtns = screen.getAllByTitle("Delete Transaction");
@@ -100,7 +100,7 @@ describe("ViewTransactionsModal", () => {
         transactions={mockTransactions}
         onClose={mockOnClose}
         onDeleteTransaction={mockOnDeleteTransaction}
-      />,
+      />
     );
 
     const closeBtn = screen.getByRole("button", { name: "×" });
