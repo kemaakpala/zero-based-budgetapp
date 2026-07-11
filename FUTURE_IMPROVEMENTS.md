@@ -7,12 +7,12 @@ This file tracks features, optimizations, and user experience enhancements defer
 - [x] **Dedicated Setup / Settings Page**: Create an onboarding/setup wizard page where users can configure their Starting Salary and initialize their budget groups and items before entering the main dashboard.
 - [x] **Global Transactions Log**: Add a collapsible section at the bottom of the main dashboard listing all recorded transactions for the month with options to filter and batch-delete.
 - [x] **Domain Glossary Completion**: Document all domain terms (Budget Group, Remaining, Spent, Over-allocated, Weekend Behavior, Budget Template, Payee) in CONTEXT.md with _Avoid_ disambiguation.
+- [x] **Fix Husky Git Hooks**: Setup Husky v9 with a hybrid hook structure (`pre-commit` for formatting, `pre-push` for lints and tests) to automate local validation (see [ADR 0004](docs/adr/0004-branch-protection-and-ci-workflow.md)).
 
 ## Planned
 
 ### Developer Experience & Core Tooling
 
-- [ ] **Fix Husky Git Hooks**: The `package.json` references an old Husky v4 configuration, but the tool is not initialized. Setup Husky v9 with a proper `.husky/pre-commit` hook to guarantee formatting (Prettier) runs automatically before code is committed.
 - [ ] **Enforce Conventional Commits with commitlint**: Set up `@commitlint/cli` and `@commitlint/config-conventional` integrated with a Husky `commit-msg` hook to programmatically reject non-compliant commit messages.
 - [ ] **Migrate to TypeScript**: Instead of expanding/fixing the current inconsistent React `PropTypes` usage, migrate the codebase to TypeScript. This will provide compile-time type safety, better developer tooling, and auto-completion.
 - [ ] **Standardize Editor & Prettier Configurations**: Add `.prettierrc` and `.editorconfig` files to the repository root. This ensures all developers and IDEs use identical indentation, trailing newline, and line ending settings.
