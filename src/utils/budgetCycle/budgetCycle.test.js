@@ -56,7 +56,7 @@ describe("BudgetCycleCalculator", () => {
     it("should format cycle range correctly", () => {
       const range = defaultCalculator.getCycleRange(2026, 5);
       expect(defaultCalculator.formatCycleRange(range)).toBe(
-        "June 19th, 2026 - July 19th, 2026"
+        "June 19th, 2026 - July 19th, 2026",
       );
     });
   });

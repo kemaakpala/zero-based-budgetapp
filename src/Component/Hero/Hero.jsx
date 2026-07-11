@@ -45,7 +45,7 @@ const Hero = ({
           <h2>Budget for {monthLabel}</h2>
           {cycleRangeLabel && <p className="cycle-range">{cycleRangeLabel}</p>}
         </div>
-        
+
         {/* Toggle Switch */}
         <div className="view-mode-toggle">
           <button
@@ -81,7 +81,11 @@ const Hero = ({
                 onKeyDown={handleKeyDown}
                 autoFocus
               />
-              <button type="button" className="btn-icon btn-save" onClick={handleSave}>
+              <button
+                type="button"
+                className="btn-icon btn-save"
+                onClick={handleSave}
+              >
                 <FontAwesomeIcon icon={faCheck} size="sm" />
               </button>
               <button
@@ -114,7 +118,9 @@ const Hero = ({
         </div>
 
         {/* Unassigned Salary Block */}
-        <div className={`hero-block unassigned-salary-block ${isOverallocated ? "overallocated" : ""}`}>
+        <div
+          className={`hero-block unassigned-salary-block ${isOverallocated ? "overallocated" : ""}`}
+        >
           <h3>{isOverallocated ? "Over-allocated" : "Left to Assign"}</h3>
           <h2 className="amount">
             <span>{currency}</span>
@@ -124,8 +130,8 @@ const Hero = ({
             {isOverallocated
               ? "You've assigned more than your salary!"
               : unassignedSalary === 0
-              ? "Every pound has a job. Well done!"
-              : "Give every pound a job."}
+                ? "Every pound has a job. Well done!"
+                : "Give every pound a job."}
           </p>
         </div>
       </div>

@@ -104,6 +104,7 @@ We follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0
 ```
 
 Common types include:
+
 - `feat`: A new feature for the user
 - `fix`: A bug fix for the user
 - `docs`: Changes to documentation
@@ -116,17 +117,17 @@ Common types include:
 
 ## Workflow
 
+We follow a feature-branch and pull request workflow. Direct commits to `main` are blocked by branch protection. For details on branching, local git hooks, and status checks, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
-- **Branch strategy**: Commit directly to `main` (CI and branch protection are planned for the future)
-- **Commit Messages**: Follow the Conventional Commits specification (see above)
-- **Before committing**: Run `npm test` to make sure you haven't broken anything
-- **Formatting**: Handled automatically by Husky on commit
+- **Commit Messages**: Follow the Conventional Commits specification (see above).
+- **Hooks**: Pre-commit hooks format files automatically, and pre-push hooks verify lints and tests locally.
 
 ## Documentation Map
 
-| Document | Purpose |
-|----------|---------|
-| [`CONTEXT.md`](CONTEXT.md) | Domain glossary — the single source of truth for terminology |
-| [`AGENTS.md`](AGENTS.md) | Architecture rules, data shapes, and coding conventions |
-| [`docs/adr/`](docs/adr/) | Architectural Decision Records |
-| [`FUTURE_IMPROVEMENTS.md`](FUTURE_IMPROVEMENTS.md) | Planned features and deferred work |
+| Document                                           | Purpose                                                      |
+| -------------------------------------------------- | ------------------------------------------------------------ |
+| [`CONTEXT.md`](CONTEXT.md)                         | Domain glossary — the single source of truth for terminology |
+| [`AGENTS.md`](AGENTS.md)                           | Architecture rules, data shapes, and coding conventions      |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md)               | Guidelines for branching, local git hooks, and pull requests |
+| [`docs/adr/`](docs/adr/)                           | Architectural Decision Records                               |
+| [`FUTURE_IMPROVEMENTS.md`](FUTURE_IMPROVEMENTS.md) | Planned features and deferred work                           |

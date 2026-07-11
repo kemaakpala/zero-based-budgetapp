@@ -5,8 +5,18 @@ import ViewTransactionsModal from "./ViewTransactionsModal";
 describe("ViewTransactionsModal", () => {
   const mockItem = { id: "h1", name: "Rent / Mortgage" };
   const mockTransactions = [
-    { id: "tx1", name: "Rent July", amount: 950.0, date: "2026-06-18T10:00:00.000Z" },
-    { id: "tx2", name: "Rent Latefee", amount: 50.0, date: "2026-06-18T11:00:00.000Z" },
+    {
+      id: "tx1",
+      name: "Rent July",
+      amount: 950.0,
+      date: "2026-06-18T10:00:00.000Z",
+    },
+    {
+      id: "tx2",
+      name: "Rent Latefee",
+      amount: 50.0,
+      date: "2026-06-18T11:00:00.000Z",
+    },
   ];
   const mockOnClose = vi.fn();
   const mockOnDeleteTransaction = vi.fn();
@@ -23,7 +33,7 @@ describe("ViewTransactionsModal", () => {
         transactions={mockTransactions}
         onClose={mockOnClose}
         onDeleteTransaction={mockOnDeleteTransaction}
-      />
+      />,
     );
     expect(container.firstChild).toBeNull();
   });
@@ -36,11 +46,13 @@ describe("ViewTransactionsModal", () => {
         transactions={mockTransactions}
         onClose={mockOnClose}
         onDeleteTransaction={mockOnDeleteTransaction}
-      />
+      />,
     );
 
     expect(screen.getByText("Transactions List")).toBeInTheDocument();
-    expect(screen.getByText("Budget Item: Rent / Mortgage")).toBeInTheDocument();
+    expect(
+      screen.getByText("Budget Item: Rent / Mortgage"),
+    ).toBeInTheDocument();
     expect(screen.getByText("Rent July")).toBeInTheDocument();
     expect(screen.getByText("£950.00")).toBeInTheDocument();
     expect(screen.getByText("Rent Latefee")).toBeInTheDocument();
@@ -55,10 +67,12 @@ describe("ViewTransactionsModal", () => {
         transactions={[]}
         onClose={mockOnClose}
         onDeleteTransaction={mockOnDeleteTransaction}
-      />
+      />,
     );
 
-    expect(screen.getByText("No transactions recorded yet.")).toBeInTheDocument();
+    expect(
+      screen.getByText("No transactions recorded yet."),
+    ).toBeInTheDocument();
   });
 
   it("triggers onDeleteTransaction when clicking a delete button", () => {
@@ -69,7 +83,7 @@ describe("ViewTransactionsModal", () => {
         transactions={mockTransactions}
         onClose={mockOnClose}
         onDeleteTransaction={mockOnDeleteTransaction}
-      />
+      />,
     );
 
     const deleteBtns = screen.getAllByTitle("Delete Transaction");
@@ -86,7 +100,7 @@ describe("ViewTransactionsModal", () => {
         transactions={mockTransactions}
         onClose={mockOnClose}
         onDeleteTransaction={mockOnDeleteTransaction}
-      />
+      />,
     );
 
     const closeBtn = screen.getByRole("button", { name: "×" });

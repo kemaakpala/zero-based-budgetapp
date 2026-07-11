@@ -46,7 +46,11 @@ export default function Layout() {
             />
           </div>
           <div className="budget-settings-container">
-            <Link to="/settings" title="Budget Setup Wizard" className="menu-icon-link">
+            <Link
+              to="/settings"
+              title="Budget Setup Wizard"
+              className="menu-icon-link"
+            >
               <FontAwesomeIcon
                 icon={faGear}
                 size="1x"

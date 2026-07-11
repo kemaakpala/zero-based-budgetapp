@@ -18,7 +18,7 @@ describe("AddTransactionModal", () => {
         budgetItem={mockItem}
         onClose={mockOnClose}
         onSubmit={mockOnSubmit}
-      />
+      />,
     );
     expect(container.firstChild).toBeNull();
   });
@@ -30,7 +30,7 @@ describe("AddTransactionModal", () => {
         budgetItem={mockItem}
         onClose={mockOnClose}
         onSubmit={mockOnSubmit}
-      />
+      />,
     );
 
     expect(screen.getByText("Add Transaction")).toBeInTheDocument();
@@ -58,7 +58,7 @@ describe("AddTransactionModal", () => {
         budgetItem={mockItem}
         onClose={mockOnClose}
         onSubmit={mockOnSubmit}
-      />
+      />,
     );
 
     const closeBtn = screen.getByRole("button", { name: "×" });

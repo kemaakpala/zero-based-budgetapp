@@ -59,7 +59,9 @@ export const budgetReducer = (state, action) => {
 
       let itemToDelete = null;
       for (const group of updatedGroups) {
-        const index = group.budgetGroupItems.findIndex((item) => item.id === itemId);
+        const index = group.budgetGroupItems.findIndex(
+          (item) => item.id === itemId,
+        );
         if (index !== -1) {
           itemToDelete = group.budgetGroupItems[index];
           group.budgetGroupItems.splice(index, 1);
@@ -96,16 +98,17 @@ export const budgetReducer = (state, action) => {
     case "DELETE_GROUP": {
       const { groupIndex } = action.payload;
       const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
-      
-      const itemsInDeletedGroup = updatedGroups[groupIndex]?.budgetGroupItems || [];
+
+      const itemsInDeletedGroup =
+        updatedGroups[groupIndex]?.budgetGroupItems || [];
       const deletedItemIds = itemsInDeletedGroup.map((item) => item.id);
-      
+
       updatedGroups.splice(groupIndex, 1);
-      
+
       const updatedTransactions = state.transactions.filter(
-        (tx) => !deletedItemIds.includes(tx.budgetItemId)
+        (tx) => !deletedItemIds.includes(tx.budgetItemId),
       );
-      
+
       return {
         ...state,
         budgetGroups: updatedGroups,

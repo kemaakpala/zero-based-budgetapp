@@ -22,8 +22,10 @@ describe("Settings Onboarding Wizard", () => {
     render(<Settings />);
 
     // STEP 1: Starting Salary
-    expect(screen.getByText("Set Your Starting Monthly Income")).toBeInTheDocument();
-    
+    expect(
+      screen.getByText("Set Your Starting Monthly Income"),
+    ).toBeInTheDocument();
+
     // Check input displays default value of 5000
     const salaryInput = screen.getByPlaceholderText("0.00");
     expect(salaryInput.value).toBe("5000");
@@ -47,14 +49,14 @@ describe("Settings Onboarding Wizard", () => {
 
     // STEP 2: Categories
     expect(screen.getByText("Customize Budget Categories")).toBeInTheDocument();
-    
+
     // Check default groups are rendered (e.g. Housing)
     expect(screen.getByDisplayValue("Housing")).toBeInTheDocument();
 
     // Add a new custom group
     const groupInput = screen.getByPlaceholderText(/New Group/i);
     fireEvent.change(groupInput, { target: { value: "Subscriptions" } });
-    
+
     const addGroupBtn = screen.getByRole("button", { name: /Add Group/i });
     fireEvent.click(addGroupBtn);
 
@@ -73,15 +75,21 @@ describe("Settings Onboarding Wizard", () => {
     expect(screen.getByText("Following Monday")).toBeInTheDocument();
 
     // Click "Save & Start Budgeting"
-    const finishBtn = screen.getByRole("button", { name: /Save & Start Budgeting/i });
+    const finishBtn = screen.getByRole("button", {
+      name: /Save & Start Budgeting/i,
+    });
     fireEvent.click(finishBtn);
 
     // Assert saving logic
     expect(localStorage.getItem("budget_app_setup_completed")).toBe("true");
-    
-    const savedDefaults = JSON.parse(localStorage.getItem("budget_app_defaults"));
+
+    const savedDefaults = JSON.parse(
+      localStorage.getItem("budget_app_defaults"),
+    );
     expect(savedDefaults.startingSalary).toBe(3500);
-    expect(savedDefaults.budgetGroups.some(g => g.name === "Subscriptions")).toBe(true);
+    expect(
+      savedDefaults.budgetGroups.some((g) => g.name === "Subscriptions"),
+    ).toBe(true);
     expect(savedDefaults.paydayDay).toBe(25);
     expect(savedDefaults.weekendBehavior).toBe("following-monday");
 

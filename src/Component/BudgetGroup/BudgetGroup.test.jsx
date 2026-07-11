@@ -9,7 +9,7 @@ vi.mock("./BudgetGroupItem", () => ({
       <div>Received</div>
       <button>Delete</button>
     </div>
-  )
+  ),
 }));
 
 export const BudgetGroupData = {
@@ -61,17 +61,21 @@ describe("BudgetGroup", () => {
         budgetGroup={BudgetGroupData}
         groupIndex={0}
         onRenameGroupClick={onRenameGroupClick}
-      />
+      />,
     );
-    
+
     // Open popover
-    const popoverBtn = container.querySelector(".group-header-column:last-child button");
+    const popoverBtn = container.querySelector(
+      ".group-header-column:last-child button",
+    );
     fireEvent.click(popoverBtn);
-    
+
     // Find Edit button and click it
-    const editBtn = container.querySelector(".popover-menu-list-item:first-child button");
+    const editBtn = container.querySelector(
+      ".popover-menu-list-item:first-child button",
+    );
     fireEvent.click(editBtn);
-    
+
     expect(onRenameGroupClick).toHaveBeenCalledWith(0, "Budget Group");
   });
 
@@ -82,17 +86,21 @@ describe("BudgetGroup", () => {
         budgetGroup={BudgetGroupData}
         groupIndex={0}
         onDeleteGroupClick={onDeleteGroupClick}
-      />
+      />,
     );
-    
+
     // Open popover
-    const popoverBtn = container.querySelector(".group-header-column:last-child button");
+    const popoverBtn = container.querySelector(
+      ".group-header-column:last-child button",
+    );
     fireEvent.click(popoverBtn);
-    
+
     // Find Delete button and click it
-    const deleteBtn = container.querySelector(".popover-menu-list-item:last-child button");
+    const deleteBtn = container.querySelector(
+      ".popover-menu-list-item:last-child button",
+    );
     fireEvent.click(deleteBtn);
-    
+
     expect(onDeleteGroupClick).toHaveBeenCalledWith(0, "Budget Group");
   });
 });

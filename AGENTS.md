@@ -1,6 +1,6 @@
 # Agent Instructions — Every Pound (£) Zero-Based Budget App
 
-This file provides context and rules for AI coding agents working in this repository. Read `CONTEXT.md` for domain terminology and `docs/adr/` for architectural decisions before making changes.
+This file provides context and rules for AI coding agents working in this repository. Before making any changes, read `CONTEXT.md` for domain terminology, `CONTRIBUTING.md` for git branch and PR workflow rules, and `docs/adr/` for architectural decisions.
 
 ---
 
@@ -66,6 +66,7 @@ New months are initialised from `budget_app_defaults` (the saved Budget Template
 ## Data Shapes
 
 ### Budget Item
+
 ```js
 {
   id: string,        // crypto-generated 32-char hex UUID
@@ -76,6 +77,7 @@ New months are initialised from `budget_app_defaults` (the saved Budget Template
 ```
 
 ### Transaction
+
 ```js
 {
   id: string,         // crypto-generated 32-char hex UUID
@@ -87,6 +89,7 @@ New months are initialised from `budget_app_defaults` (the saved Budget Template
 ```
 
 ### Budget Group
+
 ```js
 {
   name: string,                    // e.g. "Housing"
@@ -98,6 +101,7 @@ New months are initialised from `budget_app_defaults` (the saved Budget Template
 > **Note:** The `columns` array is UI metadata baked into domain state. This is a known design smell tracked in `FUTURE_IMPROVEMENTS.md`.
 
 ### Reducer State (full shape)
+
 ```js
 {
   startingSalary: number,       // e.g. 5000.00
@@ -175,6 +179,7 @@ Budget (container, owns reducer)
 ## Commit Messages
 
 When committing changes, always use the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) format:
+
 - Use `feat: ...` for features.
 - Use `fix: ...` for bug fixes.
 - Use `docs: ...` for documentation updates.
@@ -185,17 +190,17 @@ When committing changes, always use the [Conventional Commits](https://www.conve
 
 ---
 
-
 ## Key Files for Reference
 
-| Purpose | File |
-|---------|------|
-| Domain glossary | `CONTEXT.md` |
-| Architectural decisions | `docs/adr/*.md` |
-| Future work tracker | `FUTURE_IMPROVEMENTS.md` |
-| Budget state reducer | `src/utils/budgetStore/reducer.js` |
-| Derived value helpers | `src/utils/budgetStore/helpers.js` |
-| Storage abstraction | `src/utils/budgetStore/adapters.js` |
-| Budget cycle calculator | `src/utils/budgetCycle/budgetCycle.js` |
-| Main dashboard container | `src/Container/Budget/Budget.jsx` |
-| Setup wizard | `src/Settings/Settings.jsx` |
+| Purpose                   | File                                   |
+| ------------------------- | -------------------------------------- |
+| Domain glossary           | `CONTEXT.md`                           |
+| Git workflow & guidelines | `CONTRIBUTING.md`                      |
+| Architectural decisions   | `docs/adr/*.md`                        |
+| Future work tracker       | `FUTURE_IMPROVEMENTS.md`               |
+| Budget state reducer      | `src/utils/budgetStore/reducer.js`     |
+| Derived value helpers     | `src/utils/budgetStore/helpers.js`     |
+| Storage abstraction       | `src/utils/budgetStore/adapters.js`    |
+| Budget cycle calculator   | `src/utils/budgetCycle/budgetCycle.js` |
+| Main dashboard container  | `src/Container/Budget/Budget.jsx`      |
+| Setup wizard              | `src/Settings/Settings.jsx`            |

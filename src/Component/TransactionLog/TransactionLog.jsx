@@ -79,7 +79,7 @@ const TransactionLog = ({
   // Handle single row selection
   const handleSelectRow = (txId) => {
     setSelectedTxIds((prev) =>
-      prev.includes(txId) ? prev.filter((id) => id !== txId) : [...prev, txId]
+      prev.includes(txId) ? prev.filter((id) => id !== txId) : [...prev, txId],
     );
   };
 
@@ -90,7 +90,9 @@ const TransactionLog = ({
 
     if (allSelected) {
       // Uncheck all filtered
-      setSelectedTxIds((prev) => prev.filter((id) => !filteredIds.includes(id)));
+      setSelectedTxIds((prev) =>
+        prev.filter((id) => !filteredIds.includes(id)),
+      );
     } else {
       // Check all filtered (keeping any other checked items not in the current filter)
       setSelectedTxIds((prev) => {
@@ -138,7 +140,8 @@ const TransactionLog = ({
         <div className="tx-log-title-area">
           <span className="tx-log-title">Transactions Log</span>
           <span className="tx-log-badge">
-            {transactions.length} transaction{transactions.length !== 1 ? "s" : ""}
+            {transactions.length} transaction
+            {transactions.length !== 1 ? "s" : ""}
           </span>
         </div>
         <div className="tx-log-toggle-icon">
@@ -151,16 +154,25 @@ const TransactionLog = ({
         <div className="tx-log-content">
           {transactions.length === 0 ? (
             <div className="tx-log-empty">
-              <FontAwesomeIcon icon={faReceipt} className="empty-icon" size="2x" />
+              <FontAwesomeIcon
+                icon={faReceipt}
+                className="empty-icon"
+                size="2x"
+              />
               <p>No transactions recorded for this cycle.</p>
-              <p className="subtext">Add transactions to budget items using their action menus.</p>
+              <p className="subtext">
+                Add transactions to budget items using their action menus.
+              </p>
             </div>
           ) : (
             <>
               {/* Filters Panel */}
               <div className="tx-log-filters">
                 <div className="search-input-wrapper">
-                  <FontAwesomeIcon icon={faMagnifyingGlass} className="search-icon" />
+                  <FontAwesomeIcon
+                    icon={faMagnifyingGlass}
+                    className="search-icon"
+                  />
                   <input
                     type="text"
                     placeholder="Search payee..."
@@ -201,14 +213,18 @@ const TransactionLog = ({
               {selectedTxIds.length > 0 && (
                 <div className="tx-log-bulk-actions">
                   <span className="selected-count">
-                    {selectedTxIds.length} item{selectedTxIds.length !== 1 ? "s" : ""} selected
+                    {selectedTxIds.length} item
+                    {selectedTxIds.length !== 1 ? "s" : ""} selected
                   </span>
                   <button
                     type="button"
                     onClick={handleBatchDelete}
                     className="btn-bulk-delete"
                   >
-                    <FontAwesomeIcon icon={faTrashCan} className="btn-icon-spacing" />
+                    <FontAwesomeIcon
+                      icon={faTrashCan}
+                      className="btn-icon-spacing"
+                    />
                     Delete Selected
                   </button>
                 </div>
@@ -248,12 +264,15 @@ const TransactionLog = ({
                     <tbody>
                       {filteredTransactions.map((tx) => {
                         const { itemName, groupName } = getBudgetItemDetails(
-                          tx.budgetItemId
+                          tx.budgetItemId,
                         );
                         const isChecked = selectedTxIds.includes(tx.id);
 
                         return (
-                          <tr key={tx.id} className={isChecked ? "row-selected" : ""}>
+                          <tr
+                            key={tx.id}
+                            className={isChecked ? "row-selected" : ""}
+                          >
                             <td className="col-checkbox">
                               <input
                                 type="checkbox"
@@ -268,15 +287,21 @@ const TransactionLog = ({
                             </td>
                             <td className="col-category">
                               <span className="category-badge">
-                                <span className="group-prefix">{groupName}:</span> {itemName}
+                                <span className="group-prefix">
+                                  {groupName}:
+                                </span>{" "}
+                                {itemName}
                               </span>
                             </td>
                             <td className="col-date">
                               <span className="tx-date-text">
-                                {new Date(tx.date).toLocaleDateString(undefined, {
-                                  month: "short",
-                                  day: "numeric",
-                                })}
+                                {new Date(tx.date).toLocaleDateString(
+                                  undefined,
+                                  {
+                                    month: "short",
+                                    day: "numeric",
+                                  },
+                                )}
                               </span>
                             </td>
                             <td className="col-amount">
@@ -291,7 +316,7 @@ const TransactionLog = ({
                                 onClick={() => {
                                   if (
                                     window.confirm(
-                                      `Delete transaction "${tx.name}" for £${tx.amount.toFixed(2)}?`
+                                      `Delete transaction "${tx.name}" for £${tx.amount.toFixed(2)}?`,
                                     )
                                   ) {
                                     onDeleteTransaction(tx.id);
@@ -325,7 +350,7 @@ TransactionLog.propTypes = {
       amount: PropTypes.number.isRequired,
       budgetItemId: PropTypes.string.isRequired,
       date: PropTypes.string.isRequired,
-    })
+    }),
   ).isRequired,
   budgetGroups: PropTypes.arrayOf(
     PropTypes.shape({
@@ -335,9 +360,9 @@ TransactionLog.propTypes = {
           id: PropTypes.string.isRequired,
           name: PropTypes.string.isRequired,
           assigned: PropTypes.number.isRequired,
-        })
+        }),
       ).isRequired,
-    })
+    }),
   ).isRequired,
   onDeleteTransaction: PropTypes.func.isRequired,
   onDeleteMultipleTransactions: PropTypes.func.isRequired,

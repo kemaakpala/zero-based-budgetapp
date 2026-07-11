@@ -43,7 +43,10 @@ const BudgetGroupHeader = ({
         </Button>
       </div>
       {columns.map(({ name }) => (
-        <div key={name} className="group-header-column group-header-field-title">
+        <div
+          key={name}
+          className="group-header-column group-header-field-title"
+        >
           <h3 className="size1">{name}</h3>
         </div>
       ))}

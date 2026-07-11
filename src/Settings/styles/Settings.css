@@ -111,8 +111,14 @@
 }
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .step-icon-header {
@@ -128,9 +134,18 @@
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.1); opacity: 0.8; }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .wizard-step h2 {
@@ -591,7 +606,9 @@
   background-color: #ffffff;
   color: #212529;
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
   width: 100%;
 }
 

@@ -1,14 +1,14 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import 'normalize.css';
-import './index.css';
-import { RouterProvider, Navigate } from 'react-router-dom';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import ErrorPage from './Error/Error';
-import Settings from './Settings/Settings';
-import Budget from './Container/Budget/Budget';
-import browserRouter from './Routes/router';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "normalize.css";
+import "./index.css";
+import { RouterProvider, Navigate } from "react-router-dom";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import ErrorPage from "./Error/Error";
+import Settings from "./Settings/Settings";
+import Budget from "./Container/Budget/Budget";
+import browserRouter from "./Routes/router";
 
 const getCurrentMonthYearString = () => {
   const date = new Date();
@@ -24,24 +24,24 @@ const router = browserRouter({
   children: [
     {
       index: true,
-      element: <Navigate to={`/${getCurrentMonthYearString()}`} replace />
+      element: <Navigate to={`/${getCurrentMonthYearString()}`} replace />,
     },
     {
       path: "settings",
-      element: <Settings />
+      element: <Settings />,
     },
     {
       path: "/:month",
-      element: <Budget />
-    }
-  ]
-})
+      element: <Budget />,
+    },
+  ],
+});
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <RouterProvider router={router} />
-  </React.StrictMode>
+  </React.StrictMode>,
 );
 
 // If you want to start measuring performance in your app, pass a function

@@ -2,9 +2,7 @@ import Button from "../Button/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
-const BudgetGroupActions = ({
-  onAddItemClick,
-}) => {
+const BudgetGroupActions = ({ onAddItemClick }) => {
   return (
     <div className="group-actions">
       <Button

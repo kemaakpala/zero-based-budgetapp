@@ -50,7 +50,8 @@
       "budgetID": "03_2023",
       "categoryID": ["03_2023_01", "03_2023_02", "03_2023_03", "03_2023_04"],
       "current": true
-    },{
+    },
+    {
       "budgetID": "04_2023",
       "categoryID": [],
       "current": false

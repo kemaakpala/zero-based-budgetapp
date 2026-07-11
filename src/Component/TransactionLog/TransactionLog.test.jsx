@@ -57,13 +57,15 @@ describe("TransactionLog", () => {
         budgetGroups={mockBudgetGroups}
         onDeleteTransaction={mockOnDeleteTransaction}
         onDeleteMultipleTransactions={mockOnDeleteMultipleTransactions}
-      />
+      />,
     );
 
     expect(screen.getByText("Transactions Log")).toBeInTheDocument();
     expect(screen.getByText("2 transactions")).toBeInTheDocument();
     // Content should not be visible (it's conditionally rendered on isOpen)
-    expect(screen.queryByPlaceholderText("Search payee...")).not.toBeInTheDocument();
+    expect(
+      screen.queryByPlaceholderText("Search payee..."),
+    ).not.toBeInTheDocument();
   });
 
   it("opens when clicking the header and renders transactions", () => {
@@ -73,10 +75,12 @@ describe("TransactionLog", () => {
         budgetGroups={mockBudgetGroups}
         onDeleteTransaction={mockOnDeleteTransaction}
         onDeleteMultipleTransactions={mockOnDeleteMultipleTransactions}
-      />
+      />,
     );
 
-    const headerButton = screen.getByRole("button", { name: /Transactions Log/i });
+    const headerButton = screen.getByRole("button", {
+      name: /Transactions Log/i,
+    });
     fireEvent.click(headerButton);
 
     expect(screen.getByPlaceholderText("Search payee...")).toBeInTheDocument();
@@ -101,7 +105,7 @@ describe("TransactionLog", () => {
         budgetGroups={mockBudgetGroups}
         onDeleteTransaction={mockOnDeleteTransaction}
         onDeleteMultipleTransactions={mockOnDeleteMultipleTransactions}
-      />
+      />,
     );
 
     // Open
@@ -121,7 +125,7 @@ describe("TransactionLog", () => {
         budgetGroups={mockBudgetGroups}
         onDeleteTransaction={mockOnDeleteTransaction}
         onDeleteMultipleTransactions={mockOnDeleteMultipleTransactions}
-      />
+      />,
     );
 
     // Open
@@ -135,7 +139,9 @@ describe("TransactionLog", () => {
   });
 
   it("calls onDeleteTransaction on row delete click after confirmation", () => {
-    const confirmSpy = vi.spyOn(window, "confirm").mockImplementation(() => true);
+    const confirmSpy = vi
+      .spyOn(window, "confirm")
+      .mockImplementation(() => true);
 
     render(
       <TransactionLog
@@ -143,7 +149,7 @@ describe("TransactionLog", () => {
         budgetGroups={mockBudgetGroups}
         onDeleteTransaction={mockOnDeleteTransaction}
         onDeleteMultipleTransactions={mockOnDeleteMultipleTransactions}
-      />
+      />,
     );
 
     // Open
@@ -152,14 +158,18 @@ describe("TransactionLog", () => {
     const deleteButtons = screen.getAllByTitle("Delete transaction");
     fireEvent.click(deleteButtons[0]); // delete Tesco
 
-    expect(confirmSpy).toHaveBeenCalledWith('Delete transaction "Tesco Groceries" for £45.50?');
+    expect(confirmSpy).toHaveBeenCalledWith(
+      'Delete transaction "Tesco Groceries" for £45.50?',
+    );
     expect(mockOnDeleteTransaction).toHaveBeenCalledWith("tx1");
 
     confirmSpy.mockRestore();
   });
 
   it("supports row selection and batch delete", () => {
-    const confirmSpy = vi.spyOn(window, "confirm").mockImplementation(() => true);
+    const confirmSpy = vi
+      .spyOn(window, "confirm")
+      .mockImplementation(() => true);
 
     render(
       <TransactionLog
@@ -167,7 +177,7 @@ describe("TransactionLog", () => {
         budgetGroups={mockBudgetGroups}
         onDeleteTransaction={mockOnDeleteTransaction}
         onDeleteMultipleTransactions={mockOnDeleteMultipleTransactions}
-      />
+      />,
     );
 
     // Open
@@ -189,11 +199,18 @@ describe("TransactionLog", () => {
     expect(screen.getByText("2 items selected")).toBeInTheDocument();
 
     // Perform batch delete
-    const batchDeleteBtn = screen.getByRole("button", { name: /Delete Selected/i });
+    const batchDeleteBtn = screen.getByRole("button", {
+      name: /Delete Selected/i,
+    });
     fireEvent.click(batchDeleteBtn);
 
-    expect(confirmSpy).toHaveBeenCalledWith("Are you sure you want to delete 2 selected transaction(s)?");
-    expect(mockOnDeleteMultipleTransactions).toHaveBeenCalledWith(["tx1", "tx2"]);
+    expect(confirmSpy).toHaveBeenCalledWith(
+      "Are you sure you want to delete 2 selected transaction(s)?",
+    );
+    expect(mockOnDeleteMultipleTransactions).toHaveBeenCalledWith([
+      "tx1",
+      "tx2",
+    ]);
 
     confirmSpy.mockRestore();
   });

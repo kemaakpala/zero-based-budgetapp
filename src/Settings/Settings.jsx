@@ -24,7 +24,9 @@ export default function Settings() {
         const parsed = JSON.parse(savedDefaults);
         return {
           startingSalary: parsed.startingSalary || 5000.0,
-          budgetGroups: parsed.budgetGroups || JSON.parse(JSON.stringify(DEFAULT_BUDGET_GROUPS)),
+          budgetGroups:
+            parsed.budgetGroups ||
+            JSON.parse(JSON.stringify(DEFAULT_BUDGET_GROUPS)),
           paydayDay: parsed.paydayDay ?? 20,
           weekendBehavior: parsed.weekendBehavior ?? "preceding-friday",
         };
@@ -43,10 +45,14 @@ export default function Settings() {
   const initialData = loadInitialSettings();
 
   const [currentStep, setCurrentStep] = useState(1);
-  const [startingSalary, setStartingSalary] = useState(initialData.startingSalary);
+  const [startingSalary, setStartingSalary] = useState(
+    initialData.startingSalary,
+  );
   const [budgetGroups, setBudgetGroups] = useState(initialData.budgetGroups);
   const [paydayDay, setPaydayDay] = useState(initialData.paydayDay);
-  const [weekendBehavior, setWeekendBehavior] = useState(initialData.weekendBehavior);
+  const [weekendBehavior, setWeekendBehavior] = useState(
+    initialData.weekendBehavior,
+  );
   const [newGroupName, setNewGroupName] = useState("");
 
   // Auto-focus logic or helpers
@@ -127,42 +133,74 @@ export default function Settings() {
       return `${month}-${year}`;
     };
     const currentMonthKey = getCurrentMonthYearString();
-    const existingMonthData = localStorage.getItem(`budget_app_data_${currentMonthKey}`);
-    
+    const existingMonthData = localStorage.getItem(
+      `budget_app_data_${currentMonthKey}`,
+    );
+
     // Always write or prompt? Let's write to current month so user starts with their new setup
     const newMonthData = {
       startingSalary,
       budgetGroups: JSON.parse(JSON.stringify(budgetGroups)),
-      transactions: existingMonthData ? JSON.parse(existingMonthData).transactions || [] : [],
+      transactions: existingMonthData
+        ? JSON.parse(existingMonthData).transactions || []
+        : [],
       paydayDay,
       weekendBehavior,
     };
-    localStorage.setItem(`budget_app_data_${currentMonthKey}`, JSON.stringify(newMonthData));
+    localStorage.setItem(
+      `budget_app_data_${currentMonthKey}`,
+      JSON.stringify(newMonthData),
+    );
 
     // Redirect to current month's budget page
     navigate(`/${currentMonthKey}`);
   };
 
   const totalGroups = budgetGroups.length;
-  const totalItems = budgetGroups.reduce((acc, g) => acc + g.budgetGroupItems.length, 0);
+  const totalItems = budgetGroups.reduce(
+    (acc, g) => acc + g.budgetGroupItems.length,
+    0,
+  );
 
   return (
     <div className="setup-wizard-container">
       {/* Step Tracker */}
       <div className="stepper">
-        <div className={`step-node ${currentStep >= 1 ? "active" : ""} ${currentStep > 1 ? "completed" : ""}`}>
-          <span className="step-number">{currentStep > 1 ? <FontAwesomeIcon icon={faCheck} size="xs" /> : "1"}</span>
+        <div
+          className={`step-node ${currentStep >= 1 ? "active" : ""} ${currentStep > 1 ? "completed" : ""}`}
+        >
+          <span className="step-number">
+            {currentStep > 1 ? (
+              <FontAwesomeIcon icon={faCheck} size="xs" />
+            ) : (
+              "1"
+            )}
+          </span>
           <span className="step-label">Salary</span>
         </div>
         <div className="step-connector">
-          <div className="connector-progress" style={{ width: currentStep > 1 ? "100%" : "0%" }}></div>
+          <div
+            className="connector-progress"
+            style={{ width: currentStep > 1 ? "100%" : "0%" }}
+          ></div>
         </div>
-        <div className={`step-node ${currentStep >= 2 ? "active" : ""} ${currentStep > 2 ? "completed" : ""}`}>
-          <span className="step-number">{currentStep > 2 ? <FontAwesomeIcon icon={faCheck} size="xs" /> : "2"}</span>
+        <div
+          className={`step-node ${currentStep >= 2 ? "active" : ""} ${currentStep > 2 ? "completed" : ""}`}
+        >
+          <span className="step-number">
+            {currentStep > 2 ? (
+              <FontAwesomeIcon icon={faCheck} size="xs" />
+            ) : (
+              "2"
+            )}
+          </span>
           <span className="step-label">Categories</span>
         </div>
         <div className="step-connector">
-          <div className="connector-progress" style={{ width: currentStep > 2 ? "100%" : "0%" }}></div>
+          <div
+            className="connector-progress"
+            style={{ width: currentStep > 2 ? "100%" : "0%" }}
+          ></div>
         </div>
         <div className={`step-node ${currentStep === 3 ? "active" : ""}`}>
           <span className="step-number">3</span>
@@ -175,11 +213,16 @@ export default function Settings() {
         {currentStep === 1 && (
           <div className="wizard-step step-salary">
             <div className="step-icon-header">
-              <FontAwesomeIcon icon={faWandMagicSparkles} size="2x" className="wizard-icon" />
+              <FontAwesomeIcon
+                icon={faWandMagicSparkles}
+                size="2x"
+                className="wizard-icon"
+              />
             </div>
             <h2>Set Your Starting Monthly Income</h2>
             <p className="wizard-description">
-              In a zero-based budget, you assign every single pound of your salary a job. Let's start with how much money you earn each month.
+              In a zero-based budget, you assign every single pound of your
+              salary a job. Let's start with how much money you earn each month.
             </p>
 
             <div className="salary-input-container">
@@ -189,7 +232,9 @@ export default function Settings() {
                 step="0.01"
                 min="0"
                 value={startingSalary}
-                onChange={(e) => setStartingSalary(parseFloat(e.target.value) || 0)}
+                onChange={(e) =>
+                  setStartingSalary(parseFloat(e.target.value) || 0)
+                }
                 className="wizard-salary-input"
                 placeholder="0.00"
               />
@@ -212,13 +257,14 @@ export default function Settings() {
             </div>
 
             <hr className="wizard-step-divider" />
-            
+
             <div className="payday-settings-container">
               <h3>Budget Cycle & Payday Settings</h3>
               <p className="wizard-description">
-                Your budget cycle starts on your payday and ends the day before your next payday.
+                Your budget cycle starts on your payday and ends the day before
+                your next payday.
               </p>
-              
+
               <div className="payday-fields-grid">
                 <div className="form-group">
                   <label htmlFor="payday-day-select">Monthly Payday Day</label>
@@ -231,22 +277,34 @@ export default function Settings() {
                     {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
                       <option key={day} value={day}>
                         {day}
-                        {day === 1 || day === 21 || day === 31 ? "st" : day === 2 || day === 22 ? "nd" : day === 3 || day === 23 ? "rd" : "th"}
+                        {day === 1 || day === 21 || day === 31
+                          ? "st"
+                          : day === 2 || day === 22
+                            ? "nd"
+                            : day === 3 || day === 23
+                              ? "rd"
+                              : "th"}
                       </option>
                     ))}
                   </select>
                 </div>
-                
+
                 <div className="form-group">
-                  <label htmlFor="payday-weekend-select">Weekend Payday Behavior</label>
+                  <label htmlFor="payday-weekend-select">
+                    Weekend Payday Behavior
+                  </label>
                   <select
                     id="payday-weekend-select"
                     value={weekendBehavior}
                     onChange={(e) => setWeekendBehavior(e.target.value)}
                     className="wizard-select"
                   >
-                    <option value="preceding-friday">Preceding Friday (Early)</option>
-                    <option value="following-monday">Following Monday (Late)</option>
+                    <option value="preceding-friday">
+                      Preceding Friday (Early)
+                    </option>
+                    <option value="following-monday">
+                      Following Monday (Late)
+                    </option>
                     <option value="exact">Exact Day (No Shift)</option>
                   </select>
                 </div>
@@ -259,7 +317,8 @@ export default function Settings() {
           <div className="wizard-step step-categories">
             <h2>Customize Budget Categories</h2>
             <p className="wizard-description">
-              Organize your money into budget groups and specific items. We pre-populated this with defaults, but feel free to customize.
+              Organize your money into budget groups and specific items. We
+              pre-populated this with defaults, but feel free to customize.
             </p>
 
             {/* Add Group Form */}
@@ -281,7 +340,10 @@ export default function Settings() {
             <div className="groups-list-container">
               {budgetGroups.length === 0 ? (
                 <div className="empty-groups-state">
-                  <p>No budget groups configured. Please add one above to continue.</p>
+                  <p>
+                    No budget groups configured. Please add one above to
+                    continue.
+                  </p>
                 </div>
               ) : (
                 budgetGroups.map((group, groupIndex) => (
@@ -290,7 +352,9 @@ export default function Settings() {
                       <input
                         type="text"
                         value={group.name}
-                        onChange={(e) => handleRenameGroup(groupIndex, e.target.value)}
+                        onChange={(e) =>
+                          handleRenameGroup(groupIndex, e.target.value)
+                        }
                         className="group-name-edit"
                         title="Click to rename group"
                       />
@@ -312,13 +376,21 @@ export default function Settings() {
                             <input
                               type="text"
                               value={itemName}
-                              onChange={(e) => handleRenameItem(groupIndex, itemIndex, e.target.value)}
+                              onChange={(e) =>
+                                handleRenameItem(
+                                  groupIndex,
+                                  itemIndex,
+                                  e.target.value,
+                                )
+                              }
                               className="item-name-edit"
                               title="Click to rename item"
                             />
                             <button
                               type="button"
-                              onClick={() => handleDeleteItem(groupIndex, itemIndex)}
+                              onClick={() =>
+                                handleDeleteItem(groupIndex, itemIndex)
+                              }
                               className="btn-delete-item"
                               title="Delete Item"
                             >
@@ -327,7 +399,7 @@ export default function Settings() {
                           </div>
                         );
                       })}
-                      
+
                       {/* Inline Add Item Trigger */}
                       <button
                         type="button"
@@ -337,7 +409,11 @@ export default function Settings() {
                         }}
                         className="btn-add-item-trigger"
                       >
-                        <FontAwesomeIcon icon={faPlus} size="xs" className="spacing-right" />
+                        <FontAwesomeIcon
+                          icon={faPlus}
+                          size="xs"
+                          className="spacing-right"
+                        />
                         Add Item
                       </button>
                     </div>
@@ -351,17 +427,24 @@ export default function Settings() {
         {currentStep === 3 && (
           <div className="wizard-step step-confirm">
             <div className="step-icon-header">
-              <FontAwesomeIcon icon={faGear} size="2x" className="wizard-icon gear-pulse" />
+              <FontAwesomeIcon
+                icon={faGear}
+                size="2x"
+                className="wizard-icon gear-pulse"
+              />
             </div>
             <h2>Confirm Your Budget Setup</h2>
             <p className="wizard-description">
-              Review your zero-based budgeting plan. You can change these templates at any time in the settings page.
+              Review your zero-based budgeting plan. You can change these
+              templates at any time in the settings page.
             </p>
 
             <div className="summary-card">
               <div className="summary-row">
                 <span className="summary-label">Monthly Starting Income:</span>
-                <span className="summary-value">£{startingSalary.toFixed(2)}</span>
+                <span className="summary-value">
+                  £{startingSalary.toFixed(2)}
+                </span>
               </div>
               <div className="summary-row">
                 <span className="summary-label">Total Budget Groups:</span>
@@ -375,13 +458,24 @@ export default function Settings() {
                 <span className="summary-label">Payday Date:</span>
                 <span className="summary-value">
                   {paydayDay}
-                  {paydayDay === 1 || paydayDay === 21 || paydayDay === 31 ? "st" : paydayDay === 2 || paydayDay === 22 ? "nd" : paydayDay === 3 || paydayDay === 23 ? "rd" : "th"} of the month
+                  {paydayDay === 1 || paydayDay === 21 || paydayDay === 31
+                    ? "st"
+                    : paydayDay === 2 || paydayDay === 22
+                      ? "nd"
+                      : paydayDay === 3 || paydayDay === 23
+                        ? "rd"
+                        : "th"}{" "}
+                  of the month
                 </span>
               </div>
               <div className="summary-row">
                 <span className="summary-label">Weekend Strategy:</span>
                 <span className="summary-value">
-                  {weekendBehavior === "preceding-friday" ? "Preceding Friday" : weekendBehavior === "following-monday" ? "Following Monday" : "Exact Day"}
+                  {weekendBehavior === "preceding-friday"
+                    ? "Preceding Friday"
+                    : weekendBehavior === "following-monday"
+                      ? "Following Monday"
+                      : "Exact Day"}
                 </span>
               </div>
             </div>
@@ -390,13 +484,17 @@ export default function Settings() {
               <h3>Zero-Based Budgeting Checklist</h3>
               <ul>
                 <li>
-                  <span className="check-bullet">✓</span> Give every pound a job by allocating all £{startingSalary.toFixed(2)} to your categories.
+                  <span className="check-bullet">✓</span> Give every pound a job
+                  by allocating all £{startingSalary.toFixed(2)} to your
+                  categories.
                 </li>
                 <li>
-                  <span className="check-bullet">✓</span> Keep your "Left to Assign" balance at exactly £0.00.
+                  <span className="check-bullet">✓</span> Keep your "Left to
+                  Assign" balance at exactly £0.00.
                 </li>
                 <li>
-                  <span className="check-bullet">✓</span> Track transactions on the dashboard to see your Remaining funds update in real-time.
+                  <span className="check-bullet">✓</span> Track transactions on
+                  the dashboard to see your Remaining funds update in real-time.
                 </li>
               </ul>
             </div>

@@ -43,7 +43,7 @@ const BudgetGroupItem = ({
 
   return budgetGroupItems.map((item, itemIndex) => {
     const { id, name, assigned, spent = 0, status } = item;
-    
+
     // Calculate progress for this budget item
     const progress = assigned > 0 ? (spent / assigned) * 100 : 0;
     const isOverspent = spent > assigned;
@@ -66,9 +66,7 @@ const BudgetGroupItem = ({
               name={`${budgetGroupName}_Name_text_${id}`}
               defaultVal={name}
               placeholder="Item Name"
-              onChange={(e) =>
-                onChangeHandler(id, "name", e.target.value)
-              }
+              onChange={(e) => onChangeHandler(id, "name", e.target.value)}
               onBlur={(e) => {
                 onBlurHandler(id, "name", e.target.value);
               }}
@@ -90,9 +88,7 @@ const BudgetGroupItem = ({
               name={`${budgetGroupName}_Assigned_text_${id}`}
               defaultVal={assigned.toString()}
               placeholder="0.00"
-              onChange={(e) =>
-                onChangeHandler(id, "assigned", e.target.value)
-              }
+              onChange={(e) => onChangeHandler(id, "assigned", e.target.value)}
               onBlur={(e) => {
                 onBlurHandler(id, "assigned", e.target.value);
               }}
@@ -103,17 +99,19 @@ const BudgetGroupItem = ({
           {status?.length > 0 &&
             status.map(({ label, value, type }) => {
               const grouptItemID = `${budgetGroupName}_${removeSpace(
-                label
+                label,
               )}_${type}_${id}`;
               const numericValue = parseFloat(value) || 0;
               const isNegative = numericValue < 0;
-              
+
               return (
                 <div
                   className="group-item-column group-item-status"
                   key={grouptItemID}
                 >
-                  <p className={`group-item-status__text ${isNegative ? "group-item-status__text--negative" : ""}`}>
+                  <p
+                    className={`group-item-status__text ${isNegative ? "group-item-status__text--negative" : ""}`}
+                  >
                     £{value}
                   </p>
                 </div>
@@ -146,7 +144,7 @@ const BudgetGroupItem = ({
                     action: () => {
                       closePopOver(id);
                       onAddTransactionClick(groupIndex, itemIndex, item);
-                    }
+                    },
                   },
                   {
                     icon: faList,
@@ -155,7 +153,7 @@ const BudgetGroupItem = ({
                     action: () => {
                       closePopOver(id);
                       onViewTransactionsClick(groupIndex, itemIndex, item);
-                    }
+                    },
                   },
                   {
                     icon: faTrashCan,
@@ -164,7 +162,7 @@ const BudgetGroupItem = ({
                     action: () => {
                       closePopOver(id);
                       onDeleteItemClick(id);
-                    }
+                    },
                   },
                 ]}
               />
@@ -190,10 +188,10 @@ BudgetGroupItem.propTypes = {
           label: PropTypes.string,
           value: PropTypes.string,
           type: PropTypes.string,
-        })
+        }),
       ),
       type: PropTypes.string,
-    })
+    }),
   ).isRequired,
   onChangeHandler: PropTypes.func.isRequired,
   onBlurHandler: PropTypes.func.isRequired,

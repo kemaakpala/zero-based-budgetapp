@@ -1,4 +1,3 @@
-
 import defaultCalculator from "./budgetCycle";
 
 export const generateUniqueId = () =>
@@ -6,7 +5,7 @@ export const generateUniqueId = () =>
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
 
-export const removeSpace = (str) => str.replace(/\s+/g, '')
+export const removeSpace = (str) => str.replace(/\s+/g, "");
 
 export const formatBudgetItemAmount = (value) => {
   const num = parseFloat(value);
@@ -14,7 +13,7 @@ export const formatBudgetItemAmount = (value) => {
     return parseFloat(0).toFixed(2);
   }
   return num.toFixed(2);
-}
+};
 
 export const getFullYear = () => {
   const date = new Date();
@@ -40,8 +39,7 @@ export const getBudgetCycleRange = (year, monthIndex) =>
 /**
  * Formats a Date object as Month Day + Suffix, Year (e.g. June 19th, 2026).
  */
-export const formatDate = (date) =>
-  defaultCalculator.formatDate(date);
+export const formatDate = (date) => defaultCalculator.formatDate(date);
 
 export const DEFAULT_BUDGET_GROUPS = [
   {
@@ -52,21 +50,21 @@ export const DEFAULT_BUDGET_GROUPS = [
         id: "h1",
         name: "Rent / Mortgage",
         assigned: 0,
-        type: "expense"
+        type: "expense",
       },
       {
         id: "h2",
         name: "Electricity",
         assigned: 0,
-        type: "expense"
+        type: "expense",
       },
       {
         id: "h3",
         name: "Water",
         assigned: 0,
-        type: "expense"
-      }
-    ]
+        type: "expense",
+      },
+    ],
   },
   {
     name: "Food",
@@ -76,15 +74,15 @@ export const DEFAULT_BUDGET_GROUPS = [
         id: "f1",
         name: "Groceries",
         assigned: 0,
-        type: "expense"
+        type: "expense",
       },
       {
         id: "f2",
         name: "Dining Out",
         assigned: 0,
-        type: "expense"
-      }
-    ]
+        type: "expense",
+      },
+    ],
   },
   {
     name: "Giving",
@@ -94,15 +92,15 @@ export const DEFAULT_BUDGET_GROUPS = [
         id: "g1",
         name: "Charity",
         assigned: 0,
-        type: "expense"
+        type: "expense",
       },
       {
         id: "g2",
         name: "Offering",
         assigned: 0,
-        type: "expense"
-      }
-    ]
+        type: "expense",
+      },
+    ],
   },
   {
     name: "Transportation",
@@ -112,14 +110,14 @@ export const DEFAULT_BUDGET_GROUPS = [
         id: "t1",
         name: "Fuel",
         assigned: 0,
-        type: "expense"
+        type: "expense",
       },
       {
         id: "t2",
         name: "Public Transit",
         assigned: 0,
-        type: "expense"
-      }
-    ]
-  }
+        type: "expense",
+      },
+    ],
+  },
 ];

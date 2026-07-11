@@ -47,7 +47,11 @@ export const saveBudgetData = (monthKey, state, storageAdapter) => {
   storageAdapter.set(`budget_app_data_${monthKey}`, JSON.stringify(state));
 };
 
-export const getEnrichedGroups = (budgetGroups = [], transactions = [], viewMode = "remaining") => {
+export const getEnrichedGroups = (
+  budgetGroups = [],
+  transactions = [],
+  viewMode = "remaining",
+) => {
   return budgetGroups.map((group) => ({
     ...group,
     columns: [
@@ -56,7 +60,7 @@ export const getEnrichedGroups = (budgetGroups = [], transactions = [], viewMode
     ],
     budgetGroupItems: group.budgetGroupItems.map((item) => {
       const itemTransactions = transactions.filter(
-        (tx) => tx.budgetItemId === item.id
+        (tx) => tx.budgetItemId === item.id,
       );
       const spent = itemTransactions.reduce((sum, tx) => sum + tx.amount, 0);
 

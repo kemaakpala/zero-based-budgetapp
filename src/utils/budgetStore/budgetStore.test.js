@@ -40,7 +40,11 @@ describe("BudgetCycleStore Modules", () => {
     };
 
     it("handles LOAD_CYCLE", () => {
-      const newState = { startingSalary: 4000.0, budgetGroups: [], transactions: [] };
+      const newState = {
+        startingSalary: 4000.0,
+        budgetGroups: [],
+        transactions: [],
+      };
       const result = budgetReducer(initialState, {
         type: "LOAD_CYCLE",
         payload: newState,
@@ -152,7 +156,9 @@ describe("BudgetCycleStore Modules", () => {
     it("handles DELETE_TRANSACTION", () => {
       const stateWithTx = {
         ...initialState,
-        transactions: [{ id: "tx1", name: "Landlord", amount: 1000, budgetItemId: "h1" }],
+        transactions: [
+          { id: "tx1", name: "Landlord", amount: 1000, budgetItemId: "h1" },
+        ],
       };
       const result = budgetReducer(stateWithTx, {
         type: "DELETE_TRANSACTION",
@@ -206,9 +212,13 @@ describe("BudgetCycleStore Modules", () => {
 
     it("saves budget data", () => {
       const adapter = new InMemoryStorageAdapter();
-      const state = { startingSalary: 6000.0, budgetGroups: [], transactions: [] };
+      const state = {
+        startingSalary: 6000.0,
+        budgetGroups: [],
+        transactions: [],
+      };
       saveBudgetData("June-2026", state, adapter);
-      
+
       const loaded = JSON.parse(adapter.get("budget_app_data_June-2026"));
       expect(loaded.startingSalary).toBe(6000.0);
     });
@@ -228,10 +238,16 @@ describe("BudgetCycleStore Modules", () => {
           ],
         },
       ];
-      const transactions = [{ id: "tx1", name: "Landlord", amount: 800, budgetItemId: "h1" }];
-      
+      const transactions = [
+        { id: "tx1", name: "Landlord", amount: 800, budgetItemId: "h1" },
+      ];
+
       // remaining view
-      const enrichedRemaining = getEnrichedGroups(budgetGroups, transactions, "remaining");
+      const enrichedRemaining = getEnrichedGroups(
+        budgetGroups,
+        transactions,
+        "remaining",
+      );
       const itemRemaining = enrichedRemaining[0].budgetGroupItems[0];
       expect(itemRemaining.spent).toBe(800);
       expect(itemRemaining.remaining).toBe(200);
@@ -239,7 +255,11 @@ describe("BudgetCycleStore Modules", () => {
       expect(itemRemaining.status[0].value).toBe("200.00");
 
       // spent view
-      const enrichedSpent = getEnrichedGroups(budgetGroups, transactions, "spent");
+      const enrichedSpent = getEnrichedGroups(
+        budgetGroups,
+        transactions,
+        "spent",
+      );
       const itemSpent = enrichedSpent[0].budgetGroupItems[0];
       expect(itemSpent.status[0].label).toBe("Spent");
       expect(itemSpent.status[0].value).toBe("800.00");
