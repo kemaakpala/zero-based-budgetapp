@@ -15,8 +15,18 @@ const BudgetGroup = ({
   onAddItemClick,
   onRenameGroupClick,
   onDeleteGroupClick,
+  // Composition props
+  className = "",
+  headerActions,
+  footerActions,
+  children,
+  // Additional direct props (for fallback/direct usage)
+  name: propName,
+  columns: propColumns,
 }) => {
-  const { name, columns, budgetGroupItems } = budgetGroup;
+  const name = budgetGroup?.name || propName || "";
+  const columns = budgetGroup?.columns || propColumns || [];
+  const budgetGroupItems = budgetGroup?.budgetGroupItems || [];
   const [hideContent, setHideContent] = useState(false);
 
   const clickHandler = (event) => {
@@ -29,34 +39,41 @@ const BudgetGroup = ({
   };
 
   return (
-    <div className="group-container">
+    <div className={`group-container ${className}`}>
       <BudgetGroupHeader
         budgetGroupName={name}
         columns={columns}
         handleToggle={clickHandler}
         handleHeaderClick={groupHeaderTitleClickHandler}
         hideContentFlag={hideContent}
-        onRenameGroupClick={() => onRenameGroupClick(groupIndex, name)}
-        onDeleteGroupClick={() => onDeleteGroupClick(groupIndex, name)}
+        onRenameGroupClick={() => onRenameGroupClick?.(groupIndex, name)}
+        onDeleteGroupClick={() => onDeleteGroupClick?.(groupIndex, name)}
+        actions={headerActions}
       />
       <div
         className={`group-content ${
           hideContent ? "group-content--hidden" : ""
         }`}
       >
-        <BudgetGroupItem
-          budgetGroupName={name}
-          groupIndex={groupIndex}
-          budgetGroupItems={budgetGroupItems}
-          onChangeHandler={onChangeHandler}
-          onBlurHandler={onBlurHandler}
-          onAddTransactionClick={onAddTransactionClick}
-          onViewTransactionsClick={onViewTransactionsClick}
-          onDeleteItemClick={onDeleteItemClick}
-          hideContentFlag={hideContent}
-        />
+        {children || (
+          <BudgetGroupItem
+            budgetGroupName={name}
+            groupIndex={groupIndex}
+            budgetGroupItems={budgetGroupItems}
+            onChangeHandler={onChangeHandler}
+            onBlurHandler={onBlurHandler}
+            onAddTransactionClick={onAddTransactionClick}
+            onViewTransactionsClick={onViewTransactionsClick}
+            onDeleteItemClick={onDeleteItemClick}
+            hideContentFlag={hideContent}
+          />
+        )}
       </div>
-      <BudgetGroupActions onAddItemClick={onAddItemClick} />
+      {footerActions !== undefined ? (
+        footerActions
+      ) : (
+        <BudgetGroupActions onAddItemClick={onAddItemClick} />
+      )}
     </div>
   );
 };
