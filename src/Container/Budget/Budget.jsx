@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useReducer, useMemo } from "react";
+import React, { useEffect, useState, useReducer, useMemo, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Hero,
@@ -20,7 +20,11 @@ import {
   getEnrichedGroups,
   calculateSummary,
   updateTemplateDebtBalance,
+  updateTemplateDebtAssigned,
+  addTemplateDebtItem,
+  updateTemplateDebtItem,
 } from "../../utils/budgetStore";
+import { generateUniqueId } from "../../utils/utils";
 
 const storageAdapter = new LocalStorageAdapter();
 
@@ -103,10 +107,13 @@ function Budget() {
   const [debtFormModalOpen, setDebtFormModalOpen] = useState(false);
   const [editingDebtItem, setEditingDebtItem] = useState(null);
 
+  const loadedMonthRef = useRef(null);
+
   // Sync state with url parameter (Cycle loading)
   useEffect(() => {
     const data = loadBudgetData(monthKey, storageAdapter);
     dispatch({ type: "LOAD_CYCLE", payload: data });
+    loadedMonthRef.current = monthKey;
   }, [monthKey]);
 
   // Sync state changes back to localStorage
@@ -114,11 +121,13 @@ function Budget() {
     if (
       state &&
       state.startingSalary !== undefined &&
-      state.budgetGroups.length > 0
+      state.budgetGroups.length > 0 &&
+      loadedMonthRef.current === monthKey
     ) {
       saveBudgetData(monthKey, state, storageAdapter);
     }
-  }, [state, monthKey]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state]);
 
   // Helper: find a budget item by id across all groups
   const findBudgetItem = (itemId) => {
@@ -140,6 +149,12 @@ function Budget() {
       type: "UPDATE_ITEM_FIELD",
       payload: { itemId, fieldName, value },
     });
+
+    // If it's a debt item and fieldName is "assigned", update the template defaults
+    const targetItem = findBudgetItem(itemId);
+    if (targetItem && targetItem.type === "debt" && fieldName === "assigned") {
+      updateTemplateDebtAssigned(storageAdapter, itemId, value);
+    }
   };
 
   const handleAddItem = (groupIndex) => {
@@ -230,44 +245,15 @@ function Budget() {
 
   // Debt Action Dispatchers
   const handleAddDebtItem = (debtData) => {
-    // Ensure the Debt Repayment group exists
+    const newId = generateUniqueId();
+    const debtWithId = { ...debtData, id: newId };
+
+    // Ensure the Debt group exists
     dispatch({ type: "ADD_DEBT_REPAYMENT_GROUP" });
-    dispatch({ type: "ADD_DEBT_ITEM", payload: debtData });
+    dispatch({ type: "ADD_DEBT_ITEM", payload: debtWithId });
 
     // Also update the template with the new debt
-    const template = JSON.parse(
-      storageAdapter.get("budget_app_defaults") || "{}"
-    );
-    const debtGroup = template.budgetGroups?.find((g) => g.isDebtGroup);
-    if (!debtGroup) {
-      // Add debt group to template
-      template.budgetGroups = template.budgetGroups || [];
-      template.budgetGroups.push({
-        name: "Debt Repayment",
-        isDebtGroup: true,
-        columns: [
-          { name: "Balance" },
-          { name: "Planned" },
-          { name: "Paid so far" },
-        ],
-        budgetGroupItems: [
-          {
-            id: debtData.id || "temp",
-            name: debtData.name,
-            assigned: 0,
-            type: "debt",
-            outstandingBalance: parseFloat(debtData.outstandingBalance) || 0,
-            minimumPayment: parseFloat(debtData.minimumPayment) || 0,
-            debtType: debtData.debtType || "other",
-            interestRate: debtData.interestRate
-              ? parseFloat(debtData.interestRate)
-              : undefined,
-          },
-        ],
-      });
-      storageAdapter.set("budget_app_defaults", JSON.stringify(template));
-    }
-
+    addTemplateDebtItem(storageAdapter, debtWithId);
     setDebtFormModalOpen(false);
   };
 
@@ -275,27 +261,7 @@ function Budget() {
     dispatch({ type: "UPDATE_DEBT_ITEM", payload: debtData });
 
     // Also update the template
-    const template = JSON.parse(
-      storageAdapter.get("budget_app_defaults") || "{}"
-    );
-    for (const group of template.budgetGroups || []) {
-      for (const item of group.budgetGroupItems || []) {
-        if (item.id === debtData.itemId && item.type === "debt") {
-          if (debtData.name !== undefined) item.name = debtData.name;
-          if (debtData.outstandingBalance !== undefined)
-            item.outstandingBalance =
-              parseFloat(debtData.outstandingBalance) || 0;
-          if (debtData.minimumPayment !== undefined)
-            item.minimumPayment = parseFloat(debtData.minimumPayment) || 0;
-          if (debtData.debtType !== undefined)
-            item.debtType = debtData.debtType;
-          if (debtData.interestRate !== undefined)
-            item.interestRate = parseFloat(debtData.interestRate) || undefined;
-          break;
-        }
-      }
-    }
-    storageAdapter.set("budget_app_defaults", JSON.stringify(template));
+    updateTemplateDebtItem(storageAdapter, debtData);
 
     setEditingDebtItem(null);
     setDebtFormModalOpen(false);
@@ -321,7 +287,7 @@ function Budget() {
   }, [state.transactions, activeViewTransactionsItem]);
 
   return (
-    <section>
+    <section key={monthKey}>
       <Hero
         monthLabel={monthLabel}
         cycleRangeLabel={cycleRangeLabel}

@@ -68,7 +68,7 @@ describe("Settings Onboarding Wizard", () => {
     fireEvent.click(nextBtn2);
 
     // DEBT QUESTION GATE
-    expect(screen.getByText("Do You Have Any Debts?")).toBeInTheDocument();
+    expect(screen.getByText("Do You Have Any Debt?")).toBeInTheDocument();
 
     // Click "No" to skip debts
     const noDebtsBtn = screen.getByRole("button", {
@@ -121,7 +121,7 @@ describe("Settings Onboarding Wizard", () => {
     fireEvent.click(nextBtn2);
 
     // DEBT QUESTION GATE
-    expect(screen.getByText("Do You Have Any Debts?")).toBeInTheDocument();
+    expect(screen.getByText("Do You Have Any Debt?")).toBeInTheDocument();
 
     // Click "Yes"
     const yesDebtsBtn = screen.getByRole("button", {
@@ -130,7 +130,7 @@ describe("Settings Onboarding Wizard", () => {
     fireEvent.click(yesDebtsBtn);
 
     // DEBT ENTRY STEP
-    expect(screen.getByText("Add Your Debts")).toBeInTheDocument();
+    expect(screen.getByText("Add Your Debt")).toBeInTheDocument();
 
     // A blank debt entry card should exist
     expect(screen.getByText("Debt 1")).toBeInTheDocument();
@@ -165,7 +165,7 @@ describe("Settings Onboarding Wizard", () => {
     );
     const debtGroup = savedDefaults.budgetGroups.find((g) => g.isDebtGroup);
     expect(debtGroup).toBeDefined();
-    expect(debtGroup.name).toBe("Debt Repayment");
+    expect(debtGroup.name).toBe("Debt");
     expect(debtGroup.budgetGroupItems.length).toBe(1);
 
     const debtItem = debtGroup.budgetGroupItems[0];

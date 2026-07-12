@@ -146,7 +146,7 @@ export default function Settings() {
     setDebtItems(updated);
   };
 
-  // Step logic: steps are 1=Salary, 2=Categories, 3=Debt Question/Debts, 4=Confirm
+  // Step logic: steps are 1=Salary, 2=Categories, 3=Debt Question/Debt, 4=Confirm
   // If hasDebts is null or false, step 3 is the debt question gate
   // If hasDebts is true, step 3 shows debt entry, and step 4 is confirm
   // If hasDebts is false, we skip from the gate to confirm (step 4)
@@ -162,7 +162,7 @@ export default function Settings() {
       return [
         { label: "Salary", step: 1 },
         { label: "Categories", step: 2 },
-        { label: "Debts", step: 3 },
+        { label: "Debt", step: 3 },
         { label: "Confirm", step: 4 },
       ];
     }
@@ -211,7 +211,7 @@ export default function Settings() {
 
   // Finish setup and save
   const handleFinishSetup = () => {
-    // Build final budget groups including debt repayment if applicable
+    // Build final budget groups including debt group if applicable
     let finalBudgetGroups = [...budgetGroups];
 
     if (hasDebts && debtItems.length > 0) {
@@ -230,7 +230,7 @@ export default function Settings() {
 
       if (validDebtItems.length > 0) {
         finalBudgetGroups.push({
-          name: "Debt Repayment",
+          name: "Debt",
           isDebtGroup: true,
           columns: [
             { name: "Balance" },
@@ -569,7 +569,7 @@ export default function Settings() {
                 className="wizard-icon"
               />
             </div>
-            <h2>Do You Have Any Debts?</h2>
+            <h2>Do You Have Any Debt?</h2>
             <p className="wizard-description">
               Track your debts alongside your budget to monitor payoff progress.
               This includes credit cards, personal loans, car loans, student
@@ -602,7 +602,7 @@ export default function Settings() {
         {/* Step 3: Debt Entry (when hasDebts === true) */}
         {isDebtEntryStep && (
           <div className="wizard-step step-debts">
-            <h2>Add Your Debts</h2>
+            <h2>Add Your Debt</h2>
             <p className="wizard-description">
               List all your active debts. We'll track your payoff progress on
               the budget dashboard.
@@ -765,7 +765,7 @@ export default function Settings() {
               {hasDebts &&
                 debtItems.filter((d) => d.name.trim()).length > 0 && (
                   <div className="summary-row">
-                    <span className="summary-label">Debts Being Tracked:</span>
+                    <span className="summary-label">Debt Being Tracked:</span>
                     <span className="summary-value">
                       {debtItems.filter((d) => d.name.trim()).length} debts
                     </span>
