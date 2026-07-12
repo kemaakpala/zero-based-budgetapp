@@ -5,7 +5,7 @@ import DebtGroup from "./DebtGroup";
 const noop = () => {};
 
 const createDebtGroup = (overrides = {}) => ({
-  name: "Debt Repayment",
+  name: "Debt",
   isDebtGroup: true,
   columns: [{ name: "Balance" }, { name: "Planned" }, { name: "Paid so far" }],
   budgetGroupItems: [
@@ -37,7 +37,7 @@ const createDebtGroup = (overrides = {}) => ({
 });
 
 describe("DebtGroup", () => {
-  it("renders active debt items as a table with Balance, Planned, Paid so far", () => {
+  it("renders active debt items as a table with Balance and Planned columns, and Paid so far summary", () => {
     render(
       <DebtGroup
         budgetGroup={createDebtGroup()}
