@@ -70,7 +70,7 @@ _Avoid_: Vendor, merchant, recipient
 
 ### Debt Item
 
-A specialised **Budget Item** with `type: "debt"` that represents an obligation being paid off over time (e.g. a credit card or personal loan). It carries additional metadata: **Outstanding Balance**, **Minimum Payment**, **Debt Type**, and optionally an interest rate. Debt Items live exclusively in the **Debt Repayment Group**.
+A specialised **Budget Item** with `type: "debt"` that represents an obligation being paid off over time (e.g. a credit card or personal loan). It carries additional metadata: **Outstanding Balance**, **Minimum Payment**, **Debt Type**, and optionally an interest rate. Debt Items live exclusively in the **Debt Group** (named "Debt").
 _Avoid_: Liability, loan item
 
 ### Outstanding Balance
@@ -93,7 +93,7 @@ _Avoid_: Loan type, debt category
 The state of a **Debt Item** when its **Outstanding Balance** reaches zero or below. Derived from `outstandingBalance <= 0`, never stored as a flag.
 _Avoid_: Settled, cleared, closed
 
-### Debt Repayment Group
+### Debt Group
 
-A dedicated, system-level **Budget Group** that contains only **Debt Items**. Created automatically when the user indicates they have debts during setup.
-_Avoid_: Debt group, loans group
+A dedicated, system-level **Budget Group** (named "Debt") that contains only **Debt Items**. Created automatically when the user indicates they have debts during setup.
+_Avoid_: Debt Repayment Group, loans group

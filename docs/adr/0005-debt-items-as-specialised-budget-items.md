@@ -1,6 +1,6 @@
 # Debt tracking as specialised Budget Items with template-stored balances
 
-Debts (credit cards, loans, overdrafts) are modelled as Budget Items with `type: "debt"` inside a dedicated "Debt Repayment" Budget Group, rather than as a separate top-level data structure. Outstanding balances are stored in the Budget Template and updated as a side-effect when payment transactions are recorded.
+Debt (credit cards, loans, overdrafts) are modelled as Budget Items with `type: "debt"` inside a dedicated "Debt" Budget Group, rather than as a separate top-level data structure. Outstanding balances are stored in the Budget Template and updated as a side-effect when payment transactions are recorded.
 
 ## Considered Options
 
