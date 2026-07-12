@@ -54,10 +54,16 @@ export const getEnrichedGroups = (
 ) => {
   return budgetGroups.map((group) => ({
     ...group,
-    columns: [
-      { name: "Assigned" },
-      { name: viewMode === "remaining" ? "Remaining" : "Spent" },
-    ],
+    columns: group.isDebtGroup
+      ? group.columns || [
+          { name: "Balance" },
+          { name: "Planned" },
+          { name: "Paid so far" },
+        ]
+      : [
+          { name: "Assigned" },
+          { name: viewMode === "remaining" ? "Remaining" : "Spent" },
+        ],
     budgetGroupItems: group.budgetGroupItems.map((item) => {
       const itemTransactions = transactions.filter(
         (tx) => tx.budgetItemId === item.id
@@ -149,5 +155,94 @@ export const updateTemplateDebtBalance = (
     }
   } catch (e) {
     console.error("Error updating template debt balance", e);
+  }
+};
+
+export const updateTemplateDebtAssigned = (storageAdapter, itemId, value) => {
+  const raw = storageAdapter.get("budget_app_defaults");
+  if (!raw) return;
+
+  try {
+    const template = JSON.parse(raw);
+    for (const group of template.budgetGroups || []) {
+      for (const item of group.budgetGroupItems || []) {
+        if (item.id === itemId && item.type === "debt") {
+          item.assigned = parseFloat(value) || 0;
+          storageAdapter.set("budget_app_defaults", JSON.stringify(template));
+          return;
+        }
+      }
+    }
+  } catch (e) {
+    console.error("Error updating template debt assigned", e);
+  }
+};
+
+export const addTemplateDebtItem = (storageAdapter, debtData) => {
+  const raw = storageAdapter.get("budget_app_defaults");
+  try {
+    const template = JSON.parse(raw || "{}");
+    template.budgetGroups = template.budgetGroups || [];
+
+    let debtGroup = template.budgetGroups.find((g) => g.isDebtGroup);
+    if (!debtGroup) {
+      debtGroup = {
+        name: "Debt",
+        isDebtGroup: true,
+        columns: [
+          { name: "Balance" },
+          { name: "Planned" },
+          { name: "Paid so far" },
+        ],
+        budgetGroupItems: [],
+      };
+      template.budgetGroups.push(debtGroup);
+    }
+
+    debtGroup.budgetGroupItems.push({
+      id: debtData.id,
+      name: debtData.name,
+      assigned: 0,
+      type: "debt",
+      outstandingBalance: parseFloat(debtData.outstandingBalance) || 0,
+      minimumPayment: parseFloat(debtData.minimumPayment) || 0,
+      debtType: debtData.debtType || "other",
+      interestRate: debtData.interestRate
+        ? parseFloat(debtData.interestRate)
+        : undefined,
+    });
+
+    storageAdapter.set("budget_app_defaults", JSON.stringify(template));
+  } catch (e) {
+    console.error("Error adding template debt item", e);
+  }
+};
+
+export const updateTemplateDebtItem = (storageAdapter, debtData) => {
+  const raw = storageAdapter.get("budget_app_defaults");
+  if (!raw) return;
+
+  try {
+    const template = JSON.parse(raw);
+    for (const group of template.budgetGroups || []) {
+      for (const item of group.budgetGroupItems || []) {
+        if (item.id === debtData.itemId && item.type === "debt") {
+          if (debtData.name !== undefined) item.name = debtData.name;
+          if (debtData.outstandingBalance !== undefined)
+            item.outstandingBalance =
+              parseFloat(debtData.outstandingBalance) || 0;
+          if (debtData.minimumPayment !== undefined)
+            item.minimumPayment = parseFloat(debtData.minimumPayment) || 0;
+          if (debtData.debtType !== undefined)
+            item.debtType = debtData.debtType;
+          if (debtData.interestRate !== undefined)
+            item.interestRate = parseFloat(debtData.interestRate) || undefined;
+          storageAdapter.set("budget_app_defaults", JSON.stringify(template));
+          return;
+        }
+      }
+    }
+  } catch (e) {
+    console.error("Error updating template debt item", e);
   }
 };

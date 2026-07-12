@@ -19,6 +19,7 @@ const BudgetGroupHeader = ({
   handleHeaderClick,
   onRenameGroupClick,
   onDeleteGroupClick,
+  actions,
 }) => {
   const [showPopOver, setShowShowPopOver] = useState(false);
   const popOverHandler = (event) => {
@@ -51,36 +52,42 @@ const BudgetGroupHeader = ({
         </div>
       ))}
       <div className="group-header-column">
-        <Button variation="transparent" onClickHandler={popOverHandler}>
-          <FontAwesomeIcon
-            icon={faEllipsisVertical}
-            size="1x"
-            title="open pop over menu"
-          />
-        </Button>
-        {showPopOver && (
-          <PopOverMenu
-            menuList={[
-              {
-                icon: faPen,
-                title: `Edit budget ${budgetGroupName} group`,
-                description: "Edit",
-                action: () => {
-                  setShowShowPopOver(false);
-                  onRenameGroupClick();
-                },
-              },
-              {
-                icon: faTrashCan,
-                title: `Delete ${budgetGroupName} group`,
-                description: "Delete",
-                action: () => {
-                  setShowShowPopOver(false);
-                  onDeleteGroupClick();
-                },
-              },
-            ]}
-          />
+        {actions !== undefined ? (
+          actions
+        ) : (
+          <>
+            <Button variation="transparent" onClickHandler={popOverHandler}>
+              <FontAwesomeIcon
+                icon={faEllipsisVertical}
+                size="1x"
+                title="open pop over menu"
+              />
+            </Button>
+            {showPopOver && (
+              <PopOverMenu
+                menuList={[
+                  {
+                    icon: faPen,
+                    title: `Edit budget ${budgetGroupName} group`,
+                    description: "Edit",
+                    action: () => {
+                      setShowShowPopOver(false);
+                      onRenameGroupClick();
+                    },
+                  },
+                  {
+                    icon: faTrashCan,
+                    title: `Delete ${budgetGroupName} group`,
+                    description: "Delete",
+                    action: () => {
+                      setShowShowPopOver(false);
+                      onDeleteGroupClick();
+                    },
+                  },
+                ]}
+              />
+            )}
+          </>
         )}
       </div>
     </div>

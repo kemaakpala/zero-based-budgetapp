@@ -23,6 +23,7 @@ const BudgetGroupItem = ({
   onAddTransactionClick,
   onViewTransactionsClick,
   onDeleteItemClick,
+  children,
 }) => {
   const [showPopOver, setShowShowPopOver] = useState({});
 
@@ -40,6 +41,10 @@ const BudgetGroupItem = ({
       [id]: false,
     }));
   };
+
+  if (children) {
+    return <>{children}</>;
+  }
 
   return budgetGroupItems.map((item, itemIndex) => {
     const { id, name, assigned, spent = 0, status } = item;
@@ -176,8 +181,8 @@ const BudgetGroupItem = ({
 };
 
 BudgetGroupItem.propTypes = {
-  budgetGroupName: PropTypes.string.isRequired,
-  groupIndex: PropTypes.number.isRequired,
+  budgetGroupName: PropTypes.string,
+  groupIndex: PropTypes.number,
   budgetGroupItems: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
@@ -192,12 +197,13 @@ BudgetGroupItem.propTypes = {
       ),
       type: PropTypes.string,
     })
-  ).isRequired,
-  onChangeHandler: PropTypes.func.isRequired,
-  onBlurHandler: PropTypes.func.isRequired,
-  onAddTransactionClick: PropTypes.func.isRequired,
-  onViewTransactionsClick: PropTypes.func.isRequired,
-  onDeleteItemClick: PropTypes.func.isRequired,
+  ),
+  onChangeHandler: PropTypes.func,
+  onBlurHandler: PropTypes.func,
+  onAddTransactionClick: PropTypes.func,
+  onViewTransactionsClick: PropTypes.func,
+  onDeleteItemClick: PropTypes.func,
+  children: PropTypes.node,
 };
 
 export default BudgetGroupItem;

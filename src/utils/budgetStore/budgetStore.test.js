@@ -191,18 +191,18 @@ describe("BudgetCycleStore Modules", () => {
       });
       expect(result.budgetGroups.length).toBe(2);
       const debtGroup = result.budgetGroups[1];
-      expect(debtGroup.name).toBe("Debt Repayment");
+      expect(debtGroup.name).toBe("Debt");
       expect(debtGroup.isDebtGroup).toBe(true);
       expect(debtGroup.budgetGroupItems).toEqual([]);
     });
 
-    it("does not duplicate Debt Repayment group if one already exists", () => {
+    it("does not duplicate Debt group if one already exists", () => {
       const stateWithDebtGroup = {
         ...initialState,
         budgetGroups: [
           ...initialState.budgetGroups,
           {
-            name: "Debt Repayment",
+            name: "Debt",
             isDebtGroup: true,
             columns: [
               { name: "Balance" },
@@ -225,7 +225,7 @@ describe("BudgetCycleStore Modules", () => {
         budgetGroups: [
           ...initialState.budgetGroups,
           {
-            name: "Debt Repayment",
+            name: "Debt",
             isDebtGroup: true,
             columns: [
               { name: "Balance" },
@@ -259,13 +259,44 @@ describe("BudgetCycleStore Modules", () => {
       expect(item.id).toBeDefined();
     });
 
+    it("handles ADD_DEBT_ITEM with a pre-specified ID", () => {
+      const stateWithDebtGroup = {
+        ...initialState,
+        budgetGroups: [
+          ...initialState.budgetGroups,
+          {
+            name: "Debt",
+            isDebtGroup: true,
+            columns: [
+              { name: "Balance" },
+              { name: "Planned" },
+              { name: "Paid so far" },
+            ],
+            budgetGroupItems: [],
+          },
+        ],
+      };
+      const result = budgetReducer(stateWithDebtGroup, {
+        type: "ADD_DEBT_ITEM",
+        payload: {
+          id: "custom-id-999",
+          name: "Personal Loan",
+          outstandingBalance: 4000,
+          minimumPayment: 100,
+          debtType: "personal-loan",
+        },
+      });
+      const debtGroup = result.budgetGroups.find((g) => g.isDebtGroup);
+      expect(debtGroup.budgetGroupItems[0].id).toBe("custom-id-999");
+    });
+
     it("handles UPDATE_DEBT_ITEM", () => {
       const stateWithDebt = {
         ...initialState,
         budgetGroups: [
           ...initialState.budgetGroups,
           {
-            name: "Debt Repayment",
+            name: "Debt",
             isDebtGroup: true,
             columns: [
               { name: "Balance" },
@@ -390,7 +421,7 @@ describe("BudgetCycleStore Modules", () => {
     it("enriches debt items with isPaidOff flag", () => {
       const budgetGroups = [
         {
-          name: "Debt Repayment",
+          name: "Debt",
           isDebtGroup: true,
           columns: [
             { name: "Balance" },
@@ -448,7 +479,7 @@ describe("BudgetCycleStore Modules", () => {
         startingSalary: 5000,
         budgetGroups: [
           {
-            name: "Debt Repayment",
+            name: "Debt",
             isDebtGroup: true,
             budgetGroupItems: [
               {

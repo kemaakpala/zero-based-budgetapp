@@ -1,5 +1,17 @@
 import { generateUniqueId, formatBudgetItemAmount } from "../utils";
 
+const updateDebtItemBalance = (budgetGroups, itemId, amountChange) => {
+  for (const group of budgetGroups) {
+    for (const item of group.budgetGroupItems) {
+      if (item.id === itemId && item.type === "debt") {
+        item.outstandingBalance =
+          (parseFloat(item.outstandingBalance) || 0) + amountChange;
+        return;
+      }
+    }
+  }
+};
+
 export const budgetReducer = (state, action) => {
   switch (action.type) {
     case "LOAD_CYCLE":
@@ -137,24 +149,45 @@ export const budgetReducer = (state, action) => {
         budgetItemId,
         date: new Date().toISOString(),
       };
+
+      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+      updateDebtItemBalance(updatedGroups, budgetItemId, -parseFloat(amount));
+
       return {
         ...state,
+        budgetGroups: updatedGroups,
         transactions: [...state.transactions, newTx],
       };
     }
 
     case "DELETE_TRANSACTION": {
       const txId = action.payload;
+      const tx = state.transactions.find((t) => t.id === txId);
+
+      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+      if (tx) {
+        updateDebtItemBalance(updatedGroups, tx.budgetItemId, tx.amount);
+      }
+
       return {
         ...state,
+        budgetGroups: updatedGroups,
         transactions: state.transactions.filter((tx) => tx.id !== txId),
       };
     }
 
     case "DELETE_MULTIPLE_TRANSACTIONS": {
       const txIds = action.payload;
+      const txs = state.transactions.filter((t) => txIds.includes(t.id));
+
+      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+      for (const tx of txs) {
+        updateDebtItemBalance(updatedGroups, tx.budgetItemId, tx.amount);
+      }
+
       return {
         ...state,
+        budgetGroups: updatedGroups,
         transactions: state.transactions.filter((tx) => !txIds.includes(tx.id)),
       };
     }
@@ -165,7 +198,7 @@ export const budgetReducer = (state, action) => {
 
       const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
       updatedGroups.push({
-        name: "Debt Repayment",
+        name: "Debt",
         isDebtGroup: true,
         columns: [
           { name: "Balance" },
@@ -182,6 +215,7 @@ export const budgetReducer = (state, action) => {
 
     case "ADD_DEBT_ITEM": {
       const {
+        id,
         name,
         outstandingBalance,
         minimumPayment,
@@ -193,7 +227,7 @@ export const budgetReducer = (state, action) => {
       if (!debtGroup) return state;
 
       const newDebtItem = {
-        id: generateUniqueId(),
+        id: id || generateUniqueId(),
         name,
         assigned: 0,
         type: "debt",

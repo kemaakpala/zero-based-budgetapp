@@ -61,6 +61,12 @@ New months are initialised from `budget_app_defaults` (the saved Budget Template
 - Copy the previous month's state as a starting point for a new month
 - See `docs/adr/0003-template-based-month-initialisation.md` for rationale
 
+### Component reuse
+
+- Do NOT create a new UI component if an existing one under `src/Component/` can satisfy the requirements (via composition, configuration, or props).
+- Always search `src/Component/` and `src/Container/` first to locate reusable presentational elements (e.g. `Button`, `TextField`, `PopOverMenu`, `BudgetGroup`, `BudgetItem`, `TransactionLog`).
+- Prefer extending or refactoring existing presentational components over introducing new variations.
+
 ---
 
 ## Data Shapes
