@@ -193,3 +193,36 @@
   font-size: 0.85rem;
   padding: 1.5rem;
 }
+
+.debt-balance-preview {
+  font-size: 0.8rem;
+  color: #495057;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+
+.debt-balance-preview strong {
+  color: #1a73e8;
+}
+
+.btn-modal-submit:disabled {
+  background-color: #ced4da;
+  color: #6c757d;
+  cursor: not-allowed;
+}
+
+.form-group select {
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #ced4da;
+  font-size: 0.9rem;
+  background-color: #ffffff;
+}
+
+.form-group select:focus {
+  outline: none;
+  border-color: #1a73e8;
+}

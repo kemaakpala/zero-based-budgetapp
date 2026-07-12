@@ -67,7 +67,7 @@ export const getEnrichedGroups = (
       const assigned = parseFloat(item.assigned) || 0;
       const remaining = assigned - spent;
 
-      return {
+      const enrichedItem = {
         ...item,
         spent,
         remaining,
@@ -82,6 +82,14 @@ export const getEnrichedGroups = (
           },
         ],
       };
+
+      // Add debt-specific derived fields
+      if (item.type === "debt") {
+        enrichedItem.isPaidOff =
+          (parseFloat(item.outstandingBalance) || 0) <= 0;
+      }
+
+      return enrichedItem;
     }),
   }));
 };
@@ -117,4 +125,29 @@ export const calculateSummary = (state) => {
     unassignedSalary,
     isOverallocated,
   };
+};
+
+export const updateTemplateDebtBalance = (
+  storageAdapter,
+  itemId,
+  amountChange
+) => {
+  const raw = storageAdapter.get("budget_app_defaults");
+  if (!raw) return;
+
+  try {
+    const template = JSON.parse(raw);
+    for (const group of template.budgetGroups || []) {
+      for (const item of group.budgetGroupItems || []) {
+        if (item.id === itemId && item.type === "debt") {
+          item.outstandingBalance =
+            (parseFloat(item.outstandingBalance) || 0) + amountChange;
+          storageAdapter.set("budget_app_defaults", JSON.stringify(template));
+          return;
+        }
+      }
+    }
+  } catch (e) {
+    console.error("Error updating template debt balance", e);
+  }
 };

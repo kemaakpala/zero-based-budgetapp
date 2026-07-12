@@ -5,6 +5,7 @@ import {
   saveBudgetData,
   getEnrichedGroups,
   calculateSummary,
+  updateTemplateDebtBalance,
 } from "./index";
 
 describe("BudgetCycleStore Modules", () => {
@@ -183,6 +184,127 @@ describe("BudgetCycleStore Modules", () => {
       expect(result.transactions.length).toBe(1);
       expect(result.transactions[0].id).toBe("tx2");
     });
+
+    it("handles ADD_DEBT_REPAYMENT_GROUP", () => {
+      const result = budgetReducer(initialState, {
+        type: "ADD_DEBT_REPAYMENT_GROUP",
+      });
+      expect(result.budgetGroups.length).toBe(2);
+      const debtGroup = result.budgetGroups[1];
+      expect(debtGroup.name).toBe("Debt Repayment");
+      expect(debtGroup.isDebtGroup).toBe(true);
+      expect(debtGroup.budgetGroupItems).toEqual([]);
+    });
+
+    it("does not duplicate Debt Repayment group if one already exists", () => {
+      const stateWithDebtGroup = {
+        ...initialState,
+        budgetGroups: [
+          ...initialState.budgetGroups,
+          {
+            name: "Debt Repayment",
+            isDebtGroup: true,
+            columns: [
+              { name: "Balance" },
+              { name: "Planned" },
+              { name: "Paid so far" },
+            ],
+            budgetGroupItems: [],
+          },
+        ],
+      };
+      const result = budgetReducer(stateWithDebtGroup, {
+        type: "ADD_DEBT_REPAYMENT_GROUP",
+      });
+      expect(result.budgetGroups.length).toBe(2);
+    });
+
+    it("handles ADD_DEBT_ITEM", () => {
+      const stateWithDebtGroup = {
+        ...initialState,
+        budgetGroups: [
+          ...initialState.budgetGroups,
+          {
+            name: "Debt Repayment",
+            isDebtGroup: true,
+            columns: [
+              { name: "Balance" },
+              { name: "Planned" },
+              { name: "Paid so far" },
+            ],
+            budgetGroupItems: [],
+          },
+        ],
+      };
+      const result = budgetReducer(stateWithDebtGroup, {
+        type: "ADD_DEBT_ITEM",
+        payload: {
+          name: "Barclaycard",
+          outstandingBalance: 3200,
+          minimumPayment: 85,
+          debtType: "credit-card",
+          interestRate: 19.9,
+        },
+      });
+      const debtGroup = result.budgetGroups.find((g) => g.isDebtGroup);
+      expect(debtGroup.budgetGroupItems.length).toBe(1);
+      const item = debtGroup.budgetGroupItems[0];
+      expect(item.name).toBe("Barclaycard");
+      expect(item.type).toBe("debt");
+      expect(item.outstandingBalance).toBe(3200);
+      expect(item.minimumPayment).toBe(85);
+      expect(item.debtType).toBe("credit-card");
+      expect(item.interestRate).toBe(19.9);
+      expect(item.assigned).toBe(0);
+      expect(item.id).toBeDefined();
+    });
+
+    it("handles UPDATE_DEBT_ITEM", () => {
+      const stateWithDebt = {
+        ...initialState,
+        budgetGroups: [
+          ...initialState.budgetGroups,
+          {
+            name: "Debt Repayment",
+            isDebtGroup: true,
+            columns: [
+              { name: "Balance" },
+              { name: "Planned" },
+              { name: "Paid so far" },
+            ],
+            budgetGroupItems: [
+              {
+                id: "d1",
+                name: "Barclaycard",
+                assigned: 150,
+                type: "debt",
+                outstandingBalance: 3200,
+                minimumPayment: 85,
+                debtType: "credit-card",
+                interestRate: 19.9,
+              },
+            ],
+          },
+        ],
+      };
+      const result = budgetReducer(stateWithDebt, {
+        type: "UPDATE_DEBT_ITEM",
+        payload: {
+          itemId: "d1",
+          name: "Barclays Visa",
+          outstandingBalance: 2800,
+          minimumPayment: 100,
+          debtType: "credit-card",
+          interestRate: 21.5,
+        },
+      });
+      const debtGroup = result.budgetGroups.find((g) => g.isDebtGroup);
+      const item = debtGroup.budgetGroupItems[0];
+      expect(item.name).toBe("Barclays Visa");
+      expect(item.outstandingBalance).toBe(2800);
+      expect(item.minimumPayment).toBe(100);
+      expect(item.interestRate).toBe(21.5);
+    });
   });
 
   describe("helpers", () => {
@@ -263,6 +385,93 @@ describe("BudgetCycleStore Modules", () => {
       const itemSpent = enrichedSpent[0].budgetGroupItems[0];
       expect(itemSpent.status[0].label).toBe("Spent");
       expect(itemSpent.status[0].value).toBe("800.00");
+    });
+
+    it("enriches debt items with isPaidOff flag", () => {
+      const budgetGroups = [
+        {
+          name: "Debt Repayment",
+          isDebtGroup: true,
+          columns: [
+            { name: "Balance" },
+            { name: "Planned" },
+            { name: "Paid so far" },
+          ],
+          budgetGroupItems: [
+            {
+              id: "d1",
+              name: "Barclaycard",
+              assigned: 150,
+              type: "debt",
+              outstandingBalance: 3200,
+              minimumPayment: 85,
+              debtType: "credit-card",
+            },
+            {
+              id: "d2",
+              name: "Old Loan",
+              assigned: 0,
+              type: "debt",
+              outstandingBalance: 0,
+              minimumPayment: 0,
+              debtType: "personal-loan",
+            },
+          ],
+        },
+      ];
+      const transactions = [
+        {
+          id: "tx1",
+          name: "Barclaycard Payment",
+          amount: 150,
+          budgetItemId: "d1",
+        },
+      ];
+
+      const enriched = getEnrichedGroups(
+        budgetGroups,
+        transactions,
+        "remaining"
+      );
+      const debtGroup = enriched[0];
+      const activeDebt = debtGroup.budgetGroupItems[0];
+      const paidOffDebt = debtGroup.budgetGroupItems[1];
+
+      expect(activeDebt.spent).toBe(150);
+      expect(activeDebt.isPaidOff).toBe(false);
+      expect(paidOffDebt.isPaidOff).toBe(true);
+    });
+
+    it("updates template debt balance correctly", () => {
+      const adapter = new InMemoryStorageAdapter();
+      const template = {
+        startingSalary: 5000,
+        budgetGroups: [
+          {
+            name: "Debt Repayment",
+            isDebtGroup: true,
+            budgetGroupItems: [
+              {
+                id: "d1",
+                name: "Barclaycard",
+                type: "debt",
+                assigned: 150,
+                outstandingBalance: 3200,
+                minimumPayment: 85,
+                debtType: "credit-card",
+              },
+            ],
+          },
+        ],
+      };
+      adapter.set("budget_app_defaults", JSON.stringify(template));
+
+      // Simulate a payment of 150
+      updateTemplateDebtBalance(adapter, "d1", -150);
+
+      const updated = JSON.parse(adapter.get("budget_app_defaults"));
+      const debtItem = updated.budgetGroups[0].budgetGroupItems[0];
+      expect(debtItem.outstandingBalance).toBe(3050);
     });
 
     it("calculates summaries correctly", () => {

@@ -159,6 +159,88 @@ export const budgetReducer = (state, action) => {
       };
     }
 
+    case "ADD_DEBT_REPAYMENT_GROUP": {
+      const alreadyExists = state.budgetGroups.some((g) => g.isDebtGroup);
+      if (alreadyExists) return state;
+
+      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+      updatedGroups.push({
+        name: "Debt Repayment",
+        isDebtGroup: true,
+        columns: [
+          { name: "Balance" },
+          { name: "Planned" },
+          { name: "Paid so far" },
+        ],
+        budgetGroupItems: [],
+      });
+      return {
+        ...state,
+        budgetGroups: updatedGroups,
+      };
+    }
+
+    case "ADD_DEBT_ITEM": {
+      const {
+        name,
+        outstandingBalance,
+        minimumPayment,
+        debtType,
+        interestRate,
+      } = action.payload;
+      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+      const debtGroup = updatedGroups.find((g) => g.isDebtGroup);
+      if (!debtGroup) return state;
+
+      const newDebtItem = {
+        id: generateUniqueId(),
+        name,
+        assigned: 0,
+        type: "debt",
+        outstandingBalance: parseFloat(outstandingBalance) || 0,
+        minimumPayment: parseFloat(minimumPayment) || 0,
+        debtType: debtType || "other",
+        interestRate: interestRate ? parseFloat(interestRate) : undefined,
+      };
+      debtGroup.budgetGroupItems.push(newDebtItem);
+      return {
+        ...state,
+        budgetGroups: updatedGroups,
+      };
+    }
+
+    case "UPDATE_DEBT_ITEM": {
+      const {
+        itemId,
+        name: debtName,
+        outstandingBalance: newBalance,
+        minimumPayment: newMinPayment,
+        debtType: newDebtType,
+        interestRate: newInterestRate,
+      } = action.payload;
+      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+
+      for (const group of updatedGroups) {
+        for (const item of group.budgetGroupItems) {
+          if (item.id === itemId && item.type === "debt") {
+            if (debtName !== undefined) item.name = debtName;
+            if (newBalance !== undefined)
+              item.outstandingBalance = parseFloat(newBalance) || 0;
+            if (newMinPayment !== undefined)
+              item.minimumPayment = parseFloat(newMinPayment) || 0;
+            if (newDebtType !== undefined) item.debtType = newDebtType;
+            if (newInterestRate !== undefined)
+              item.interestRate = parseFloat(newInterestRate) || undefined;
+            break;
+          }
+        }
+      }
+      return {
+        ...state,
+        budgetGroups: updatedGroups,
+      };
+    }
+
     default:
       return state;
   }

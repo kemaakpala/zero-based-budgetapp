@@ -4,6 +4,8 @@ import {
   Hero,
   BudgetForm,
   BudgetGroup,
+  DebtGroup,
+  DebtFormModal,
   TransactionLog,
   AddTransactionModal,
   ViewTransactionsModal,
@@ -17,6 +19,7 @@ import {
   saveBudgetData,
   getEnrichedGroups,
   calculateSummary,
+  updateTemplateDebtBalance,
 } from "../../utils/budgetStore";
 
 const storageAdapter = new LocalStorageAdapter();
@@ -96,6 +99,10 @@ function Budget() {
   const [activeViewTransactionsItem, setActiveViewTransactionsItem] =
     useState(null);
 
+  // Debt Modal States
+  const [debtFormModalOpen, setDebtFormModalOpen] = useState(false);
+  const [editingDebtItem, setEditingDebtItem] = useState(null);
+
   // Sync state with url parameter (Cycle loading)
   useEffect(() => {
     const data = loadBudgetData(monthKey, storageAdapter);
@@ -112,6 +119,16 @@ function Budget() {
       saveBudgetData(monthKey, state, storageAdapter);
     }
   }, [state, monthKey]);
+
+  // Helper: find a budget item by id across all groups
+  const findBudgetItem = (itemId) => {
+    for (const group of state.budgetGroups) {
+      for (const item of group.budgetGroupItems) {
+        if (item.id === itemId) return item;
+      }
+    }
+    return null;
+  };
 
   // Action Dispatchers
   const handleStartingSalaryChange = (newVal) => {
@@ -167,14 +184,121 @@ function Budget() {
       type: "ADD_TRANSACTION",
       payload: { name, amount, budgetItemId },
     });
+
+    // Side-effect: update template balance for debt items (Option A)
+    const targetItem = findBudgetItem(budgetItemId);
+    if (targetItem && targetItem.type === "debt") {
+      updateTemplateDebtBalance(
+        storageAdapter,
+        budgetItemId,
+        -parseFloat(amount)
+      );
+    }
   };
 
   const handleDeleteTransaction = (txId) => {
+    // Side-effect: reverse template balance for debt items
+    const tx = state.transactions.find((t) => t.id === txId);
+    if (tx) {
+      const targetItem = findBudgetItem(tx.budgetItemId);
+      if (targetItem && targetItem.type === "debt") {
+        updateTemplateDebtBalance(
+          storageAdapter,
+          tx.budgetItemId,
+          tx.amount // Add back the amount
+        );
+      }
+    }
+
     dispatch({ type: "DELETE_TRANSACTION", payload: txId });
   };
 
   const handleDeleteMultipleTransactions = (txIds) => {
+    // Side-effect: reverse template balance for debt items
+    for (const txId of txIds) {
+      const tx = state.transactions.find((t) => t.id === txId);
+      if (tx) {
+        const targetItem = findBudgetItem(tx.budgetItemId);
+        if (targetItem && targetItem.type === "debt") {
+          updateTemplateDebtBalance(storageAdapter, tx.budgetItemId, tx.amount);
+        }
+      }
+    }
+
     dispatch({ type: "DELETE_MULTIPLE_TRANSACTIONS", payload: txIds });
+  };
+
+  // Debt Action Dispatchers
+  const handleAddDebtItem = (debtData) => {
+    // Ensure the Debt Repayment group exists
+    dispatch({ type: "ADD_DEBT_REPAYMENT_GROUP" });
+    dispatch({ type: "ADD_DEBT_ITEM", payload: debtData });
+
+    // Also update the template with the new debt
+    const template = JSON.parse(
+      storageAdapter.get("budget_app_defaults") || "{}"
+    );
+    const debtGroup = template.budgetGroups?.find((g) => g.isDebtGroup);
+    if (!debtGroup) {
+      // Add debt group to template
+      template.budgetGroups = template.budgetGroups || [];
+      template.budgetGroups.push({
+        name: "Debt Repayment",
+        isDebtGroup: true,
+        columns: [
+          { name: "Balance" },
+          { name: "Planned" },
+          { name: "Paid so far" },
+        ],
+        budgetGroupItems: [
+          {
+            id: debtData.id || "temp",
+            name: debtData.name,
+            assigned: 0,
+            type: "debt",
+            outstandingBalance: parseFloat(debtData.outstandingBalance) || 0,
+            minimumPayment: parseFloat(debtData.minimumPayment) || 0,
+            debtType: debtData.debtType || "other",
+            interestRate: debtData.interestRate
+              ? parseFloat(debtData.interestRate)
+              : undefined,
+          },
+        ],
+      });
+      storageAdapter.set("budget_app_defaults", JSON.stringify(template));
+    }
+
+    setDebtFormModalOpen(false);
+  };
+
+  const handleUpdateDebtItem = (debtData) => {
+    dispatch({ type: "UPDATE_DEBT_ITEM", payload: debtData });
+
+    // Also update the template
+    const template = JSON.parse(
+      storageAdapter.get("budget_app_defaults") || "{}"
+    );
+    for (const group of template.budgetGroups || []) {
+      for (const item of group.budgetGroupItems || []) {
+        if (item.id === debtData.itemId && item.type === "debt") {
+          if (debtData.name !== undefined) item.name = debtData.name;
+          if (debtData.outstandingBalance !== undefined)
+            item.outstandingBalance =
+              parseFloat(debtData.outstandingBalance) || 0;
+          if (debtData.minimumPayment !== undefined)
+            item.minimumPayment = parseFloat(debtData.minimumPayment) || 0;
+          if (debtData.debtType !== undefined)
+            item.debtType = debtData.debtType;
+          if (debtData.interestRate !== undefined)
+            item.interestRate = parseFloat(debtData.interestRate) || undefined;
+          break;
+        }
+      }
+    }
+    storageAdapter.set("budget_app_defaults", JSON.stringify(template));
+
+    setEditingDebtItem(null);
+    setDebtFormModalOpen(false);
   };
 
   // Derived values on render (Single Source of Truth)
@@ -209,25 +333,48 @@ function Budget() {
       />
 
       <BudgetForm className="form" onAddGroupClick={handleAddGroup}>
-        {enrichedBudgetGroups.map((group, groupIndex) => (
-          <BudgetGroup
-            key={group.name}
-            groupIndex={groupIndex}
-            budgetGroup={group}
-            onChangeHandler={handleFieldChange}
-            onBlurHandler={() => {}}
-            onAddTransactionClick={(gIdx, iIdx, item) => {
-              setActiveAddTransactionItem(item);
-            }}
-            onViewTransactionsClick={(gIdx, iIdx, item) => {
-              setActiveViewTransactionsItem(item);
-            }}
-            onDeleteItemClick={handleDeleteItem}
-            onAddItemClick={() => handleAddItem(groupIndex)}
-            onRenameGroupClick={handleRenameGroup}
-            onDeleteGroupClick={handleDeleteGroup}
-          />
-        ))}
+        {enrichedBudgetGroups.map((group, groupIndex) =>
+          group.isDebtGroup ? (
+            <DebtGroup
+              key={group.name}
+              budgetGroup={group}
+              onChangeHandler={handleFieldChange}
+              onRecordPaymentClick={(item) => {
+                setActiveAddTransactionItem(item);
+              }}
+              onViewPaymentsClick={(item) => {
+                setActiveViewTransactionsItem(item);
+              }}
+              onEditDebtClick={(item) => {
+                setEditingDebtItem(item);
+                setDebtFormModalOpen(true);
+              }}
+              onDeleteItemClick={handleDeleteItem}
+              onAddDebtClick={() => {
+                setEditingDebtItem(null);
+                setDebtFormModalOpen(true);
+              }}
+            />
+          ) : (
+            <BudgetGroup
+              key={group.name}
+              groupIndex={groupIndex}
+              budgetGroup={group}
+              onChangeHandler={handleFieldChange}
+              onBlurHandler={() => {}}
+              onAddTransactionClick={(gIdx, iIdx, item) => {
+                setActiveAddTransactionItem(item);
+              }}
+              onViewTransactionsClick={(gIdx, iIdx, item) => {
+                setActiveViewTransactionsItem(item);
+              }}
+              onDeleteItemClick={handleDeleteItem}
+              onAddItemClick={() => handleAddItem(groupIndex)}
+              onRenameGroupClick={handleRenameGroup}
+              onDeleteGroupClick={handleDeleteGroup}
+            />
+          )
+        )}
       </BudgetForm>
 
       <TransactionLog
@@ -237,7 +384,7 @@ function Budget() {
         onDeleteMultipleTransactions={handleDeleteMultipleTransactions}
       />
 
-      {/* Add Transaction Modal */}
+      {/* Add Transaction Modal (also used for debt payments) */}
       <AddTransactionModal
         isOpen={!!activeAddTransactionItem}
         budgetItem={activeAddTransactionItem}
@@ -255,6 +402,23 @@ function Budget() {
         transactions={activeItemTransactions}
         onClose={() => setActiveViewTransactionsItem(null)}
         onDeleteTransaction={handleDeleteTransaction}
+      />
+
+      {/* Debt Form Modal (Add/Edit) */}
+      <DebtFormModal
+        isOpen={debtFormModalOpen}
+        debtItem={editingDebtItem}
+        onClose={() => {
+          setDebtFormModalOpen(false);
+          setEditingDebtItem(null);
+        }}
+        onSubmit={(data) => {
+          if (editingDebtItem) {
+            handleUpdateDebtItem(data);
+          } else {
+            handleAddDebtItem(data);
+          }
+        }}
       />
     </section>
   );

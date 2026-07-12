@@ -9,8 +9,10 @@ import {
   faTrashCan,
   faGear,
   faWandMagicSparkles,
+  faCreditCard,
 } from "@fortawesome/free-solid-svg-icons";
 import { DEFAULT_BUDGET_GROUPS, generateUniqueId } from "../utils/utils";
+import { DEBT_TYPES } from "../utils/constants";
 import "./styles/Settings.css";
 
 export default function Settings() {
@@ -54,6 +56,10 @@ export default function Settings() {
     initialData.weekendBehavior
   );
   const [newGroupName, setNewGroupName] = useState("");
+
+  // Debt tracking state
+  const [hasDebts, setHasDebts] = useState(null); // null = unanswered, true/false
+  const [debtItems, setDebtItems] = useState([]);
 
   // Auto-focus logic or helpers
   const handleSalaryPreset = (amount) => {
@@ -113,12 +119,133 @@ export default function Settings() {
     setBudgetGroups(updated);
   };
 
+  // Debt Item Handlers
+  const handleAddDebtItem = () => {
+    setDebtItems([
+      ...debtItems,
+      {
+        id: generateUniqueId(),
+        name: "",
+        outstandingBalance: "",
+        minimumPayment: "",
+        debtType: "credit-card",
+        interestRate: "",
+      },
+    ]);
+  };
+
+  const handleUpdateDebtItem = (index, field, value) => {
+    const updated = [...debtItems];
+    updated[index][field] = value;
+    setDebtItems(updated);
+  };
+
+  const handleDeleteDebtItem = (index) => {
+    const updated = [...debtItems];
+    updated.splice(index, 1);
+    setDebtItems(updated);
+  };
+
+  // Step logic: steps are 1=Salary, 2=Categories, 3=Debt Question/Debts, 4=Confirm
+  // If hasDebts is null or false, step 3 is the debt question gate
+  // If hasDebts is true, step 3 shows debt entry, and step 4 is confirm
+  // If hasDebts is false, we skip from the gate to confirm (step 4)
+
+  const isConfirmStep =
+    currentStep === 4 || (currentStep === 3 && hasDebts === false);
+  const isDebtQuestionStep = currentStep === 3 && hasDebts === null;
+  const isDebtEntryStep = currentStep === 3 && hasDebts === true;
+
+  // Get the actual step labels for the stepper
+  const getStepperSteps = () => {
+    if (hasDebts) {
+      return [
+        { label: "Salary", step: 1 },
+        { label: "Categories", step: 2 },
+        { label: "Debts", step: 3 },
+        { label: "Confirm", step: 4 },
+      ];
+    }
+    return [
+      { label: "Salary", step: 1 },
+      { label: "Categories", step: 2 },
+      { label: "Confirm", step: 3 },
+    ];
+  };
+
+  const stepperSteps = getStepperSteps();
+
+  const handleNextStep = () => {
+    if (currentStep === 2) {
+      // After categories, go to debt question (step 3)
+      setCurrentStep(3);
+    } else if (currentStep === 3 && hasDebts === true) {
+      // After debt entry, go to confirm
+      setCurrentStep(4);
+    } else if (currentStep === 3 && hasDebts === false) {
+      // Should not happen — if no debts, confirm is step 3
+      // This case is handled by isConfirmStep
+    } else {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handlePrevStep = () => {
+    if (currentStep === 4) {
+      // Go back to debt entry (step 3)
+      setCurrentStep(3);
+    } else if (currentStep === 3 && hasDebts === false) {
+      // Back from confirm (when no debts) — go to debt question
+      setHasDebts(null);
+      setCurrentStep(3);
+    } else if (currentStep === 3 && hasDebts === true) {
+      // Back from debt entry — go to debt question
+      setHasDebts(null);
+    } else if (currentStep === 3 && hasDebts === null) {
+      // Back from debt question — go to categories
+      setCurrentStep(2);
+    } else {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
   // Finish setup and save
   const handleFinishSetup = () => {
+    // Build final budget groups including debt repayment if applicable
+    let finalBudgetGroups = [...budgetGroups];
+
+    if (hasDebts && debtItems.length > 0) {
+      const validDebtItems = debtItems
+        .filter((d) => d.name.trim())
+        .map((d) => ({
+          id: d.id,
+          name: d.name.trim(),
+          assigned: 0,
+          type: "debt",
+          outstandingBalance: parseFloat(d.outstandingBalance) || 0,
+          minimumPayment: parseFloat(d.minimumPayment) || 0,
+          debtType: d.debtType || "other",
+          interestRate: d.interestRate ? parseFloat(d.interestRate) : undefined,
+        }));
+
+      if (validDebtItems.length > 0) {
+        finalBudgetGroups.push({
+          name: "Debt Repayment",
+          isDebtGroup: true,
+          columns: [
+            { name: "Balance" },
+            { name: "Planned" },
+            { name: "Paid so far" },
+          ],
+          budgetGroupItems: validDebtItems,
+        });
+      }
+    }
+
     // 1. Save defaults to localStorage for template use
     const defaults = {
       startingSalary,
-      budgetGroups,
+      budgetGroups: finalBudgetGroups,
       paydayDay,
       weekendBehavior,
     };
@@ -140,7 +267,7 @@ export default function Settings() {
     // Always write or prompt? Let's write to current month so user starts with their new setup
     const newMonthData = {
       startingSalary,
-      budgetGroups: JSON.parse(JSON.stringify(budgetGroups)),
+      budgetGroups: JSON.parse(JSON.stringify(finalBudgetGroups)),
       transactions: existingMonthData
         ? JSON.parse(existingMonthData).transactions || []
         : [],
@@ -156,56 +283,64 @@ export default function Settings() {
     navigate(`/${currentMonthKey}`);
   };
 
-  const totalGroups = budgetGroups.length;
-  const totalItems = budgetGroups.reduce(
-    (acc, g) => acc + g.budgetGroupItems.length,
-    0
-  );
+  const totalGroups =
+    budgetGroups.length + (hasDebts && debtItems.length > 0 ? 1 : 0);
+  const totalItems =
+    budgetGroups.reduce((acc, g) => acc + g.budgetGroupItems.length, 0) +
+    (hasDebts ? debtItems.filter((d) => d.name.trim()).length : 0);
+
+  // Determine stepper state for each node
+  const getStepState = (stepNum) => {
+    if (hasDebts) {
+      return {
+        active: currentStep >= stepNum,
+        completed: currentStep > stepNum,
+      };
+    }
+    // When no debts or unanswered, map to 3-step stepper
+    if (stepNum <= 2) {
+      return {
+        active: currentStep >= stepNum,
+        completed: currentStep > stepNum,
+      };
+    }
+    // Step 3 = Confirm (when no debts)
+    return {
+      active: isConfirmStep || currentStep >= 3,
+      completed: false,
+    };
+  };
 
   return (
     <div className="setup-wizard-container">
       {/* Step Tracker */}
       <div className="stepper">
-        <div
-          className={`step-node ${currentStep >= 1 ? "active" : ""} ${currentStep > 1 ? "completed" : ""}`}
-        >
-          <span className="step-number">
-            {currentStep > 1 ? (
-              <FontAwesomeIcon icon={faCheck} size="xs" />
-            ) : (
-              "1"
+        {stepperSteps.map((step, idx) => (
+          <React.Fragment key={step.label}>
+            {idx > 0 && (
+              <div className="step-connector">
+                <div
+                  className="connector-progress"
+                  style={{
+                    width: getStepState(step.step).completed ? "100%" : "0%",
+                  }}
+                ></div>
+              </div>
             )}
-          </span>
-          <span className="step-label">Salary</span>
-        </div>
-        <div className="step-connector">
-          <div
-            className="connector-progress"
-            style={{ width: currentStep > 1 ? "100%" : "0%" }}
-          ></div>
-        </div>
-        <div
-          className={`step-node ${currentStep >= 2 ? "active" : ""} ${currentStep > 2 ? "completed" : ""}`}
-        >
-          <span className="step-number">
-            {currentStep > 2 ? (
-              <FontAwesomeIcon icon={faCheck} size="xs" />
-            ) : (
-              "2"
-            )}
-          </span>
-          <span className="step-label">Categories</span>
-        </div>
-        <div className="step-connector">
-          <div
-            className="connector-progress"
-            style={{ width: currentStep > 2 ? "100%" : "0%" }}
-          ></div>
-        </div>
-        <div className={`step-node ${currentStep === 3 ? "active" : ""}`}>
-          <span className="step-number">3</span>
-          <span className="step-label">Confirm</span>
-        </div>
+            <div
+              className={`step-node ${getStepState(step.step).active ? "active" : ""} ${getStepState(step.step).completed ? "completed" : ""}`}
+            >
+              <span className="step-number">
+                {getStepState(step.step).completed ? (
+                  <FontAwesomeIcon icon={faCheck} size="xs" />
+                ) : (
+                  idx + 1
+                )}
+              </span>
+              <span className="step-label">{step.label}</span>
+            </div>
+          </React.Fragment>
+        ))}
       </div>
 
       {/* Wizard Card */}
@@ -424,7 +559,180 @@ export default function Settings() {
           </div>
         )}
 
-        {currentStep === 3 && (
+        {/* Step 3: Debt Question Gate (when unanswered) */}
+        {currentStep === 3 && hasDebts === null && (
+          <div className="wizard-step step-debt-question">
+            <div className="step-icon-header">
+              <FontAwesomeIcon
+                icon={faCreditCard}
+                size="2x"
+                className="wizard-icon"
+              />
+            </div>
+            <h2>Do You Have Any Debts?</h2>
+            <p className="wizard-description">
+              Track your debts alongside your budget to monitor payoff progress.
+              This includes credit cards, personal loans, car loans, student
+              loans, and overdrafts.
+            </p>
+            <div className="debt-question-buttons">
+              <button
+                type="button"
+                className="btn-debt-answer btn-debt-yes"
+                onClick={() => {
+                  setHasDebts(true);
+                  if (debtItems.length === 0) {
+                    handleAddDebtItem();
+                  }
+                }}
+              >
+                Yes, I have debts
+              </button>
+              <button
+                type="button"
+                className="btn-debt-answer btn-debt-no"
+                onClick={() => setHasDebts(false)}
+              >
+                No, skip this step
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 3: Debt Entry (when hasDebts === true) */}
+        {isDebtEntryStep && (
+          <div className="wizard-step step-debts">
+            <h2>Add Your Debts</h2>
+            <p className="wizard-description">
+              List all your active debts. We'll track your payoff progress on
+              the budget dashboard.
+            </p>
+
+            <div className="debts-list-container">
+              {debtItems.map((debt, index) => (
+                <div key={debt.id} className="debt-entry-card">
+                  <div className="debt-entry-header">
+                    <span className="debt-entry-number">Debt {index + 1}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteDebtItem(index)}
+                      className="btn-delete-group"
+                      title="Remove debt"
+                    >
+                      <FontAwesomeIcon icon={faTrashCan} size="sm" />
+                    </button>
+                  </div>
+
+                  <div className="debt-fields-grid">
+                    <div className="form-group">
+                      <label>Name</label>
+                      <input
+                        type="text"
+                        value={debt.name}
+                        onChange={(e) =>
+                          handleUpdateDebtItem(index, "name", e.target.value)
+                        }
+                        placeholder="e.g. Barclaycard"
+                        className="debt-input"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>Debt Type</label>
+                      <select
+                        value={debt.debtType}
+                        onChange={(e) =>
+                          handleUpdateDebtItem(
+                            index,
+                            "debtType",
+                            e.target.value
+                          )
+                        }
+                        className="wizard-select"
+                      >
+                        {DEBT_TYPES.map((dt) => (
+                          <option key={dt.value} value={dt.value}>
+                            {dt.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label>Outstanding Balance (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={debt.outstandingBalance}
+                        onChange={(e) =>
+                          handleUpdateDebtItem(
+                            index,
+                            "outstandingBalance",
+                            e.target.value
+                          )
+                        }
+                        placeholder="0.00"
+                        className="debt-input"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>Minimum Payment (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={debt.minimumPayment}
+                        onChange={(e) =>
+                          handleUpdateDebtItem(
+                            index,
+                            "minimumPayment",
+                            e.target.value
+                          )
+                        }
+                        placeholder="0.00"
+                        className="debt-input"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>Interest Rate (% — optional)</label>
+                      <input
+                        type="number"
+                        step="0.1"
+                        min="0"
+                        max="100"
+                        value={debt.interestRate}
+                        onChange={(e) =>
+                          handleUpdateDebtItem(
+                            index,
+                            "interestRate",
+                            e.target.value
+                          )
+                        }
+                        placeholder="e.g. 19.9"
+                        className="debt-input"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              className="btn-add-debt-entry"
+              onClick={handleAddDebtItem}
+            >
+              <FontAwesomeIcon icon={faPlus} className="spacing-right" />
+              Add Another Debt
+            </button>
+          </div>
+        )}
+
+        {/* Confirm Step */}
+        {isConfirmStep && (
           <div className="wizard-step step-confirm">
             <div className="step-icon-header">
               <FontAwesomeIcon
@@ -454,6 +762,15 @@ export default function Settings() {
                 <span className="summary-label">Total Budget Items:</span>
                 <span className="summary-value">{totalItems} items</span>
               </div>
+              {hasDebts &&
+                debtItems.filter((d) => d.name.trim()).length > 0 && (
+                  <div className="summary-row">
+                    <span className="summary-label">Debts Being Tracked:</span>
+                    <span className="summary-value">
+                      {debtItems.filter((d) => d.name.trim()).length} debts
+                    </span>
+                  </div>
+                )}
               <div className="summary-row">
                 <span className="summary-label">Payday Date:</span>
                 <span className="summary-value">
@@ -506,7 +823,7 @@ export default function Settings() {
           {currentStep > 1 ? (
             <button
               type="button"
-              onClick={() => setCurrentStep(currentStep - 1)}
+              onClick={handlePrevStep}
               className="btn-wizard-nav btn-wizard-back"
             >
               <FontAwesomeIcon icon={faChevronLeft} className="spacing-right" />
@@ -516,17 +833,17 @@ export default function Settings() {
             <div /> // Placeholder to push next button right
           )}
 
-          {currentStep < 3 ? (
+          {!isConfirmStep && !isDebtQuestionStep ? (
             <button
               type="button"
-              onClick={() => setCurrentStep(currentStep + 1)}
+              onClick={handleNextStep}
               className="btn-wizard-nav btn-wizard-next"
               disabled={currentStep === 2 && budgetGroups.length === 0}
             >
               Next
               <FontAwesomeIcon icon={faChevronRight} className="spacing-left" />
             </button>
-          ) : (
+          ) : isConfirmStep ? (
             <button
               type="button"
               onClick={handleFinishSetup}
@@ -535,7 +852,7 @@ export default function Settings() {
               Save & Start Budgeting
               <FontAwesomeIcon icon={faCheck} className="spacing-left" />
             </button>
-          )}
+          ) : null}
         </div>
       </div>
     </div>
