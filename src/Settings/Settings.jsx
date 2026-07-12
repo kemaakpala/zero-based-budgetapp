@@ -151,7 +151,6 @@ export default function Settings() {
   // If hasDebts is true, step 3 shows debt entry, and step 4 is confirm
   // If hasDebts is false, we skip from the gate to confirm (step 4)
 
-  const totalSteps = hasDebts ? 4 : 3;
   const isConfirmStep =
     currentStep === 4 || (currentStep === 3 && hasDebts === false);
   const isDebtQuestionStep = currentStep === 3 && hasDebts === null;
