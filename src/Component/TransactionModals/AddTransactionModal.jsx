@@ -6,13 +6,16 @@ const AddTransactionModal = ({ isOpen, budgetItem, onClose, onSubmit }) => {
   const [txName, setTxName] = useState("");
   const [txAmount, setTxAmount] = useState("");
 
+  const isDebt = budgetItem?.type === "debt";
+
   // Reset inputs when opened or item changes
   useEffect(() => {
     if (isOpen) {
-      setTxName("");
+      // Pre-fill payee name for debt payments
+      setTxName(isDebt ? budgetItem?.name || "" : "");
       setTxAmount("");
     }
-  }, [isOpen, budgetItem]);
+  }, [isOpen, budgetItem, isDebt]);
 
   if (!isOpen || !budgetItem) return null;
 
@@ -20,28 +23,46 @@ const AddTransactionModal = ({ isOpen, budgetItem, onClose, onSubmit }) => {
     onSubmit(txName, txAmount);
   };
 
+  const parsedAmount = parseFloat(txAmount) || 0;
+  const currentBalance = parseFloat(budgetItem.outstandingBalance) || 0;
+  const balanceAfterPayment = currentBalance - parsedAmount;
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-box" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h3>Add Transaction</h3>
+          <h3>{isDebt ? "Record Payment" : "Add Transaction"}</h3>
           <button className="btn-close-modal" onClick={onClose}>
             ×
           </button>
         </div>
         <div className="modal-body">
           <div className="form-group">
-            <label>Budget Item</label>
+            <label>{isDebt ? "Debt Item" : "Budget Item"}</label>
             <input type="text" value={budgetItem.name || ""} disabled />
           </div>
+
+          {isDebt && (
+            <div className="form-group">
+              <label>Current Outstanding Balance</label>
+              <input
+                type="text"
+                value={`£${currentBalance.toFixed(2)}`}
+                disabled
+              />
+            </div>
+          )}
+
           <div className="form-group">
             <label>Payee / Description</label>
             <input
               type="text"
               value={txName}
               onChange={(e) => setTxName(e.target.value)}
-              placeholder="e.g. Tesco, Rent payment"
-              autoFocus
+              placeholder={
+                isDebt ? "e.g. Monthly payment" : "e.g. Tesco, Rent payment"
+              }
+              autoFocus={!isDebt}
             />
           </div>
           <div className="form-group">
@@ -52,15 +73,23 @@ const AddTransactionModal = ({ isOpen, budgetItem, onClose, onSubmit }) => {
               value={txAmount}
               onChange={(e) => setTxAmount(e.target.value)}
               placeholder="0.00"
+              autoFocus={isDebt}
             />
           </div>
+
+          {isDebt && parsedAmount > 0 && (
+            <div className="debt-balance-preview">
+              Balance after payment:{" "}
+              <strong>£{balanceAfterPayment.toFixed(2)}</strong>
+            </div>
+          )}
         </div>
         <div className="modal-actions">
           <button className="btn-modal btn-modal-cancel" onClick={onClose}>
             Cancel
           </button>
           <button className="btn-modal btn-modal-submit" onClick={handleAdd}>
-            Add
+            {isDebt ? "Record Payment" : "Add"}
           </button>
         </div>
       </div>
@@ -73,6 +102,8 @@ AddTransactionModal.propTypes = {
   budgetItem: PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
+    type: PropTypes.string,
+    outstandingBalance: PropTypes.number,
   }),
   onClose: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
