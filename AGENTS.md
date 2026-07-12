@@ -210,3 +210,19 @@ When committing changes, always use the [Conventional Commits](https://www.conve
 | Budget cycle calculator   | `src/utils/budgetCycle/budgetCycle.js` |
 | Main dashboard container  | `src/Container/Budget/Budget.jsx`      |
 | Setup wizard              | `src/Settings/Settings.jsx`            |
+
+---
+
+## Agent skills
+
+### Issue tracker
+
+Issues are tracked in GitHub Issues. See [docs/agents/issue-tracker.md](file:///home/patrick/dev/zero-based-budgetapp/docs/agents/issue-tracker.md).
+
+### Triage labels
+
+Triage labels map to canonical roles (needs-triage, needs-info, ready-for-agent, ready-for-human, wontfix). See [docs/agents/triage-labels.md](file:///home/patrick/dev/zero-based-budgetapp/docs/agents/triage-labels.md).
+
+### Domain docs
+
+Single-context repository layout. See [docs/agents/domain.md](file:///home/patrick/dev/zero-based-budgetapp/docs/agents/domain.md).
