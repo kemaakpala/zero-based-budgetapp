@@ -25,7 +25,7 @@ export const budgetReducer = (state, action) => {
           ...(state.incomes || []),
           {
             id: generateUniqueId(),
-            name: name || "New Income",
+            name: (name || "New Income").trim(),
             amount: parseFloat(amount) || 0,
             received: !!received,
           },
@@ -37,7 +37,7 @@ export const budgetReducer = (state, action) => {
       const { incomeId } = action.payload;
       return {
         ...state,
-        incomes: (state.incomes || []).filter((inc) => inc.id !== incomeId),
+        incomes: (state.incomes || []).filter((i) => i.id !== incomeId),
       };
     }
 
@@ -47,16 +47,8 @@ export const budgetReducer = (state, action) => {
         ...state,
         incomes: (state.incomes || []).map((inc) => {
           if (inc.id === incomeId) {
-            let parsedVal = value;
-            if (fieldName === "amount") {
-              parsedVal = parseFloat(value) || 0;
-            } else if (fieldName === "received") {
-              parsedVal = !!value;
-            }
-            return {
-              ...inc,
-              [fieldName]: parsedVal,
-            };
+            const parsed = fieldName === "amount" ? parseFloat(value) || 0 : value;
+            return { ...inc, [fieldName]: parsed };
           }
           return inc;
         }),
@@ -172,6 +164,38 @@ export const budgetReducer = (state, action) => {
       const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
       if (updatedGroups[groupIndex]) {
         updatedGroups[groupIndex].name = newName.trim();
+      }
+      return {
+        ...state,
+        budgetGroups: updatedGroups,
+      };
+    }
+
+    case "MOVE_GROUP": {
+      const { groupIndex, direction } = action.payload;
+      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+      const targetIndex = direction === "up" ? groupIndex - 1 : groupIndex + 1;
+      if (targetIndex >= 0 && targetIndex < updatedGroups.length) {
+        const temp = updatedGroups[groupIndex];
+        updatedGroups[groupIndex] = updatedGroups[targetIndex];
+        updatedGroups[targetIndex] = temp;
+      }
+      return {
+        ...state,
+        budgetGroups: updatedGroups,
+      };
+    }
+
+    case "SWAP_GROUPS": {
+      const { index1, index2 } = action.payload;
+      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+      if (
+        index1 >= 0 && index1 < updatedGroups.length &&
+        index2 >= 0 && index2 < updatedGroups.length
+      ) {
+        const temp = updatedGroups[index1];
+        updatedGroups[index1] = updatedGroups[index2];
+        updatedGroups[index2] = temp;
       }
       return {
         ...state,
