@@ -146,10 +146,10 @@ describe("BudgetCycleStore Modules", () => {
     it("handles ADD_TRANSACTION", () => {
       const result = budgetReducer(initialState, {
         type: "ADD_TRANSACTION",
-        payload: { name: "Tesco", amount: "55.50", budgetItemId: "h1" },
+        payload: { payee: "Tesco", amount: "55.50", budgetItemId: "h1" },
       });
       expect(result.transactions.length).toBe(1);
-      expect(result.transactions[0].name).toBe("Tesco");
+      expect(result.transactions[0].payee).toBe("Tesco");
       expect(result.transactions[0].amount).toBe(55.5);
       expect(result.transactions[0].budgetItemId).toBe("h1");
     });

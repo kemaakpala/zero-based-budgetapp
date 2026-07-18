@@ -65,7 +65,7 @@ const TransactionLog = ({
     return transactions
       .filter((tx) => {
         // Filter by search term (payee name)
-        const matchSearch = tx.name
+        const matchSearch = tx.payee
           .toLowerCase()
           .includes(searchTerm.toLowerCase());
         // Filter by budget item dropdown
@@ -279,11 +279,11 @@ const TransactionLog = ({
                                 checked={isChecked}
                                 onChange={() => handleSelectRow(tx.id)}
                                 className="tx-checkbox"
-                                aria-label={`Select transaction with ${tx.name}`}
+                                aria-label={`Select transaction with ${tx.payee}`}
                               />
                             </td>
                             <td className="col-payee">
-                              <span className="payee-name">{tx.name}</span>
+                              <span className="payee-name">{tx.payee}</span>
                             </td>
                             <td className="col-category">
                               <span className="category-badge">
@@ -316,7 +316,7 @@ const TransactionLog = ({
                                 onClick={() => {
                                   if (
                                     window.confirm(
-                                      `Delete transaction "${tx.name}" for £${tx.amount.toFixed(2)}?`
+                                      `Delete transaction "${tx.payee}" for £${tx.amount.toFixed(2)}?`
                                     )
                                   ) {
                                     onDeleteTransaction(tx.id);
@@ -346,7 +346,7 @@ TransactionLog.propTypes = {
   transactions: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
+      payee: PropTypes.string.isRequired,
       amount: PropTypes.number.isRequired,
       budgetItemId: PropTypes.string.isRequired,
       date: PropTypes.string.isRequired,

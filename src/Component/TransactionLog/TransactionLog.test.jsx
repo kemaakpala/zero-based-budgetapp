@@ -6,14 +6,14 @@ describe("TransactionLog", () => {
   const mockTransactions = [
     {
       id: "tx1",
-      name: "Tesco Groceries",
+      payee: "Tesco Groceries",
       amount: 45.5,
       budgetItemId: "item-groceries",
       date: "2026-06-18T10:00:00.000Z",
     },
     {
       id: "tx2",
-      name: "Monthly Rent",
+      payee: "Monthly Rent",
       amount: 1200.0,
       budgetItemId: "item-rent",
       date: "2026-06-18T09:00:00.000Z",
