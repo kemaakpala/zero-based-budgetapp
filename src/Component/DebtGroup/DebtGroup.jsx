@@ -18,7 +18,12 @@ const DebtGroup = ({
   onDeleteItemClick,
   onAddDebtClick,
 }) => {
-  const { name, columns, budgetGroupItems } = budgetGroup;
+  const { name, budgetGroupItems } = budgetGroup;
+  const columns = [
+    { name: "Balance" },
+    { name: "Planned" },
+    { name: "Paid so far" },
+  ];
   const [showPaidOff, setShowPaidOff] = useState(false);
 
   const activeItems = budgetGroupItems.filter((item) => !item.isPaidOff);
@@ -80,7 +85,6 @@ const DebtGroup = ({
 DebtGroup.propTypes = {
   budgetGroup: PropTypes.shape({
     name: PropTypes.string.isRequired,
-    columns: PropTypes.array,
     budgetGroupItems: PropTypes.array.isRequired,
   }).isRequired,
   onChangeHandler: PropTypes.func.isRequired,

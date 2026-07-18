@@ -44,7 +44,6 @@ export const formatDate = (date) => defaultCalculator.formatDate(date);
 export const DEFAULT_BUDGET_GROUPS = [
   {
     name: "Housing",
-    columns: [{ name: "Assigned" }, { name: "Remaining" }],
     budgetGroupItems: [
       {
         id: "h1",
@@ -68,7 +67,6 @@ export const DEFAULT_BUDGET_GROUPS = [
   },
   {
     name: "Food",
-    columns: [{ name: "Assigned" }, { name: "Remaining" }],
     budgetGroupItems: [
       {
         id: "f1",
@@ -86,7 +84,6 @@ export const DEFAULT_BUDGET_GROUPS = [
   },
   {
     name: "Giving",
-    columns: [{ name: "Assigned" }, { name: "Remaining" }],
     budgetGroupItems: [
       {
         id: "g1",
@@ -104,7 +101,6 @@ export const DEFAULT_BUDGET_GROUPS = [
   },
   {
     name: "Transportation",
-    columns: [{ name: "Assigned" }, { name: "Remaining" }],
     budgetGroupItems: [
       {
         id: "t1",

@@ -326,6 +326,7 @@ function Budget() {
               key={group.name}
               groupIndex={groupIndex}
               budgetGroup={group}
+              viewMode={viewMode}
               onChangeHandler={handleFieldChange}
               onBlurHandler={() => {}}
               onAddTransactionClick={(gIdx, iIdx, item) => {

@@ -23,9 +23,13 @@ const BudgetGroup = ({
   // Additional direct props (for fallback/direct usage)
   name: propName,
   columns: propColumns,
+  viewMode = "remaining",
 }) => {
   const name = budgetGroup?.name || propName || "";
-  const columns = budgetGroup?.columns || propColumns || [];
+  const columns = propColumns || [
+    { name: "Assigned" },
+    { name: viewMode === "spent" ? "Spent" : "Remaining" },
+  ];
   const budgetGroupItems = budgetGroup?.budgetGroupItems || [];
   const [hideContent, setHideContent] = useState(false);
 

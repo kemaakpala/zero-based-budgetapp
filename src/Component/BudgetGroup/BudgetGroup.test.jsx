@@ -14,7 +14,6 @@ vi.mock("./BudgetGroupItem", () => ({
 
 export const BudgetGroupData = {
   name: "Budget Group",
-  columns: [{ name: "Planned" }, { name: "Received" }],
   budgetGroupItems: [
     {
       id: 1,
@@ -29,13 +28,17 @@ describe("BudgetGroup", () => {
     render(<BudgetGroup budgetGroup={BudgetGroupData} />);
     expect(screen.getByText("Budget Group")).toBeInTheDocument();
   });
-  it("test budget group renders Planned", () => {
+  it("test budget group renders Assigned column", () => {
     render(<BudgetGroup budgetGroup={BudgetGroupData} />);
-    expect(screen.getAllByText("Planned")[0]).toBeInTheDocument();
+    expect(screen.getByText("Assigned")).toBeInTheDocument();
   });
-  it("test budget group renders Received", () => {
+  it("test budget group renders Remaining column by default", () => {
     render(<BudgetGroup budgetGroup={BudgetGroupData} />);
-    expect(screen.getAllByText("Received")[0]).toBeInTheDocument();
+    expect(screen.getByText("Remaining")).toBeInTheDocument();
+  });
+  it("test budget group renders Spent column in spent viewMode", () => {
+    render(<BudgetGroup budgetGroup={BudgetGroupData} viewMode="spent" />);
+    expect(screen.getByText("Spent")).toBeInTheDocument();
   });
   it("test budget group renders Delete", () => {
     render(<BudgetGroup budgetGroup={BudgetGroupData} />);

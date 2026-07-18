@@ -26,7 +26,6 @@ describe("BudgetCycleStore Modules", () => {
       budgetGroups: [
         {
           name: "Housing",
-          columns: [{ name: "Assigned" }, { name: "Remaining" }],
           budgetGroupItems: [
             {
               id: "h1",
@@ -204,11 +203,6 @@ describe("BudgetCycleStore Modules", () => {
           {
             name: "Debt",
             isDebtGroup: true,
-            columns: [
-              { name: "Balance" },
-              { name: "Planned" },
-              { name: "Paid so far" },
-            ],
             budgetGroupItems: [],
           },
         ],
@@ -227,11 +221,6 @@ describe("BudgetCycleStore Modules", () => {
           {
             name: "Debt",
             isDebtGroup: true,
-            columns: [
-              { name: "Balance" },
-              { name: "Planned" },
-              { name: "Paid so far" },
-            ],
             budgetGroupItems: [],
           },
         ],
@@ -267,11 +256,6 @@ describe("BudgetCycleStore Modules", () => {
           {
             name: "Debt",
             isDebtGroup: true,
-            columns: [
-              { name: "Balance" },
-              { name: "Planned" },
-              { name: "Paid so far" },
-            ],
             budgetGroupItems: [],
           },
         ],
@@ -298,11 +282,6 @@ describe("BudgetCycleStore Modules", () => {
           {
             name: "Debt",
             isDebtGroup: true,
-            columns: [
-              { name: "Balance" },
-              { name: "Planned" },
-              { name: "Paid so far" },
-            ],
             budgetGroupItems: [
               {
                 id: "d1",
@@ -380,7 +359,6 @@ describe("BudgetCycleStore Modules", () => {
       const budgetGroups = [
         {
           name: "Housing",
-          columns: [{ name: "Assigned" }, { name: "Remaining" }],
           budgetGroupItems: [
             {
               id: "h1",
@@ -423,11 +401,6 @@ describe("BudgetCycleStore Modules", () => {
         {
           name: "Debt",
           isDebtGroup: true,
-          columns: [
-            { name: "Balance" },
-            { name: "Planned" },
-            { name: "Paid so far" },
-          ],
           budgetGroupItems: [
             {
               id: "d1",

@@ -98,7 +98,6 @@ export const budgetReducer = (state, action) => {
       const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
       updatedGroups.push({
         name,
-        columns: [{ name: "Assigned" }, { name: "Remaining" }],
         budgetGroupItems: [],
       });
       return {
@@ -200,11 +199,6 @@ export const budgetReducer = (state, action) => {
       updatedGroups.push({
         name: "Debt",
         isDebtGroup: true,
-        columns: [
-          { name: "Balance" },
-          { name: "Planned" },
-          { name: "Paid so far" },
-        ],
         budgetGroupItems: [],
       });
       return {

@@ -1,5 +1,18 @@
 import { DEFAULT_BUDGET_GROUPS } from "../utils";
 
+// Data migration: strips the legacy `columns` property from persisted budget
+// groups. Before this refactor, each group stored UI column metadata (e.g.
+// [{name: "Assigned"}, {name: "Remaining"}]) in domain state. Columns are now
+// computed at the component layer (BudgetGroup / DebtGroup). This sanitizer
+// ensures old localStorage blobs are cleaned up on first load. Safe to remove
+// once no persisted data carries `columns`.
+const sanitizeBudgetGroups = (groups = []) => {
+  return groups.map(({ columns, ...rest }) => ({
+    ...rest,
+    budgetGroupItems: rest.budgetGroupItems || [],
+  }));
+};
+
 export const loadBudgetData = (monthKey, storageAdapter) => {
   const data = storageAdapter.get(`budget_app_data_${monthKey}`);
   if (data) {
@@ -7,7 +20,7 @@ export const loadBudgetData = (monthKey, storageAdapter) => {
       const parsed = JSON.parse(data);
       return {
         startingSalary: parsed.startingSalary || 5000.0,
-        budgetGroups: parsed.budgetGroups || [],
+        budgetGroups: sanitizeBudgetGroups(parsed.budgetGroups || []),
         transactions: parsed.transactions || [],
         paydayDay: parsed.paydayDay ?? 20,
         weekendBehavior: parsed.weekendBehavior ?? "preceding-friday",
@@ -24,7 +37,9 @@ export const loadBudgetData = (monthKey, storageAdapter) => {
       const parsed = JSON.parse(savedDefaults);
       return {
         startingSalary: parsed.startingSalary || 5000.0,
-        budgetGroups: JSON.parse(JSON.stringify(parsed.budgetGroups)),
+        budgetGroups: sanitizeBudgetGroups(
+          JSON.parse(JSON.stringify(parsed.budgetGroups))
+        ),
         transactions: [],
         paydayDay: parsed.paydayDay ?? 20,
         weekendBehavior: parsed.weekendBehavior ?? "preceding-friday",
@@ -36,7 +51,9 @@ export const loadBudgetData = (monthKey, storageAdapter) => {
 
   return {
     startingSalary: 5000.0,
-    budgetGroups: JSON.parse(JSON.stringify(DEFAULT_BUDGET_GROUPS)),
+    budgetGroups: sanitizeBudgetGroups(
+      JSON.parse(JSON.stringify(DEFAULT_BUDGET_GROUPS))
+    ),
     transactions: [],
     paydayDay: 20,
     weekendBehavior: "preceding-friday",
@@ -54,16 +71,6 @@ export const getEnrichedGroups = (
 ) => {
   return budgetGroups.map((group) => ({
     ...group,
-    columns: group.isDebtGroup
-      ? group.columns || [
-          { name: "Balance" },
-          { name: "Planned" },
-          { name: "Paid so far" },
-        ]
-      : [
-          { name: "Assigned" },
-          { name: viewMode === "remaining" ? "Remaining" : "Spent" },
-        ],
     budgetGroupItems: group.budgetGroupItems.map((item) => {
       const itemTransactions = transactions.filter(
         (tx) => tx.budgetItemId === item.id
@@ -189,11 +196,6 @@ export const addTemplateDebtItem = (storageAdapter, debtData) => {
       debtGroup = {
         name: "Debt",
         isDebtGroup: true,
-        columns: [
-          { name: "Balance" },
-          { name: "Planned" },
-          { name: "Paid so far" },
-        ],
         budgetGroupItems: [],
       };
       template.budgetGroups.push(debtGroup);
