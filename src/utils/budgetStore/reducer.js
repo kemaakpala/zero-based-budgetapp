@@ -141,10 +141,10 @@ export const budgetReducer = (state, action) => {
     }
 
     case "ADD_TRANSACTION": {
-      const { name, amount, budgetItemId } = action.payload;
+      const { payee, amount, budgetItemId } = action.payload;
       const newTx = {
         id: generateUniqueId(),
-        name: name.trim(),
+        payee: payee.trim(),
         amount: parseFloat(amount) || 0,
         budgetItemId,
         date: new Date().toISOString(),

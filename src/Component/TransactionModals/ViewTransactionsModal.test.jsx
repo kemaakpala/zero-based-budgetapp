@@ -7,13 +7,13 @@ describe("ViewTransactionsModal", () => {
   const mockTransactions = [
     {
       id: "tx1",
-      name: "Rent July",
+      payee: "Rent July",
       amount: 950.0,
       date: "2026-06-18T10:00:00.000Z",
     },
     {
       id: "tx2",
-      name: "Rent Latefee",
+      payee: "Rent Latefee",
       amount: 50.0,
       date: "2026-06-18T11:00:00.000Z",
     },

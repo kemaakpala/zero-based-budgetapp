@@ -190,14 +190,14 @@ function Budget() {
     }
   };
 
-  const handleAddTransaction = (name, amount, budgetItemId) => {
-    if (!name.trim() || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
+  const handleAddTransaction = (payee, amount, budgetItemId) => {
+    if (!payee.trim() || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
       alert("Please enter a valid payee name and numeric amount.");
       return;
     }
     dispatch({
       type: "ADD_TRANSACTION",
-      payload: { name, amount, budgetItemId },
+      payload: { payee, amount, budgetItemId },
     });
 
     // Side-effect: update template balance for debt items (Option A)
@@ -355,8 +355,8 @@ function Budget() {
         isOpen={!!activeAddTransactionItem}
         budgetItem={activeAddTransactionItem}
         onClose={() => setActiveAddTransactionItem(null)}
-        onSubmit={(name, amount) => {
-          handleAddTransaction(name, amount, activeAddTransactionItem.id);
+        onSubmit={(payee, amount) => {
+          handleAddTransaction(payee, amount, activeAddTransactionItem.id);
           setActiveAddTransactionItem(null);
         }}
       />

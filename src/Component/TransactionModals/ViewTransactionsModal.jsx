@@ -33,7 +33,7 @@ const ViewTransactionsModal = ({
               {transactions.map((tx) => (
                 <li key={tx.id} className="tx-item">
                   <div className="tx-info">
-                    <span className="tx-name">{tx.name}</span>
+                    <span className="tx-name">{tx.payee}</span>
                     <span className="tx-date">
                       {new Date(tx.date).toLocaleDateString()}
                     </span>
@@ -72,7 +72,7 @@ ViewTransactionsModal.propTypes = {
   transactions: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
+      payee: PropTypes.string.isRequired,
       amount: PropTypes.number.isRequired,
       date: PropTypes.string.isRequired,
     })
