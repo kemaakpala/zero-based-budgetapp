@@ -45,4 +45,24 @@ describe("Hero Component", () => {
       screen.getByText("£4000.00 of £5000.00 assigned")
     ).toBeInTheDocument();
   });
+
+  it("does not render the redundant segmented progress bar", () => {
+    const { container } = render(
+      <Hero
+        incomes={[
+          { id: "inc-1", name: "Main Salary", amount: 5000, received: true },
+        ]}
+        totalIncome={5000}
+        totalAssigned={4000}
+        unassignedIncome={1000}
+        onUpdateIncomeField={vi.fn()}
+        onAddIncome={vi.fn()}
+        onDeleteIncome={vi.fn()}
+        viewMode="remaining"
+        onViewModeToggle={vi.fn()}
+      />
+    );
+    expect(container.querySelector(".hero-segmented-bar")).toBeNull();
+    expect(container.querySelector(".hero-segmented-bar-container")).toBeNull();
+  });
 });

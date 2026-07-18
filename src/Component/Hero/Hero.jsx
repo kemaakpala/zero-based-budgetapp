@@ -121,100 +121,73 @@ const Hero = ({
         </h2>
       </div>
 
-      <div className="hero-segmented-bar-container">
-        {/* Segmented bar graph representing each income stream */}
-        <div className="hero-segmented-bar">
-          {incomes.map((income, idx) => {
-            const widthPct =
-              totalIncome > 0 ? (income.amount / totalIncome) * 100 : 0;
-            return (
-              <div
-                key={income.id}
-                className="hero-segment"
-                style={{
-                  width: `${widthPct}%`,
-                  backgroundColor: SEGMENT_COLORS[idx % SEGMENT_COLORS.length],
-                }}
-                title={`${income.name}: £${income.amount.toFixed(2)}`}
-              ></div>
-            );
-          })}
-        </div>
-
-        {/* Incomes Cards Grid */}
-        <div className="hero-cards-grid">
-          {incomes.map((income, idx) => {
-            const pctShare =
-              totalIncome > 0 ? (income.amount / totalIncome) * 100 : 0;
-            return (
-              <div
-                key={income.id}
-                className="hero-bordered-card"
-                style={{
-                  borderLeft: `4px solid ${SEGMENT_COLORS[idx % SEGMENT_COLORS.length]}`,
-                }}
-              >
-                <div className="hero-card-header-row">
-                  <EditableField
-                    value={income.name}
-                    onSave={(v) => onUpdateIncomeField(income.id, "name", v)}
-                  />
-                  <button
-                    type="button"
-                    className={`hero-pill-badge ${income.received ? "received" : "pending"}`}
-                    onClick={() =>
-                      onUpdateIncomeField(
-                        income.id,
-                        "received",
-                        !income.received
-                      )
-                    }
-                    title="Click to toggle status"
-                  >
-                    {income.received ? "Received" : "Pending"}
-                  </button>
-                </div>
-                <div className="hero-card-bottom-row">
-                  <EditableField
-                    value={income.amount.toFixed(2)}
-                    onSave={(v) => onUpdateIncomeField(income.id, "amount", v)}
-                    type="number"
-                    prefix="£"
-                  />
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "2px",
-                      alignItems: "center",
-                    }}
-                  >
-                    <span className="hero-card-pct">
-                      {pctShare.toFixed(0)}%
-                    </span>
-                    {incomes.length > 1 && (
-                      <button
-                        type="button"
-                        className="hero-btn-icon hero-btn-danger"
-                        onClick={() => onDeleteIncome(income.id)}
-                        title="Delete Income Source"
-                      >
-                        <FontAwesomeIcon icon={faTrashCan} size="xs" />
-                      </button>
-                    )}
-                  </div>
+      {/* Incomes Cards Grid */}
+      <div className="hero-cards-grid">
+        {incomes.map((income, idx) => {
+          const pctShare =
+            totalIncome > 0 ? (income.amount / totalIncome) * 100 : 0;
+          return (
+            <div
+              key={income.id}
+              className="hero-bordered-card"
+              style={{
+                borderLeft: `4px solid ${SEGMENT_COLORS[idx % SEGMENT_COLORS.length]}`,
+              }}
+            >
+              <div className="hero-card-header-row">
+                <EditableField
+                  value={income.name}
+                  onSave={(v) => onUpdateIncomeField(income.id, "name", v)}
+                />
+                <button
+                  type="button"
+                  className={`hero-pill-badge ${income.received ? "received" : "pending"}`}
+                  onClick={() =>
+                    onUpdateIncomeField(income.id, "received", !income.received)
+                  }
+                  title="Click to toggle status"
+                >
+                  {income.received ? "Received" : "Pending"}
+                </button>
+              </div>
+              <div className="hero-card-bottom-row">
+                <EditableField
+                  value={income.amount.toFixed(2)}
+                  onSave={(v) => onUpdateIncomeField(income.id, "amount", v)}
+                  type="number"
+                  prefix="£"
+                />
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "2px",
+                    alignItems: "center",
+                  }}
+                >
+                  <span className="hero-card-pct">{pctShare.toFixed(0)}%</span>
+                  {incomes.length > 1 && (
+                    <button
+                      type="button"
+                      className="hero-btn-icon hero-btn-danger"
+                      onClick={() => onDeleteIncome(income.id)}
+                      title="Delete Income Source"
+                    >
+                      <FontAwesomeIcon icon={faTrashCan} size="xs" />
+                    </button>
+                  )}
                 </div>
               </div>
-            );
-          })}
-          <button
-            type="button"
-            className="hero-bordered-card hero-btn-add-card"
-            onClick={onAddIncome}
-          >
-            <FontAwesomeIcon icon={faPlus} />
-            <span>Add Income</span>
-          </button>
-        </div>
+            </div>
+          );
+        })}
+        <button
+          type="button"
+          className="hero-bordered-card hero-btn-add-card"
+          onClick={onAddIncome}
+        >
+          <FontAwesomeIcon icon={faPlus} />
+          <span>Add Income</span>
+        </button>
       </div>
 
       {/* Symmetric Banners Area */}
