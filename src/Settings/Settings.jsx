@@ -72,7 +72,6 @@ export default function Settings() {
     if (!newGroupName.trim()) return;
     const newGroup = {
       name: newGroupName.trim(),
-      columns: [{ name: "Assigned" }, { name: "Remaining" }],
       budgetGroupItems: [],
     };
     setBudgetGroups([...budgetGroups, newGroup]);
@@ -232,11 +231,6 @@ export default function Settings() {
         finalBudgetGroups.push({
           name: "Debt",
           isDebtGroup: true,
-          columns: [
-            { name: "Balance" },
-            { name: "Planned" },
-            { name: "Paid so far" },
-          ],
           budgetGroupItems: validDebtItems,
         });
       }

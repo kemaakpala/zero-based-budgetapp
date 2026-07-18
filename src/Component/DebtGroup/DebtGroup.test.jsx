@@ -7,7 +7,6 @@ const noop = () => {};
 const createDebtGroup = (overrides = {}) => ({
   name: "Debt",
   isDebtGroup: true,
-  columns: [{ name: "Balance" }, { name: "Planned" }, { name: "Paid so far" }],
   budgetGroupItems: [
     {
       id: "d1",

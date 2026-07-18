@@ -46,11 +46,6 @@ describe("Budget", () => {
         {
           name: "Debt",
           isDebtGroup: true,
-          columns: [
-            { name: "Balance" },
-            { name: "Planned" },
-            { name: "Paid so far" },
-          ],
           budgetGroupItems: [
             {
               id: "d1",
@@ -100,11 +95,6 @@ describe("Budget", () => {
         {
           name: "Debt",
           isDebtGroup: true,
-          columns: [
-            { name: "Balance" },
-            { name: "Planned" },
-            { name: "Paid so far" },
-          ],
           budgetGroupItems: [
             {
               id: "d1",
@@ -167,7 +157,6 @@ describe("Budget", () => {
       budgetGroups: [
         {
           name: "Housing",
-          columns: [{ name: "Assigned" }, { name: "Remaining" }],
           budgetGroupItems: [
             {
               id: "h1",
