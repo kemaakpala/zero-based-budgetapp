@@ -47,7 +47,8 @@ export const budgetReducer = (state, action) => {
         ...state,
         incomes: (state.incomes || []).map((inc) => {
           if (inc.id === incomeId) {
-            const parsed = fieldName === "amount" ? parseFloat(value) || 0 : value;
+            const parsed =
+              fieldName === "amount" ? parseFloat(value) || 0 : value;
             return { ...inc, [fieldName]: parsed };
           }
           return inc;
@@ -190,8 +191,10 @@ export const budgetReducer = (state, action) => {
       const { index1, index2 } = action.payload;
       const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
       if (
-        index1 >= 0 && index1 < updatedGroups.length &&
-        index2 >= 0 && index2 < updatedGroups.length
+        index1 >= 0 &&
+        index1 < updatedGroups.length &&
+        index2 >= 0 &&
+        index2 < updatedGroups.length
       ) {
         const temp = updatedGroups[index1];
         updatedGroups[index1] = updatedGroups[index2];
