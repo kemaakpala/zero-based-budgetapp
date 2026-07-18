@@ -72,7 +72,7 @@ function Budget() {
 
   // Core Store Reducer
   const [state, dispatch] = useReducer(budgetReducer, {
-    startingSalary: 0,
+    incomes: [],
     budgetGroups: [],
     transactions: [],
     paydayDay: 20,
@@ -97,6 +97,7 @@ function Budget() {
 
   const [viewMode, setViewMode] = useState("remaining"); // 'remaining' or 'spent'
 
+
   // Modal States
   const [activeAddTransactionItem, setActiveAddTransactionItem] =
     useState(null);
@@ -120,7 +121,7 @@ function Budget() {
   useEffect(() => {
     if (
       state &&
-      state.startingSalary !== undefined &&
+      state.incomes !== undefined &&
       state.budgetGroups.length > 0 &&
       loadedMonthRef.current === monthKey
     ) {
@@ -140,8 +141,25 @@ function Budget() {
   };
 
   // Action Dispatchers
-  const handleStartingSalaryChange = (newVal) => {
-    dispatch({ type: "SET_STARTING_SALARY", payload: newVal });
+  const handleUpdateIncomeField = (incomeId, fieldName, value) => {
+    dispatch({
+      type: "UPDATE_INCOME_FIELD",
+      payload: { incomeId, fieldName, value },
+    });
+  };
+
+  const handleAddIncome = () => {
+    dispatch({
+      type: "ADD_INCOME",
+      payload: { name: "New Income", amount: 0, received: false },
+    });
+  };
+
+  const handleDeleteIncome = (incomeId) => {
+    dispatch({
+      type: "DELETE_INCOME",
+      payload: { incomeId },
+    });
   };
 
   const handleFieldChange = (itemId, fieldName, value) => {
@@ -189,6 +207,8 @@ function Budget() {
       dispatch({ type: "DELETE_GROUP", payload: { groupIndex } });
     }
   };
+
+
 
   const handleAddTransaction = (payee, amount, budgetItemId) => {
     if (!payee.trim() || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
@@ -276,7 +296,7 @@ function Budget() {
     return calculateSummary(state);
   }, [state]);
 
-  const { startingSalary, unassignedSalary } = summary;
+  const { totalIncome, totalAssigned, unassignedIncome, isOverallocated } = summary;
 
   const activeItemTransactions = useMemo(() => {
     return activeViewTransactionsItem
@@ -291,16 +311,21 @@ function Budget() {
       <Hero
         monthLabel={monthLabel}
         cycleRangeLabel={cycleRangeLabel}
-        startingSalary={startingSalary}
-        unassignedSalary={unassignedSalary}
-        onStartingSalaryChange={handleStartingSalaryChange}
+        incomes={state.incomes || []}
+        totalIncome={totalIncome}
+        totalAssigned={totalAssigned}
+        unassignedIncome={unassignedIncome}
+        isOverallocated={isOverallocated}
+        onUpdateIncomeField={handleUpdateIncomeField}
+        onAddIncome={handleAddIncome}
+        onDeleteIncome={handleDeleteIncome}
         viewMode={viewMode}
         onViewModeToggle={setViewMode}
       />
 
       <BudgetForm className="form" onAddGroupClick={handleAddGroup}>
-        {enrichedBudgetGroups.map((group, groupIndex) =>
-          group.isDebtGroup ? (
+        {enrichedBudgetGroups.map((group, groupIndex) => {
+          const budgetGroupElement = group.isDebtGroup ? (
             <DebtGroup
               key={group.name}
               budgetGroup={group}
@@ -340,8 +365,10 @@ function Budget() {
               onRenameGroupClick={handleRenameGroup}
               onDeleteGroupClick={handleDeleteGroup}
             />
-          )
-        )}
+          );
+
+          return budgetGroupElement;
+        })}
       </BudgetForm>
 
       <TransactionLog
@@ -389,6 +416,6 @@ function Budget() {
       />
     </section>
   );
-}
+};
 
 export default Budget;

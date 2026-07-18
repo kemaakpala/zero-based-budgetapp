@@ -1,30 +1,33 @@
+import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
+import Budget from "./Budget";
+import { describe, vi, it, expect, beforeEach } from "vitest";
 import { useParams } from "react-router-dom";
 import { formatBudgetItemAmount } from "../../utils/utils";
-import Budget from "./Budget";
 
-vi.mock("react-router-dom", async (importOriginal) => {
-  const actual = await importOriginal();
+// Mock React Router useParams
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom");
   return {
     ...actual,
-    useParams: vi.fn(() => ({ month: "June-2026" })),
-    useNavigate: vi.fn(() => vi.fn()),
+    useParams: vi.fn(),
+    useNavigate: () => vi.fn(),
   };
 });
 
-vi.mock("../../utils/utils", async (importOriginal) => {
-  const actual = await importOriginal();
+vi.mock("../../utils/utils", async () => {
+  const actual = await vi.importActual("../../utils/utils");
   return {
     ...actual,
-    generateUniqueId: vi.fn(() => 1),
-    formatBudgetItemAmount: vi.fn(() => 1),
-    getFullYear: vi.fn(() => 1),
+    formatBudgetItemAmount: vi.fn(),
   };
 });
 
 describe("Budget", () => {
   beforeEach(() => {
     localStorage.clear();
+    vi.clearAllMocks();
+    vi.mocked(useParams).mockReturnValue({ month: "July-2026" });
   });
 
   it("test budget renders Housing", () => {
@@ -41,7 +44,9 @@ describe("Budget", () => {
 
   it("updates template defaults when a debt item's Planned (assigned) field changes", () => {
     const defaults = {
-      startingSalary: 5000,
+      incomes: [
+        { id: "inc-default", name: "Main Salary", amount: 5000, received: true }
+      ],
       budgetGroups: [
         {
           name: "Debt",
@@ -90,7 +95,9 @@ describe("Budget", () => {
     });
 
     const defaults = {
-      startingSalary: 5000,
+      incomes: [
+        { id: "inc-default", name: "Main Salary", amount: 5000, received: true }
+      ],
       budgetGroups: [
         {
           name: "Debt",
@@ -119,10 +126,10 @@ describe("Budget", () => {
 
     // Check starting unassigned salary is 5000.00
     const unassignedSalaryEl = container.querySelector(
-      ".unassigned-salary-block .amount"
+      ".hero-progress-subtext"
     );
     expect(unassignedSalaryEl).toBeInTheDocument();
-    expect(unassignedSalaryEl.textContent).toBe("£5000.00");
+    expect(unassignedSalaryEl.textContent).toBe("£5000.00 left to assign");
 
     // Edit the planned value in June-2026 to 150
     const input = container.querySelector("#debt_Planned_text_d1");
@@ -130,7 +137,7 @@ describe("Budget", () => {
     fireEvent.change(input, { target: { value: "150" } });
 
     // Verify unassigned salary in June-2026 is reduced to 4850.00
-    expect(unassignedSalaryEl.textContent).toBe("£4850.00");
+    expect(unassignedSalaryEl.textContent).toBe("£4850.00 left to assign");
 
     // Now transition to July-2026
     vi.mocked(useParams).mockReturnValue({ month: "July-2026" });
@@ -141,8 +148,8 @@ describe("Budget", () => {
     // In July-2026 (a new month), the planned amount should be carried over from defaults (which was updated to 150)
     // Therefore, the left to assign amount should be 4850.00 (not 5000.00)
     expect(
-      container.querySelector(".unassigned-salary-block .amount").textContent
-    ).toBe("£4850.00");
+      container.querySelector(".hero-progress-subtext").textContent
+    ).toBe("£4850.00 left to assign");
   });
 
   it("does not save the previous month's state to the new month when transitioning", () => {
@@ -153,7 +160,9 @@ describe("Budget", () => {
     });
 
     const defaults = {
-      startingSalary: 5000,
+      incomes: [
+        { id: "inc-default", name: "Main Salary", amount: 5000, received: true }
+      ],
       budgetGroups: [
         {
           name: "Housing",

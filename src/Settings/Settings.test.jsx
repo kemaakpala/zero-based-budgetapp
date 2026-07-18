@@ -95,7 +95,7 @@ describe("Settings Onboarding Wizard", () => {
     const savedDefaults = JSON.parse(
       localStorage.getItem("budget_app_defaults")
     );
-    expect(savedDefaults.startingSalary).toBe(3500);
+    expect(savedDefaults.incomes[0].amount).toBe(3500);
     expect(
       savedDefaults.budgetGroups.some((g) => g.name === "Subscriptions")
     ).toBe(true);

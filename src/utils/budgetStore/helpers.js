@@ -19,7 +19,9 @@ export const loadBudgetData = (monthKey, storageAdapter) => {
     try {
       const parsed = JSON.parse(data);
       return {
-        startingSalary: parsed.startingSalary || 5000.0,
+        incomes: parsed.incomes || [
+          { id: "inc-default", name: "Main Salary", amount: 5000.0, received: true }
+        ],
         budgetGroups: sanitizeBudgetGroups(parsed.budgetGroups || []),
         transactions: parsed.transactions || [],
         paydayDay: parsed.paydayDay ?? 20,
@@ -36,7 +38,9 @@ export const loadBudgetData = (monthKey, storageAdapter) => {
     try {
       const parsed = JSON.parse(savedDefaults);
       return {
-        startingSalary: parsed.startingSalary || 5000.0,
+        incomes: parsed.incomes || [
+          { id: "inc-default", name: "Main Salary", amount: 5000.0, received: true }
+        ],
         budgetGroups: sanitizeBudgetGroups(
           JSON.parse(JSON.stringify(parsed.budgetGroups))
         ),
@@ -50,7 +54,9 @@ export const loadBudgetData = (monthKey, storageAdapter) => {
   }
 
   return {
-    startingSalary: 5000.0,
+    incomes: [
+      { id: "inc-default", name: "Main Salary", amount: 5000.0, received: true }
+    ],
     budgetGroups: sanitizeBudgetGroups(
       JSON.parse(JSON.stringify(DEFAULT_BUDGET_GROUPS))
     ),
@@ -110,14 +116,16 @@ export const getEnrichedGroups = (
 export const calculateSummary = (state) => {
   if (!state) {
     return {
-      startingSalary: 0,
+      totalIncome: 0,
       totalAssigned: 0,
-      unassignedSalary: 0,
+      unassignedIncome: 0,
       isOverallocated: false,
     };
   }
 
-  const { startingSalary, budgetGroups = [] } = state;
+  const { incomes = [], budgetGroups = [] } = state;
+
+  const totalIncome = incomes.reduce((sum, inc) => sum + (parseFloat(inc.amount) || 0), 0);
 
   const totalAssigned = budgetGroups.reduce((total, group) => {
     return (
@@ -129,13 +137,13 @@ export const calculateSummary = (state) => {
     );
   }, 0);
 
-  const unassignedSalary = startingSalary - totalAssigned;
-  const isOverallocated = unassignedSalary < 0;
+  const unassignedIncome = totalIncome - totalAssigned;
+  const isOverallocated = unassignedIncome < 0;
 
   return {
-    startingSalary,
+    totalIncome,
     totalAssigned,
-    unassignedSalary,
+    unassignedIncome,
     isOverallocated,
   };
 };
