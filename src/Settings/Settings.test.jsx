@@ -27,12 +27,12 @@ describe("Settings Onboarding Wizard", () => {
     ).toBeInTheDocument();
 
     // Check input displays default value of 5000
-    const salaryInput = screen.getByPlaceholderText("0.00");
-    expect(salaryInput.value).toBe("5000");
+    const incomeInput = screen.getByPlaceholderText("0.00");
+    expect(incomeInput.value).toBe("5000");
 
     // Change input value to 3500
-    fireEvent.change(salaryInput, { target: { value: "3500" } });
-    expect(salaryInput.value).toBe("3500");
+    fireEvent.change(incomeInput, { target: { value: "3500" } });
+    expect(incomeInput.value).toBe("3500");
 
     // Change payday settings: Day = 25, Weekend Strategy = "following-monday"
     const paydaySelect = screen.getByLabelText("Monthly Payday Day");
@@ -95,7 +95,7 @@ describe("Settings Onboarding Wizard", () => {
     const savedDefaults = JSON.parse(
       localStorage.getItem("budget_app_defaults")
     );
-    expect(savedDefaults.startingSalary).toBe(3500);
+    expect(savedDefaults.incomes[0].amount).toBe(3500);
     expect(
       savedDefaults.budgetGroups.some((g) => g.name === "Subscriptions")
     ).toBe(true);

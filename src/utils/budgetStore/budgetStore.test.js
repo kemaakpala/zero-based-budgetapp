@@ -22,7 +22,9 @@ describe("BudgetCycleStore Modules", () => {
 
   describe("budgetReducer", () => {
     const initialState = {
-      startingSalary: 3000.0,
+      incomes: [
+        { id: "inc-1", name: "Main Salary", amount: 3000.0, received: true },
+      ],
       budgetGroups: [
         {
           name: "Housing",
@@ -41,7 +43,9 @@ describe("BudgetCycleStore Modules", () => {
 
     it("handles LOAD_CYCLE", () => {
       const newState = {
-        startingSalary: 4000.0,
+        incomes: [
+          { id: "inc-1", name: "Main Salary", amount: 4000.0, received: true },
+        ],
         budgetGroups: [],
         transactions: [],
       };
@@ -49,16 +53,35 @@ describe("BudgetCycleStore Modules", () => {
         type: "LOAD_CYCLE",
         payload: newState,
       });
-      expect(result.startingSalary).toBe(4000.0);
+      expect(result.incomes[0].amount).toBe(4000.0);
       expect(result.budgetGroups.length).toBe(0);
     });
 
-    it("handles SET_STARTING_SALARY", () => {
-      const result = budgetReducer(initialState, {
-        type: "SET_STARTING_SALARY",
-        payload: 5000.0,
+    it("handles ADD_INCOME, DELETE_INCOME, and UPDATE_INCOME_FIELD", () => {
+      // Add income
+      let state = budgetReducer(initialState, {
+        type: "ADD_INCOME",
+        payload: { name: "Side Hustle", amount: 500, received: false },
       });
-      expect(result.startingSalary).toBe(5000.0);
+      expect(state.incomes.length).toBe(2);
+      expect(state.incomes[1].name).toBe("Side Hustle");
+      expect(state.incomes[1].amount).toBe(500);
+
+      const newIncomeId = state.incomes[1].id;
+
+      // Update income field
+      state = budgetReducer(state, {
+        type: "UPDATE_INCOME_FIELD",
+        payload: { incomeId: newIncomeId, fieldName: "amount", value: 600 },
+      });
+      expect(state.incomes[1].amount).toBe(600);
+
+      // Delete income
+      state = budgetReducer(state, {
+        type: "DELETE_INCOME",
+        payload: { incomeId: newIncomeId },
+      });
+      expect(state.incomes.length).toBe(1);
     });
 
     it("handles UPDATE_ITEM_FIELD", () => {
@@ -322,21 +345,23 @@ describe("BudgetCycleStore Modules", () => {
       const adapter = new InMemoryStorageAdapter();
       // Test default fallback
       const data1 = loadBudgetData("June-2026", adapter);
-      expect(data1.startingSalary).toBe(5000.0);
+      expect(data1.incomes[0].amount).toBe(5000.0);
       expect(data1.budgetGroups.length).toBeGreaterThan(0);
       expect(data1.paydayDay).toBe(20);
       expect(data1.weekendBehavior).toBe("preceding-friday");
 
       // Test custom templates
       const defaults = {
-        startingSalary: 4500.0,
+        incomes: [
+          { id: "inc-1", name: "Salary", amount: 4500.0, received: true },
+        ],
         budgetGroups: [{ name: "CustomGroup", budgetGroupItems: [] }],
         paydayDay: 25,
         weekendBehavior: "following-monday",
       };
       adapter.set("budget_app_defaults", JSON.stringify(defaults));
       const data2 = loadBudgetData("June-2026", adapter);
-      expect(data2.startingSalary).toBe(4500.0);
+      expect(data2.incomes[0].amount).toBe(4500.0);
       expect(data2.budgetGroups[0].name).toBe("CustomGroup");
       expect(data2.paydayDay).toBe(25);
       expect(data2.weekendBehavior).toBe("following-monday");
@@ -345,14 +370,16 @@ describe("BudgetCycleStore Modules", () => {
     it("saves budget data", () => {
       const adapter = new InMemoryStorageAdapter();
       const state = {
-        startingSalary: 6000.0,
+        incomes: [
+          { id: "inc-1", name: "Salary", amount: 6000.0, received: true },
+        ],
         budgetGroups: [],
         transactions: [],
       };
       saveBudgetData("June-2026", state, adapter);
 
       const loaded = JSON.parse(adapter.get("budget_app_data_June-2026"));
-      expect(loaded.startingSalary).toBe(6000.0);
+      expect(loaded.incomes[0].amount).toBe(6000.0);
     });
 
     it("enriches budget groups correctly", () => {
@@ -480,7 +507,9 @@ describe("BudgetCycleStore Modules", () => {
 
     it("calculates summaries correctly", () => {
       const state = {
-        startingSalary: 3000.0,
+        incomes: [
+          { id: "inc-1", name: "Salary", amount: 3000.0, received: true },
+        ],
         budgetGroups: [
           {
             name: "Housing",
@@ -501,15 +530,17 @@ describe("BudgetCycleStore Modules", () => {
       };
 
       const summary = calculateSummary(state);
-      expect(summary.startingSalary).toBe(3000.0);
+      expect(summary.totalIncome).toBe(3000.0);
       expect(summary.totalAssigned).toBe(1200.0);
-      expect(summary.unassignedSalary).toBe(1800.0);
+      expect(summary.unassignedIncome).toBe(1800.0);
       expect(summary.isOverallocated).toBe(false);
 
       // Test overallocated
-      state.startingSalary = 1000.0;
+      state.incomes = [
+        { id: "inc-1", name: "Salary", amount: 1000.0, received: true },
+      ];
       const summary2 = calculateSummary(state);
-      expect(summary2.unassignedSalary).toBe(-200.0);
+      expect(summary2.unassignedIncome).toBe(-200.0);
       expect(summary2.isOverallocated).toBe(true);
     });
   });

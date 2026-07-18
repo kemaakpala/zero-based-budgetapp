@@ -17,11 +17,51 @@ export const budgetReducer = (state, action) => {
     case "LOAD_CYCLE":
       return action.payload;
 
-    case "SET_STARTING_SALARY":
+    case "ADD_INCOME": {
+      const { name, amount, received } = action.payload;
       return {
         ...state,
-        startingSalary: action.payload,
+        incomes: [
+          ...(state.incomes || []),
+          {
+            id: generateUniqueId(),
+            name: name || "New Income",
+            amount: parseFloat(amount) || 0,
+            received: !!received,
+          },
+        ],
       };
+    }
+
+    case "DELETE_INCOME": {
+      const { incomeId } = action.payload;
+      return {
+        ...state,
+        incomes: (state.incomes || []).filter((inc) => inc.id !== incomeId),
+      };
+    }
+
+    case "UPDATE_INCOME_FIELD": {
+      const { incomeId, fieldName, value } = action.payload;
+      return {
+        ...state,
+        incomes: (state.incomes || []).map((inc) => {
+          if (inc.id === incomeId) {
+            let parsedVal = value;
+            if (fieldName === "amount") {
+              parsedVal = parseFloat(value) || 0;
+            } else if (fieldName === "received") {
+              parsedVal = !!value;
+            }
+            return {
+              ...inc,
+              [fieldName]: parsedVal,
+            };
+          }
+          return inc;
+        }),
+      };
+    }
 
     case "UPDATE_ITEM_FIELD": {
       const { itemId, fieldName, value } = action.payload;
