@@ -25,12 +25,12 @@ export default function Settings() {
       try {
         const parsed = JSON.parse(savedDefaults);
         const incomes = parsed.incomes || [];
-        const salary =
+        const incomeVal =
           incomes.length > 0
             ? incomes.reduce((s, i) => s + i.amount, 0)
             : parsed.startingSalary || 5000.0;
         return {
-          startingSalary: salary,
+          initialIncome: incomeVal,
           budgetGroups:
             parsed.budgetGroups ||
             JSON.parse(JSON.stringify(DEFAULT_BUDGET_GROUPS)),
@@ -42,7 +42,7 @@ export default function Settings() {
       }
     }
     return {
-      startingSalary: 5000.0,
+      initialIncome: 5000.0,
       budgetGroups: JSON.parse(JSON.stringify(DEFAULT_BUDGET_GROUPS)),
       paydayDay: 20,
       weekendBehavior: "preceding-friday",
@@ -52,9 +52,7 @@ export default function Settings() {
   const initialData = loadInitialSettings();
 
   const [currentStep, setCurrentStep] = useState(1);
-  const [startingSalary, setStartingSalary] = useState(
-    initialData.startingSalary
-  );
+  const [initialIncome, setInitialIncome] = useState(initialData.initialIncome);
   const [budgetGroups, setBudgetGroups] = useState(initialData.budgetGroups);
   const [paydayDay, setPaydayDay] = useState(initialData.paydayDay);
   const [weekendBehavior, setWeekendBehavior] = useState(
@@ -67,8 +65,8 @@ export default function Settings() {
   const [debtItems, setDebtItems] = useState([]);
 
   // Auto-focus logic or helpers
-  const handleSalaryPreset = (amount) => {
-    setStartingSalary(amount);
+  const handleIncomePreset = (amount) => {
+    setInitialIncome(amount);
   };
 
   // Group Handlers
@@ -247,7 +245,7 @@ export default function Settings() {
         {
           id: "inc-default",
           name: "Main Salary",
-          amount: startingSalary,
+          amount: initialIncome,
           received: true,
         },
       ],
@@ -276,7 +274,7 @@ export default function Settings() {
         {
           id: "inc-default",
           name: "Main Salary",
-          amount: startingSalary,
+          amount: initialIncome,
           received: true,
         },
       ],
@@ -370,7 +368,7 @@ export default function Settings() {
             <h2>Set Your Starting Monthly Income</h2>
             <p className="wizard-description">
               In a zero-based budget, you assign every single pound of your
-              salary a job. Let's start with how much money you earn each month.
+              income a job. Let's start with how much money you earn each month.
             </p>
 
             <div className="salary-input-container">
@@ -379,9 +377,9 @@ export default function Settings() {
                 type="number"
                 step="0.01"
                 min="0"
-                value={startingSalary}
+                value={initialIncome}
                 onChange={(e) =>
-                  setStartingSalary(parseFloat(e.target.value) || 0)
+                  setInitialIncome(parseFloat(e.target.value) || 0)
                 }
                 className="wizard-salary-input"
                 placeholder="0.00"
@@ -395,8 +393,8 @@ export default function Settings() {
                   <button
                     key={preset}
                     type="button"
-                    onClick={() => handleSalaryPreset(preset)}
-                    className={`preset-btn ${startingSalary === preset ? "selected" : ""}`}
+                    onClick={() => handleIncomePreset(preset)}
+                    className={`preset-btn ${initialIncome === preset ? "selected" : ""}`}
                   >
                     £{preset.toLocaleString()}
                   </button>
@@ -764,7 +762,7 @@ export default function Settings() {
               <div className="summary-row">
                 <span className="summary-label">Monthly Starting Income:</span>
                 <span className="summary-value">
-                  £{startingSalary.toFixed(2)}
+                  £{initialIncome.toFixed(2)}
                 </span>
               </div>
               <div className="summary-row">
@@ -815,7 +813,7 @@ export default function Settings() {
               <ul>
                 <li>
                   <span className="check-bullet">✓</span> Give every pound a job
-                  by allocating all £{startingSalary.toFixed(2)} to your
+                  by allocating all £{initialIncome.toFixed(2)} to your
                   categories.
                 </li>
                 <li>
