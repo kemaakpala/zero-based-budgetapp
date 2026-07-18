@@ -397,8 +397,8 @@ function Budget() {
               onDrop={(e) => handleDrop(e, groupIndex)}
               style={{
                 opacity: draggedIndex === groupIndex ? 0.4 : 1,
-                transition: "opacity 0.2s ease",
               }}
+              className="budget-group-draggable"
             >
               {budgetGroupElement}
             </div>

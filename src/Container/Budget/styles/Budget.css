@@ -239,3 +239,9 @@ section {
 .form-actions__Button:hover {
   background-color: #e8f0fe;
 }
+
+.budget-group-draggable {
+  width: 100%;
+  box-sizing: border-box;
+  transition: "opacity 0.2s ease";
+}
