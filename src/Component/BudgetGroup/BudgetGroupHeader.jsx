@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronDown,
@@ -6,6 +7,7 @@ import {
   faEllipsisVertical,
   faPen,
   faTrashCan,
+  faGripVertical,
 } from "@fortawesome/free-solid-svg-icons";
 import PopOverMenu from "../PopOverMenu/PopOverMenu";
 import Button from "../Button/Button";
@@ -32,7 +34,15 @@ const BudgetGroupHeader = ({
         className="group-header-column group-header-title"
         role="button"
         onClick={handleHeaderClick}
+        style={{ display: "flex", alignItems: "center" }}
       >
+        <span
+          className="grip-handle"
+          title="Drag grip handle to reorder group"
+          style={{ marginRight: "0.5rem", cursor: "grab", color: "#adb5bd" }}
+        >
+          <FontAwesomeIcon icon={faGripVertical} />
+        </span>
         <h3>{budgetGroupName}</h3>
 
         <Button variation="transparent" onClickHandler={handleToggle}>
@@ -93,4 +103,20 @@ const BudgetGroupHeader = ({
     </div>
   );
 };
+
+BudgetGroupHeader.propTypes = {
+  budgetGroupName: PropTypes.string.isRequired,
+  columns: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  handleToggle: PropTypes.func.isRequired,
+  hideContentFlag: PropTypes.bool.isRequired,
+  handleHeaderClick: PropTypes.func.isRequired,
+  onRenameGroupClick: PropTypes.func.isRequired,
+  onDeleteGroupClick: PropTypes.func.isRequired,
+  actions: PropTypes.node,
+};
+
 export default BudgetGroupHeader;

@@ -97,6 +97,8 @@ function Budget() {
 
   const [viewMode, setViewMode] = useState("remaining"); // 'remaining' or 'spent'
 
+  const [draggedIndex, setDraggedIndex] = useState(null);
+
   // Modal States
   const [activeAddTransactionItem, setActiveAddTransactionItem] =
     useState(null);
@@ -205,6 +207,26 @@ function Budget() {
     if (confirmed) {
       dispatch({ type: "DELETE_GROUP", payload: { groupIndex } });
     }
+  };
+
+  const handleDragStart = (e, index) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e, index) => {
+    e.preventDefault();
+    if (draggedIndex !== null && draggedIndex !== index) {
+      dispatch({
+        type: "SWAP_GROUPS",
+        payload: { index1: draggedIndex, index2: index },
+      });
+    }
+    setDraggedIndex(null);
   };
 
   const handleAddTransaction = (payee, amount, budgetItemId) => {
@@ -365,7 +387,22 @@ function Budget() {
             />
           );
 
-          return budgetGroupElement;
+          // Wrap all groups (Budget & Debt) in Draggable containers for sorting
+          return (
+            <div
+              key={group.name}
+              draggable
+              onDragStart={(e) => handleDragStart(e, groupIndex)}
+              onDragOver={handleDragOver}
+              onDrop={(e) => handleDrop(e, groupIndex)}
+              style={{
+                opacity: draggedIndex === groupIndex ? 0.4 : 1,
+                transition: "opacity 0.2s ease",
+              }}
+            >
+              {budgetGroupElement}
+            </div>
+          );
         })}
       </BudgetForm>
 

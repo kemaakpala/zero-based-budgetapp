@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import "./styles/BudgetGroup.css";
 import BudgetGroupHeader from "./BudgetGroupHeader";
 import BudgetGroupActions from "./BudgetGroupActions";
@@ -80,6 +81,29 @@ const BudgetGroup = ({
       )}
     </div>
   );
+};
+
+BudgetGroup.propTypes = {
+  budgetGroup: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    budgetGroupItems: PropTypes.array.isRequired,
+  }),
+  groupIndex: PropTypes.number,
+  onChangeHandler: PropTypes.func,
+  onBlurHandler: PropTypes.func,
+  onAddTransactionClick: PropTypes.func,
+  onViewTransactionsClick: PropTypes.func,
+  onDeleteItemClick: PropTypes.func,
+  onAddItemClick: PropTypes.func,
+  onRenameGroupClick: PropTypes.func,
+  onDeleteGroupClick: PropTypes.func,
+  className: PropTypes.string,
+  headerActions: PropTypes.node,
+  footerActions: PropTypes.node,
+  children: PropTypes.node,
+  name: PropTypes.string,
+  columns: PropTypes.array,
+  viewMode: PropTypes.string,
 };
 
 export default BudgetGroup;
