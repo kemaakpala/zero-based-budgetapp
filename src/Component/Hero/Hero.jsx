@@ -37,6 +37,8 @@ const Hero = ({
   };
 
   const isOverallocated = unassignedSalary < 0;
+  const assignedAmount = startingSalary - unassignedSalary;
+  const assignedPercentage = (assignedAmount / startingSalary) * 100;
 
   return (
     <div className="hero-container">
@@ -100,19 +102,24 @@ const Hero = ({
               </button>
             </div>
           ) : (
-            <div className="salary-display">
-              <h2 className="amount">
-                <span>{currency}</span>
-                <span>{parseFloat(startingSalary).toFixed(2)}</span>
-              </h2>
-              <button
-                type="button"
-                className="btn-edit-salary"
-                onClick={() => setIsEditing(true)}
-                title="Edit Starting Salary"
-              >
-                <FontAwesomeIcon icon={faPen} size="xs" />
-              </button>
+            <div>
+              <div className="salary-display">
+                <h2 className="amount">
+                  <span>{currency}</span>
+                  <span>{parseFloat(startingSalary).toFixed(2)}</span>
+                </h2>
+                <button
+                  type="button"
+                  className="btn-edit-salary"
+                  onClick={() => setIsEditing(true)}
+                  title="Edit Starting Salary"
+                >
+                  <FontAwesomeIcon icon={faPen} size="xs" />
+                </button>
+              </div>
+              <div className="assigned-percentage-badge">
+                {assignedPercentage.toFixed(0)}% assigned
+              </div>
             </div>
           )}
         </div>

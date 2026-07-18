@@ -122,6 +122,16 @@ section {
   align-items: center;
   gap: 0.5rem;
 }
+.assigned-percentage-badge {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1b5e20;
+  background-color: #e8f5e9;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  margin-top: 0.35rem;
+}
 .btn-edit-salary {
   background: none;
   border: none;
