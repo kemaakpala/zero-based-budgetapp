@@ -25,7 +25,10 @@ export default function Settings() {
       try {
         const parsed = JSON.parse(savedDefaults);
         const incomes = parsed.incomes || [];
-        const salary = incomes.length > 0 ? incomes.reduce((s, i) => s + i.amount, 0) : (parsed.startingSalary || 5000.0);
+        const salary =
+          incomes.length > 0
+            ? incomes.reduce((s, i) => s + i.amount, 0)
+            : parsed.startingSalary || 5000.0;
         return {
           startingSalary: salary,
           budgetGroups:
@@ -241,7 +244,12 @@ export default function Settings() {
     // 1. Save defaults to localStorage for template use
     const defaults = {
       incomes: [
-        { id: "inc-default", name: "Main Salary", amount: startingSalary, received: true }
+        {
+          id: "inc-default",
+          name: "Main Salary",
+          amount: startingSalary,
+          received: true,
+        },
       ],
       budgetGroups: finalBudgetGroups,
       paydayDay,
@@ -265,7 +273,12 @@ export default function Settings() {
     // Always write or prompt? Let's write to current month so user starts with their new setup
     const newMonthData = {
       incomes: [
-        { id: "inc-default", name: "Main Salary", amount: startingSalary, received: true }
+        {
+          id: "inc-default",
+          name: "Main Salary",
+          amount: startingSalary,
+          received: true,
+        },
       ],
       budgetGroups: JSON.parse(JSON.stringify(finalBudgetGroups)),
       transactions: existingMonthData

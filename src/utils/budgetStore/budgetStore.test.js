@@ -23,7 +23,7 @@ describe("BudgetCycleStore Modules", () => {
   describe("budgetReducer", () => {
     const initialState = {
       incomes: [
-        { id: "inc-1", name: "Main Salary", amount: 3000.0, received: true }
+        { id: "inc-1", name: "Main Salary", amount: 3000.0, received: true },
       ],
       budgetGroups: [
         {
@@ -44,7 +44,7 @@ describe("BudgetCycleStore Modules", () => {
     it("handles LOAD_CYCLE", () => {
       const newState = {
         incomes: [
-          { id: "inc-1", name: "Main Salary", amount: 4000.0, received: true }
+          { id: "inc-1", name: "Main Salary", amount: 4000.0, received: true },
         ],
         budgetGroups: [],
         transactions: [],
@@ -352,7 +352,9 @@ describe("BudgetCycleStore Modules", () => {
 
       // Test custom templates
       const defaults = {
-        incomes: [{ id: "inc-1", name: "Salary", amount: 4500.0, received: true }],
+        incomes: [
+          { id: "inc-1", name: "Salary", amount: 4500.0, received: true },
+        ],
         budgetGroups: [{ name: "CustomGroup", budgetGroupItems: [] }],
         paydayDay: 25,
         weekendBehavior: "following-monday",
@@ -368,7 +370,9 @@ describe("BudgetCycleStore Modules", () => {
     it("saves budget data", () => {
       const adapter = new InMemoryStorageAdapter();
       const state = {
-        incomes: [{ id: "inc-1", name: "Salary", amount: 6000.0, received: true }],
+        incomes: [
+          { id: "inc-1", name: "Salary", amount: 6000.0, received: true },
+        ],
         budgetGroups: [],
         transactions: [],
       };
@@ -504,7 +508,7 @@ describe("BudgetCycleStore Modules", () => {
     it("calculates summaries correctly", () => {
       const state = {
         incomes: [
-          { id: "inc-1", name: "Salary", amount: 3000.0, received: true }
+          { id: "inc-1", name: "Salary", amount: 3000.0, received: true },
         ],
         budgetGroups: [
           {
@@ -533,7 +537,7 @@ describe("BudgetCycleStore Modules", () => {
 
       // Test overallocated
       state.incomes = [
-        { id: "inc-1", name: "Salary", amount: 1000.0, received: true }
+        { id: "inc-1", name: "Salary", amount: 1000.0, received: true },
       ];
       const summary2 = calculateSummary(state);
       expect(summary2.unassignedIncome).toBe(-200.0);

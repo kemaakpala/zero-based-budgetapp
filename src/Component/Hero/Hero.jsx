@@ -55,7 +55,8 @@ const EditableField = ({ value, onSave, type = "text", prefix = "" }) => {
       className="hero-inplace-text"
       title="Click to edit"
     >
-      {prefix}{value}
+      {prefix}
+      {value}
     </span>
   );
 };
@@ -162,7 +163,11 @@ const Hero = ({
                     type="button"
                     className={`hero-pill-badge ${income.received ? "received" : "pending"}`}
                     onClick={() =>
-                      onUpdateIncomeField(income.id, "received", !income.received)
+                      onUpdateIncomeField(
+                        income.id,
+                        "received",
+                        !income.received
+                      )
                     }
                     title="Click to toggle status"
                   >
@@ -176,8 +181,16 @@ const Hero = ({
                     type="number"
                     prefix="£"
                   />
-                  <div style={{ display: "flex", gap: "2px", alignItems: "center" }}>
-                    <span className="hero-card-pct">{pctShare.toFixed(0)}%</span>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "2px",
+                      alignItems: "center",
+                    }}
+                  >
+                    <span className="hero-card-pct">
+                      {pctShare.toFixed(0)}%
+                    </span>
                     {incomes.length > 1 && (
                       <button
                         type="button"
@@ -212,7 +225,10 @@ const Hero = ({
         </div>
       ) : isOverallocated ? (
         <div className="hero-status-banner hero-status-banner--error">
-          <FontAwesomeIcon icon={faTriangleExclamation} className="hero-status-banner-icon" />
+          <FontAwesomeIcon
+            icon={faTriangleExclamation}
+            className="hero-status-banner-icon"
+          />
           <span>£{overage.toFixed(2)} Over-allocated! Reduce assignments.</span>
         </div>
       ) : (

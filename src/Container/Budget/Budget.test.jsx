@@ -45,7 +45,12 @@ describe("Budget", () => {
   it("updates template defaults when a debt item's Planned (assigned) field changes", () => {
     const defaults = {
       incomes: [
-        { id: "inc-default", name: "Main Salary", amount: 5000, received: true }
+        {
+          id: "inc-default",
+          name: "Main Salary",
+          amount: 5000,
+          received: true,
+        },
       ],
       budgetGroups: [
         {
@@ -96,7 +101,12 @@ describe("Budget", () => {
 
     const defaults = {
       incomes: [
-        { id: "inc-default", name: "Main Salary", amount: 5000, received: true }
+        {
+          id: "inc-default",
+          name: "Main Salary",
+          amount: 5000,
+          received: true,
+        },
       ],
       budgetGroups: [
         {
@@ -147,9 +157,9 @@ describe("Budget", () => {
 
     // In July-2026 (a new month), the planned amount should be carried over from defaults (which was updated to 150)
     // Therefore, the left to assign amount should be 4850.00 (not 5000.00)
-    expect(
-      container.querySelector(".hero-progress-subtext").textContent
-    ).toBe("£4850.00 left to assign");
+    expect(container.querySelector(".hero-progress-subtext").textContent).toBe(
+      "£4850.00 left to assign"
+    );
   });
 
   it("does not save the previous month's state to the new month when transitioning", () => {
@@ -161,7 +171,12 @@ describe("Budget", () => {
 
     const defaults = {
       incomes: [
-        { id: "inc-default", name: "Main Salary", amount: 5000, received: true }
+        {
+          id: "inc-default",
+          name: "Main Salary",
+          amount: 5000,
+          received: true,
+        },
       ],
       budgetGroups: [
         {

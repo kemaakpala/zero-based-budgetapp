@@ -20,7 +20,12 @@ export const loadBudgetData = (monthKey, storageAdapter) => {
       const parsed = JSON.parse(data);
       return {
         incomes: parsed.incomes || [
-          { id: "inc-default", name: "Main Salary", amount: 5000.0, received: true }
+          {
+            id: "inc-default",
+            name: "Main Salary",
+            amount: 5000.0,
+            received: true,
+          },
         ],
         budgetGroups: sanitizeBudgetGroups(parsed.budgetGroups || []),
         transactions: parsed.transactions || [],
@@ -39,7 +44,12 @@ export const loadBudgetData = (monthKey, storageAdapter) => {
       const parsed = JSON.parse(savedDefaults);
       return {
         incomes: parsed.incomes || [
-          { id: "inc-default", name: "Main Salary", amount: 5000.0, received: true }
+          {
+            id: "inc-default",
+            name: "Main Salary",
+            amount: 5000.0,
+            received: true,
+          },
         ],
         budgetGroups: sanitizeBudgetGroups(
           JSON.parse(JSON.stringify(parsed.budgetGroups))
@@ -55,7 +65,12 @@ export const loadBudgetData = (monthKey, storageAdapter) => {
 
   return {
     incomes: [
-      { id: "inc-default", name: "Main Salary", amount: 5000.0, received: true }
+      {
+        id: "inc-default",
+        name: "Main Salary",
+        amount: 5000.0,
+        received: true,
+      },
     ],
     budgetGroups: sanitizeBudgetGroups(
       JSON.parse(JSON.stringify(DEFAULT_BUDGET_GROUPS))
@@ -125,7 +140,10 @@ export const calculateSummary = (state) => {
 
   const { incomes = [], budgetGroups = [] } = state;
 
-  const totalIncome = incomes.reduce((sum, inc) => sum + (parseFloat(inc.amount) || 0), 0);
+  const totalIncome = incomes.reduce(
+    (sum, inc) => sum + (parseFloat(inc.amount) || 0),
+    0
+  );
 
   const totalAssigned = budgetGroups.reduce((total, group) => {
     return (

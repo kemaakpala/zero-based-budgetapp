@@ -97,7 +97,6 @@ function Budget() {
 
   const [viewMode, setViewMode] = useState("remaining"); // 'remaining' or 'spent'
 
-
   // Modal States
   const [activeAddTransactionItem, setActiveAddTransactionItem] =
     useState(null);
@@ -208,8 +207,6 @@ function Budget() {
     }
   };
 
-
-
   const handleAddTransaction = (payee, amount, budgetItemId) => {
     if (!payee.trim() || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
       alert("Please enter a valid payee name and numeric amount.");
@@ -296,7 +293,8 @@ function Budget() {
     return calculateSummary(state);
   }, [state]);
 
-  const { totalIncome, totalAssigned, unassignedIncome, isOverallocated } = summary;
+  const { totalIncome, totalAssigned, unassignedIncome, isOverallocated } =
+    summary;
 
   const activeItemTransactions = useMemo(() => {
     return activeViewTransactionsItem
@@ -416,6 +414,6 @@ function Budget() {
       />
     </section>
   );
-};
+}
 
 export default Budget;

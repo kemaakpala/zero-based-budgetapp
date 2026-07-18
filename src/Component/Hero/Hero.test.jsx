@@ -7,7 +7,9 @@ describe("Hero Component", () => {
   it("renders total income and remaining values", () => {
     render(
       <Hero
-        incomes={[{ id: "inc-1", name: "Main Salary", amount: 5000, received: true }]}
+        incomes={[
+          { id: "inc-1", name: "Main Salary", amount: 5000, received: true },
+        ]}
         totalIncome={5000}
         totalAssigned={4000}
         unassignedIncome={1000}
@@ -26,7 +28,9 @@ describe("Hero Component", () => {
   it("displays the correct assigned amount statement", () => {
     render(
       <Hero
-        incomes={[{ id: "inc-1", name: "Main Salary", amount: 5000, received: true }]}
+        incomes={[
+          { id: "inc-1", name: "Main Salary", amount: 5000, received: true },
+        ]}
         totalIncome={5000}
         totalAssigned={4000}
         unassignedIncome={1000}
@@ -37,6 +41,8 @@ describe("Hero Component", () => {
         onViewModeToggle={vi.fn()}
       />
     );
-    expect(screen.getByText("£4000.00 of £5000.00 assigned")).toBeInTheDocument();
+    expect(
+      screen.getByText("£4000.00 of £5000.00 assigned")
+    ).toBeInTheDocument();
   });
 });
