@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useReducer, useMemo, useRef } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Hero,
@@ -14,22 +14,7 @@ import {
 } from "../../Component";
 import "./styles/Budget.css";
 import { BudgetCycleCalculator } from "../../utils/budgetCycle";
-import {
-  budgetReducer,
-  LocalStorageAdapter,
-  loadBudgetData,
-  saveBudgetData,
-  getEnrichedGroups,
-  calculateSummary,
-  updateTemplateDebtBalance,
-  updateTemplateDebtAssigned,
-  addTemplateDebtItem,
-  updateTemplateDebtItem,
-  updateTemplateSavingsBalance,
-  addTemplateSavingsItem,
-  updateTemplateSavingsItem,
-} from "../../utils/budgetStore";
-import { generateUniqueId } from "../../utils/utils";
+import { useBudgetStore, LocalStorageAdapter } from "../../utils/budgetStore";
 
 const storageAdapter = new LocalStorageAdapter();
 
@@ -75,14 +60,31 @@ function Budget() {
     monthIndex = new Date().getMonth();
   }
 
-  // Core Store Reducer
-  const [state, dispatch] = useReducer(budgetReducer, {
-    incomes: [],
-    budgetGroups: [],
-    transactions: [],
-    paydayDay: 20,
-    weekendBehavior: "preceding-friday",
-  });
+  // Custom Hook for State management, Persistence and default Template syncing
+  const {
+    state,
+    summary,
+    enrichedBudgetGroups,
+    viewMode,
+    setViewMode,
+    handleUpdateIncomeField,
+    handleAddIncome,
+    handleDeleteIncome,
+    handleFieldChange,
+    handleAddItem,
+    handleDeleteItem,
+    handleAddGroup: hookAddGroup,
+    handleRenameGroup: hookRenameGroup,
+    handleDeleteGroup: hookDeleteGroup,
+    handleSwapGroups,
+    handleAddTransaction: hookAddTransaction,
+    handleDeleteTransaction,
+    handleDeleteMultipleTransactions,
+    handleAddDebtItem: hookAddDebtItem,
+    handleUpdateDebtItem: hookUpdateDebtItem,
+    handleAddSavingsItem: hookAddSavingsItem,
+    handleUpdateSavingsItem: hookUpdateSavingsItem,
+  } = useBudgetStore(monthKey, storageAdapter);
 
   const cycleCalculator = useMemo(() => {
     return new BudgetCycleCalculator({
@@ -100,8 +102,6 @@ function Budget() {
     return cycleCalculator.formatCycleRange(range);
   }, [cycleCalculator, range]);
 
-  const [viewMode, setViewMode] = useState("remaining"); // 'remaining' or 'spent'
-
   const [draggedIndex, setDraggedIndex] = useState(null);
 
   // Modal States
@@ -118,108 +118,17 @@ function Budget() {
   const [savingsFormModalOpen, setSavingsFormModalOpen] = useState(false);
   const [editingSavingsItem, setEditingSavingsItem] = useState(null);
 
-  const loadedMonthRef = useRef(null);
-
-  // Sync state with url parameter (Cycle loading)
-  useEffect(() => {
-    const data = loadBudgetData(monthKey, storageAdapter);
-    dispatch({ type: "LOAD_CYCLE", payload: data });
-    loadedMonthRef.current = monthKey;
-  }, [monthKey]);
-
-  // Sync state changes back to localStorage
-  useEffect(() => {
-    if (
-      state &&
-      state.incomes !== undefined &&
-      state.budgetGroups.length > 0 &&
-      loadedMonthRef.current === monthKey
-    ) {
-      saveBudgetData(monthKey, state, storageAdapter);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state]);
-
-  // Helper: find a budget item by id across all groups
-  const findBudgetItem = (itemId) => {
-    for (const group of state.budgetGroups) {
-      for (const item of group.budgetGroupItems) {
-        if (item.id === itemId) return item;
-      }
-    }
-    return null;
-  };
-
-  // Action Dispatchers
-  const handleUpdateIncomeField = (incomeId, fieldName, value) => {
-    dispatch({
-      type: "UPDATE_INCOME_FIELD",
-      payload: { incomeId, fieldName, value },
-    });
-  };
-
-  const handleAddIncome = () => {
-    dispatch({
-      type: "ADD_INCOME",
-      payload: { name: "New Income", amount: 0, received: false },
-    });
-  };
-
-  const handleDeleteIncome = (incomeId) => {
-    dispatch({
-      type: "DELETE_INCOME",
-      payload: { incomeId },
-    });
-  };
-
-  const handleFieldChange = (itemId, fieldName, value) => {
-    const targetItem = findBudgetItem(itemId);
-
-    dispatch({
-      type: "UPDATE_ITEM_FIELD",
-      payload: { itemId, fieldName, value },
-    });
-
-    if (targetItem) {
-      if (targetItem.type === "debt" && fieldName === "assigned") {
-        updateTemplateDebtAssigned(storageAdapter, itemId, value);
-      } else if (targetItem.type === "savings") {
-        if (fieldName === "assigned") {
-          const oldAssigned = parseFloat(targetItem.assigned) || 0;
-          const newAssigned = parseFloat(value) || 0;
-          const diff = newAssigned - oldAssigned;
-          updateTemplateSavingsBalance(storageAdapter, itemId, diff);
-        } else {
-          updateTemplateSavingsItem(storageAdapter, {
-            itemId,
-            [fieldName]: value,
-          });
-        }
-      }
-    }
-  };
-
-  const handleAddItem = (groupIndex) => {
-    dispatch({ type: "ADD_ITEM", payload: { groupIndex } });
-  };
-
-  const handleDeleteItem = (itemId) => {
-    dispatch({ type: "DELETE_ITEM", payload: itemId });
-  };
-
+  // Component UI Dialog Action wrappers
   const handleAddGroup = () => {
     const newGroupName = prompt("Enter new group name:");
     if (!newGroupName) return;
-    dispatch({ type: "ADD_GROUP", payload: { name: newGroupName } });
+    hookAddGroup(newGroupName);
   };
 
   const handleRenameGroup = (groupIndex, currentName) => {
     const newName = prompt("Rename budget group:", currentName);
     if (newName && newName.trim() && newName.trim() !== currentName) {
-      dispatch({
-        type: "RENAME_GROUP",
-        payload: { groupIndex, newName: newName.trim() },
-      });
+      hookRenameGroup(groupIndex, newName.trim());
     }
   };
 
@@ -228,7 +137,7 @@ function Budget() {
       `Are you sure you want to delete the "${groupName}" group and all its budget items? This will also remove any related transactions.`
     );
     if (confirmed) {
-      dispatch({ type: "DELETE_GROUP", payload: { groupIndex } });
+      hookDeleteGroup(groupIndex);
     }
   };
 
@@ -244,10 +153,7 @@ function Budget() {
   const handleDrop = (e, index) => {
     e.preventDefault();
     if (draggedIndex !== null && draggedIndex !== index) {
-      dispatch({
-        type: "SWAP_GROUPS",
-        payload: { index1: draggedIndex, index2: index },
-      });
+      handleSwapGroups(draggedIndex, index);
     }
     setDraggedIndex(null);
   };
@@ -257,131 +163,30 @@ function Budget() {
       alert("Please enter a valid payee name and numeric amount.");
       return;
     }
-    dispatch({
-      type: "ADD_TRANSACTION",
-      payload: { payee, amount, budgetItemId },
-    });
-
-    const targetItem = findBudgetItem(budgetItemId);
-    if (targetItem) {
-      if (targetItem.type === "debt") {
-        updateTemplateDebtBalance(
-          storageAdapter,
-          budgetItemId,
-          -parseFloat(amount)
-        );
-      } else if (targetItem.type === "savings") {
-        updateTemplateSavingsBalance(
-          storageAdapter,
-          budgetItemId,
-          -parseFloat(amount)
-        );
-      }
-    }
+    hookAddTransaction(payee, amount, budgetItemId);
   };
 
-  const handleDeleteTransaction = (txId) => {
-    const tx = state.transactions.find((t) => t.id === txId);
-    if (tx) {
-      const targetItem = findBudgetItem(tx.budgetItemId);
-      if (targetItem) {
-        if (targetItem.type === "debt") {
-          updateTemplateDebtBalance(storageAdapter, tx.budgetItemId, tx.amount);
-        } else if (targetItem.type === "savings") {
-          updateTemplateSavingsBalance(
-            storageAdapter,
-            tx.budgetItemId,
-            tx.amount
-          );
-        }
-      }
-    }
-
-    dispatch({ type: "DELETE_TRANSACTION", payload: txId });
-  };
-
-  const handleDeleteMultipleTransactions = (txIds) => {
-    for (const txId of txIds) {
-      const tx = state.transactions.find((t) => t.id === txId);
-      if (tx) {
-        const targetItem = findBudgetItem(tx.budgetItemId);
-        if (targetItem) {
-          if (targetItem.type === "debt") {
-            updateTemplateDebtBalance(
-              storageAdapter,
-              tx.budgetItemId,
-              tx.amount
-            );
-          } else if (targetItem.type === "savings") {
-            updateTemplateSavingsBalance(
-              storageAdapter,
-              tx.budgetItemId,
-              tx.amount
-            );
-          }
-        }
-      }
-    }
-
-    dispatch({ type: "DELETE_MULTIPLE_TRANSACTIONS", payload: txIds });
-  };
-
-  // Debt Action Dispatchers
   const handleAddDebtItem = (debtData) => {
-    const newId = generateUniqueId();
-    const debtWithId = { ...debtData, id: newId };
-
-    // Ensure the Debt group exists
-    dispatch({ type: "ADD_DEBT_REPAYMENT_GROUP" });
-    dispatch({ type: "ADD_DEBT_ITEM", payload: debtWithId });
-
-    // Also update the template with the new debt
-    addTemplateDebtItem(storageAdapter, debtWithId);
+    hookAddDebtItem(debtData);
     setDebtFormModalOpen(false);
   };
 
   const handleUpdateDebtItem = (debtData) => {
-    dispatch({ type: "UPDATE_DEBT_ITEM", payload: debtData });
-
-    // Also update the template
-    updateTemplateDebtItem(storageAdapter, debtData);
-
+    hookUpdateDebtItem(debtData);
     setEditingDebtItem(null);
     setDebtFormModalOpen(false);
   };
 
-  // Savings Action Dispatchers
   const handleAddSavingsItem = (savingsData) => {
-    const newId = generateUniqueId();
-    const savingsWithId = { ...savingsData, id: newId };
-
-    // Ensure the Savings group exists
-    dispatch({ type: "ADD_SAVINGS_GROUP" });
-    dispatch({ type: "ADD_SAVINGS_ITEM", payload: savingsWithId });
-
-    // Also update the template with the new savings
-    addTemplateSavingsItem(storageAdapter, savingsWithId);
+    hookAddSavingsItem(savingsData);
     setSavingsFormModalOpen(false);
   };
 
   const handleUpdateSavingsItem = (savingsData) => {
-    dispatch({ type: "UPDATE_SAVINGS_ITEM", payload: savingsData });
-
-    // Also update the template
-    updateTemplateSavingsItem(storageAdapter, savingsData);
-
+    hookUpdateSavingsItem(savingsData);
     setEditingSavingsItem(null);
     setSavingsFormModalOpen(false);
   };
-
-  // Derived values on render (Single Source of Truth)
-  const enrichedBudgetGroups = useMemo(() => {
-    return getEnrichedGroups(state.budgetGroups, state.transactions, viewMode);
-  }, [state.budgetGroups, state.transactions, viewMode]);
-
-  const summary = useMemo(() => {
-    return calculateSummary(state);
-  }, [state]);
 
   const { totalIncome, totalAssigned, unassignedIncome, isOverallocated } =
     summary;

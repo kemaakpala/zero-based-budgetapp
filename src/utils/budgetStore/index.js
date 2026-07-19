@@ -13,3 +13,4 @@ export {
   addTemplateSavingsItem,
   updateTemplateSavingsItem,
 } from "./helpers";
+export { useBudgetStore } from "./useBudgetStore";
