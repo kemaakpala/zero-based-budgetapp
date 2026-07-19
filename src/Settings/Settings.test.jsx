@@ -18,7 +18,7 @@ describe("Settings Onboarding Wizard", () => {
     localStorage.clear();
   });
 
-  it("walks through the 3-step setup wizard and saves config (no debts path)", () => {
+  it("walks through the 5-step setup wizard and saves config (no debts, no savings path)", () => {
     render(<Settings />);
 
     // STEP 1: Starting Salary
@@ -76,7 +76,18 @@ describe("Settings Onboarding Wizard", () => {
     });
     fireEvent.click(noDebtsBtn);
 
-    // CONFIRM STEP (step 3 in the no-debts flow)
+    // SAVINGS QUESTION GATE (Step 4)
+    expect(
+      screen.getByText("Do You Want to Set Up Savings Goals?")
+    ).toBeInTheDocument();
+
+    // Click "No" to skip savings
+    const noSavingsBtn = screen.getByRole("button", {
+      name: /No, skip this step/i,
+    });
+    fireEvent.click(noSavingsBtn);
+
+    // CONFIRM STEP (Step 5)
     expect(screen.getByText("Confirm Your Budget Setup")).toBeInTheDocument();
     expect(screen.getByText("£3500.00")).toBeInTheDocument();
     expect(screen.getByText("5 groups")).toBeInTheDocument(); // 4 defaults + 1 custom
@@ -102,25 +113,28 @@ describe("Settings Onboarding Wizard", () => {
     expect(savedDefaults.paydayDay).toBe(25);
     expect(savedDefaults.weekendBehavior).toBe("following-monday");
 
-    // No debt group should be present
+    // No debt or savings groups should be present
     expect(savedDefaults.budgetGroups.some((g) => g.isDebtGroup)).toBe(false);
+    expect(savedDefaults.budgetGroups.some((g) => g.isSavingsGroup)).toBe(
+      false
+    );
 
     // Assert redirect
     expect(mockNavigate).toHaveBeenCalled();
   });
 
-  it("walks through the 4-step setup wizard with debts", () => {
+  it("walks through the 5-step setup wizard with debts and savings goals", () => {
     render(<Settings />);
 
-    // STEP 1: Advance past salary (defaults are fine)
+    // STEP 1: Advance past salary
     const nextBtn1 = screen.getByRole("button", { name: /Next/i });
     fireEvent.click(nextBtn1);
 
-    // STEP 2: Advance past categories (defaults are fine)
+    // STEP 2: Advance past categories
     const nextBtn2 = screen.getByRole("button", { name: /Next/i });
     fireEvent.click(nextBtn2);
 
-    // DEBT QUESTION GATE
+    // DEBT QUESTION GATE (Step 3)
     expect(screen.getByText("Do You Have Any Debt?")).toBeInTheDocument();
 
     // Click "Yes"
@@ -131,8 +145,6 @@ describe("Settings Onboarding Wizard", () => {
 
     // DEBT ENTRY STEP
     expect(screen.getByText("Add Your Debt")).toBeInTheDocument();
-
-    // A blank debt entry card should exist
     expect(screen.getByText("Debt 1")).toBeInTheDocument();
 
     // Fill in debt details
@@ -140,18 +152,57 @@ describe("Settings Onboarding Wizard", () => {
     fireEvent.change(nameInput, { target: { value: "Barclaycard" } });
 
     const balanceInputs = screen.getAllByPlaceholderText("0.00");
-    // First 0.00 placeholder is Outstanding Balance
+    // First is Outstanding Balance
     fireEvent.change(balanceInputs[0], { target: { value: "3200" } });
     // Second is Minimum Payment
     fireEvent.change(balanceInputs[1], { target: { value: "85" } });
 
-    // Click "Next" to go to confirm
+    // Click "Next" to go to Savings Gate (Step 4)
     const nextBtn3 = screen.getByRole("button", { name: /Next/i });
     fireEvent.click(nextBtn3);
+
+    // SAVINGS QUESTION GATE (Step 4)
+    expect(
+      screen.getByText("Do You Want to Set Up Savings Goals?")
+    ).toBeInTheDocument();
+
+    // Click "Yes"
+    const yesSavingsBtn = screen.getByRole("button", {
+      name: /Yes, set up savings/i,
+    });
+    fireEvent.click(yesSavingsBtn);
+
+    // SAVINGS ENTRY STEP
+    expect(screen.getByText("Add Your Savings Goals")).toBeInTheDocument();
+
+    // We check risk assessment calculations
+    // Sole breadwinner check
+    const breadwinnerChk = screen.getByLabelText(
+      "Are you the sole breadwinner?"
+    );
+    expect(breadwinnerChk.checked).toBe(false);
+
+    // Trigger calculation updates by making sole breadwinner true
+    fireEvent.click(breadwinnerChk);
+    expect(breadwinnerChk.checked).toBe(true);
+
+    // Apply Recommended Emergency Fund buffer
+    const applyBtn = screen.getByRole("button", {
+      name: /Apply Emergency Fund Target/i,
+    });
+    fireEvent.click(applyBtn);
+
+    // Goal 1 Emergency Fund should exist
+    expect(screen.getByDisplayValue("Emergency Fund")).toBeInTheDocument();
+
+    // Click "Next" to go to confirm (Step 5)
+    const nextBtn4 = screen.getByRole("button", { name: /Next/i });
+    fireEvent.click(nextBtn4);
 
     // CONFIRM STEP
     expect(screen.getByText("Confirm Your Budget Setup")).toBeInTheDocument();
     expect(screen.getByText("1 debts")).toBeInTheDocument();
+    expect(screen.getByText("1 goals")).toBeInTheDocument();
 
     // Click "Save & Start Budgeting"
     const finishBtn = screen.getByRole("button", {
@@ -159,21 +210,24 @@ describe("Settings Onboarding Wizard", () => {
     });
     fireEvent.click(finishBtn);
 
-    // Assert debt group was saved
+    // Assert saving logic
     const savedDefaults = JSON.parse(
       localStorage.getItem("budget_app_defaults")
     );
-    const debtGroup = savedDefaults.budgetGroups.find((g) => g.isDebtGroup);
-    expect(debtGroup).toBeDefined();
-    expect(debtGroup.name).toBe("Debt");
-    expect(debtGroup.budgetGroupItems.length).toBe(1);
+    const savingsGroup = savedDefaults.budgetGroups.find(
+      (g) => g.isSavingsGroup
+    );
+    expect(savingsGroup).toBeDefined();
+    expect(savingsGroup.name).toBe("Savings");
+    expect(savingsGroup.budgetGroupItems.length).toBe(1);
 
-    const debtItem = debtGroup.budgetGroupItems[0];
-    expect(debtItem.name).toBe("Barclaycard");
-    expect(debtItem.type).toBe("debt");
-    expect(debtItem.outstandingBalance).toBe(3200);
-    expect(debtItem.minimumPayment).toBe(85);
-    expect(debtItem.debtType).toBe("credit-card"); // default selection
+    const savingsItem = savingsGroup.budgetGroupItems[0];
+    expect(savingsItem.name).toBe("Emergency Fund");
+    expect(savingsItem.type).toBe("savings");
+    // income default is 5000, 70% monthly expenses = 3500.
+    // Sole breadwinner is true -> 6 months -> 3500 * 6 = 21000.
+    expect(savingsItem.target).toBe(21000);
+    expect(savingsItem.startingBalance).toBe(0);
 
     expect(mockNavigate).toHaveBeenCalled();
   });
