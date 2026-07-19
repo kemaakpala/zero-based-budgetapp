@@ -6,6 +6,9 @@ import {
   getEnrichedGroups,
   calculateSummary,
   updateTemplateDebtBalance,
+  updateTemplateSavingsBalance,
+  addTemplateSavingsItem,
+  updateTemplateSavingsItem,
 } from "./index";
 
 describe("BudgetCycleStore Modules", () => {
@@ -542,6 +545,147 @@ describe("BudgetCycleStore Modules", () => {
       const summary2 = calculateSummary(state);
       expect(summary2.unassignedIncome).toBe(-200.0);
       expect(summary2.isOverallocated).toBe(true);
+    });
+
+    it("handles ADD_SAVINGS_GROUP, ADD_SAVINGS_ITEM, and UPDATE_SAVINGS_ITEM", () => {
+      const state = { budgetGroups: [] };
+
+      // 1. ADD_SAVINGS_GROUP
+      let nextState = budgetReducer(state, { type: "ADD_SAVINGS_GROUP" });
+      expect(nextState.budgetGroups.length).toBe(1);
+      expect(nextState.budgetGroups[0].name).toBe("Savings");
+      expect(nextState.budgetGroups[0].isSavingsGroup).toBe(true);
+
+      // Duplicate check
+      nextState = budgetReducer(nextState, { type: "ADD_SAVINGS_GROUP" });
+      expect(nextState.budgetGroups.length).toBe(1);
+
+      // 2. ADD_SAVINGS_ITEM
+      nextState = budgetReducer(nextState, {
+        type: "ADD_SAVINGS_ITEM",
+        payload: {
+          id: "sav-1",
+          name: "Trip Fund",
+          target: 1000,
+          startingBalance: 200,
+        },
+      });
+      expect(nextState.budgetGroups[0].budgetGroupItems.length).toBe(1);
+      const item = nextState.budgetGroups[0].budgetGroupItems[0];
+      expect(item.name).toBe("Trip Fund");
+      expect(item.target).toBe(1000);
+      expect(item.startingBalance).toBe(200);
+      expect(item.type).toBe("savings");
+
+      // 3. UPDATE_SAVINGS_ITEM
+      nextState = budgetReducer(nextState, {
+        type: "UPDATE_SAVINGS_ITEM",
+        payload: {
+          itemId: "sav-1",
+          name: "Tokyo Trip",
+          target: 1200,
+          startingBalance: 250,
+        },
+      });
+      const updatedItem = nextState.budgetGroups[0].budgetGroupItems[0];
+      expect(updatedItem.name).toBe("Tokyo Trip");
+      expect(updatedItem.target).toBe(1200);
+      expect(updatedItem.startingBalance).toBe(250);
+    });
+
+    it("enriches savings items correctly in getEnrichedGroups", () => {
+      const budgetGroups = [
+        {
+          name: "Savings",
+          isSavingsGroup: true,
+          budgetGroupItems: [
+            {
+              id: "sav-1",
+              name: "Emergency Fund",
+              type: "savings",
+              assigned: 200,
+              target: 1000,
+              startingBalance: 400,
+            },
+          ],
+        },
+      ];
+      const transactions = [
+        { id: "tx-1", payee: "Car Repair", amount: 150, budgetItemId: "sav-1" },
+      ];
+
+      const enriched = getEnrichedGroups(
+        budgetGroups,
+        transactions,
+        "remaining"
+      );
+      const item = enriched[0].budgetGroupItems[0];
+
+      expect(item.spent).toBe(150);
+      // currentBalance = startingBalance + assigned - spent = 400 + 200 - 150 = 450
+      expect(item.currentBalance).toBe(450);
+      // toSave = target - currentBalance = 1000 - 450 = 550
+      expect(item.toSave).toBe(550);
+      expect(item.status[0].label).toBe("To Save");
+      expect(item.status[0].value).toBe("550.00");
+    });
+
+    it("manages savings template updates correctly", () => {
+      const adapter = new InMemoryStorageAdapter();
+      const template = {
+        budgetGroups: [
+          {
+            name: "Savings",
+            isSavingsGroup: true,
+            budgetGroupItems: [
+              {
+                id: "sav-1",
+                name: "Emergency Fund",
+                type: "savings",
+                assigned: 0,
+                target: 1000,
+                startingBalance: 200,
+              },
+            ],
+          },
+        ],
+      };
+      adapter.set("budget_app_defaults", JSON.stringify(template));
+
+      // 1. Update savings balance in template
+      updateTemplateSavingsBalance(adapter, "sav-1", 100);
+      let updated = JSON.parse(adapter.get("budget_app_defaults"));
+      expect(updated.budgetGroups[0].budgetGroupItems[0].startingBalance).toBe(
+        300
+      );
+
+      // 2. Update savings item metadata in template
+      updateTemplateSavingsItem(adapter, {
+        itemId: "sav-1",
+        name: "Sinking Fund",
+        target: 1500,
+        startingBalance: 350,
+      });
+      updated = JSON.parse(adapter.get("budget_app_defaults"));
+      const item = updated.budgetGroups[0].budgetGroupItems[0];
+      expect(item.name).toBe("Sinking Fund");
+      expect(item.target).toBe(1500);
+      expect(item.startingBalance).toBe(350);
+
+      // 3. Add template savings item
+      addTemplateSavingsItem(adapter, {
+        id: "sav-2",
+        name: "Car Goal",
+        target: 5000,
+        startingBalance: 500,
+      });
+      updated = JSON.parse(adapter.get("budget_app_defaults"));
+      expect(updated.budgetGroups[0].budgetGroupItems.length).toBe(2);
+      expect(updated.budgetGroups[0].budgetGroupItems[1].name).toBe("Car Goal");
+      expect(updated.budgetGroups[0].budgetGroupItems[1].target).toBe(5000);
+      expect(updated.budgetGroups[0].budgetGroupItems[1].startingBalance).toBe(
+        500
+      );
     });
   });
 });

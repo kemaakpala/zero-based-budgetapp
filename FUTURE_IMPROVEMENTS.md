@@ -15,6 +15,8 @@ This file tracks features, optimizations, and user experience enhancements defer
 - [x] **Remove `columns` from Domain State**: Each Budget Group stores a `columns` array (`[{name: "Assigned"}, {name: "Remaining"}]`) that is purely UI metadata. Move this to the component layer so domain state stays clean.
 - [x] **Rename `tx.name` to `tx.payee`**: Align the Transaction data model with the CONTEXT.md glossary term "Payee" — the field is currently just `name`, which is ambiguous.
 - [x] **GitHub Actions CI Pipeline**: Set up a CI workflow that runs the test suite (`npm test`) on every push and pull request to `main`. This is a prerequisite for moving to a feature-branch workflow with merge protection.
+- [x] **Playwright End-to-End Tests**: Integrated Playwright for automated E2E testing of critical user flows (setup wizard, adding Budget Items, recording Transactions, month navigation).
+- [x] **Standardize Editable Fields**: Extracted a unified click-to-edit `EditableField` component and replaced raw HTML inputs with upgraded `TextField` and `SelectField` primitives across the application.
 
 ## Planned
 
@@ -28,7 +30,6 @@ This file tracks features, optimizations, and user experience enhancements defer
 - [ ] **Data Export / Import**: All data lives in localStorage with no backup mechanism. Add export-to-JSON and import functionality so users can back up their budget history or move between browsers.
 - [ ] **Multi-Device Sync / Backend Persistence**: Replace or supplement localStorage with a backend (e.g. Firebase, Supabase) to enable cross-device access and data durability.
 - [ ] **Budget Summary / Insights Page**: The Layout nav bar has a chart-pie icon placeholder with no linked page. Build a summary view showing spending trends, category breakdowns, and month-over-month comparisons.
-- [ ] **Playwright End-to-End Tests**: Integrate Playwright for automated E2E testing of critical user flows (setup wizard, adding Budget Items, recording Transactions, month navigation). Unit tests cover business logic well, but the app has no automated browser-level testing.
 - [ ] **Income Frequency**: Allow each Income entry to specify a frequency (monthly, fortnightly, weekly) and automatically normalise the amount to a monthly equivalent. This would handle edge cases like months with an extra fortnightly pay period.
 - [ ] **Income Expected Date**: Track when within a Budget Cycle each Income is expected to arrive (e.g. "Freelance income lands around the 5th"). This would enable cash-flow awareness — showing which income hasn't arrived yet — but changes the current assumption that all income is available from day one.
 - [ ] **Income Type / Category**: Categorise each Income entry (salary, freelance, benefits, investment, etc.) to enable visual differentiation (icons, colours) and potential filtering/reporting in a future insights page.

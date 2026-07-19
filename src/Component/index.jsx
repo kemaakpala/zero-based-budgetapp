@@ -10,6 +10,8 @@ import DebtFormModal from "./DebtGroup/DebtFormModal";
 import TransactionLog from "./TransactionLog/TransactionLog";
 import AddTransactionModal from "./TransactionModals/AddTransactionModal";
 import ViewTransactionsModal from "./TransactionModals/ViewTransactionsModal";
+import SavingsGroup from "./SavingsGroup/SavingsGroup";
+import SavingsFormModal from "./SavingsGroup/SavingsFormModal";
 
 export {
   Button,
@@ -24,4 +26,6 @@ export {
   TransactionLog,
   AddTransactionModal,
   ViewTransactionsModal,
+  SavingsGroup,
+  SavingsFormModal,
 };

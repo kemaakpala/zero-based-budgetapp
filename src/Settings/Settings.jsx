@@ -10,6 +10,7 @@ import {
   faGear,
   faWandMagicSparkles,
   faCreditCard,
+  faPiggyBank,
 } from "@fortawesome/free-solid-svg-icons";
 import { DEFAULT_BUDGET_GROUPS, generateUniqueId } from "../utils/utils";
 import { DEBT_TYPES } from "../utils/constants";
@@ -63,6 +64,81 @@ export default function Settings() {
   // Debt tracking state
   const [hasDebts, setHasDebts] = useState(null); // null = unanswered, true/false
   const [debtItems, setDebtItems] = useState([]);
+
+  // Savings tracking state
+  const [hasSavings, setHasSavings] = useState(null); // null = unanswered, true/false
+  const [savingsItems, setSavingsItems] = useState([]);
+  const [isSoleBreadwinner, setIsSoleBreadwinner] = useState(false);
+  const [employmentStatus, setEmploymentStatus] = useState("permanent"); // "permanent" | "contractor"
+  const [monthlyExpensesInput, setMonthlyExpensesInput] = useState("");
+
+  // Initialize estimated monthly expenses baseline
+  React.useEffect(() => {
+    if (monthlyExpensesInput === "" && initialIncome > 0) {
+      setMonthlyExpensesInput((initialIncome * 0.7).toFixed(0));
+    }
+  }, [initialIncome, monthlyExpensesInput]);
+
+  const calcRecommendedBuffer = () => {
+    const expenses = parseFloat(monthlyExpensesInput) || 0;
+    const months =
+      isSoleBreadwinner || employmentStatus === "contractor" ? 6 : 3;
+    return {
+      months,
+      amount: expenses * months,
+    };
+  };
+
+  const recommendedBuffer = calcRecommendedBuffer();
+
+  const handleAddSavingsItem = () => {
+    setSavingsItems([
+      ...savingsItems,
+      {
+        id: generateUniqueId(),
+        name: "",
+        target: "",
+        startingBalance: "",
+      },
+    ]);
+  };
+
+  const handleUpdateSavingsItem = (index, field, value) => {
+    const updated = [...savingsItems];
+    updated[index][field] = value;
+    setSavingsItems(updated);
+  };
+
+  const handleDeleteSavingsItem = (index) => {
+    const updated = [...savingsItems];
+    updated.splice(index, 1);
+    setSavingsItems(updated);
+  };
+
+  const handleApplyRecommendedBuffer = () => {
+    const recommended = calcRecommendedBuffer();
+    const existingIndex = savingsItems.findIndex((item) =>
+      item.name.toLowerCase().includes("emergency")
+    );
+
+    if (existingIndex !== -1) {
+      handleUpdateSavingsItem(
+        existingIndex,
+        "target",
+        recommended.amount.toFixed(0)
+      );
+    } else {
+      setSavingsItems([
+        {
+          id: generateUniqueId(),
+          name: "Emergency Fund",
+          target: recommended.amount.toFixed(0),
+          startingBalance: "0",
+        },
+        ...savingsItems,
+      ]);
+    }
+  };
 
   // Auto-focus logic or helpers
   const handleIncomePreset = (amount) => {
@@ -148,64 +224,63 @@ export default function Settings() {
     setDebtItems(updated);
   };
 
-  // Step logic: steps are 1=Salary, 2=Categories, 3=Debt Question/Debt, 4=Confirm
-  // If hasDebts is null or false, step 3 is the debt question gate
-  // If hasDebts is true, step 3 shows debt entry, and step 4 is confirm
-  // If hasDebts is false, we skip from the gate to confirm (step 4)
-
-  const isConfirmStep =
-    currentStep === 4 || (currentStep === 3 && hasDebts === false);
+  // Step logic: steps are 1=Salary, 2=Categories, 3=Debt, 4=Savings, 5=Confirm
+  const isConfirmStep = currentStep === 5;
   const isDebtQuestionStep = currentStep === 3 && hasDebts === null;
   const isDebtEntryStep = currentStep === 3 && hasDebts === true;
+  const isSavingsQuestionStep = currentStep === 4 && hasSavings === null;
+  const isSavingsEntryStep = currentStep === 4 && hasSavings === true;
 
   // Get the actual step labels for the stepper
   const getStepperSteps = () => {
-    if (hasDebts) {
-      return [
-        { label: "Salary", step: 1 },
-        { label: "Categories", step: 2 },
-        { label: "Debt", step: 3 },
-        { label: "Confirm", step: 4 },
-      ];
-    }
     return [
       { label: "Salary", step: 1 },
       { label: "Categories", step: 2 },
-      { label: "Confirm", step: 3 },
+      { label: "Debt", step: 3 },
+      { label: "Savings", step: 4 },
+      { label: "Confirm", step: 5 },
     ];
   };
 
   const stepperSteps = getStepperSteps();
 
   const handleNextStep = () => {
-    if (currentStep === 2) {
-      // After categories, go to debt question (step 3)
+    if (currentStep === 1) {
+      setCurrentStep(2);
+    } else if (currentStep === 2) {
       setCurrentStep(3);
-    } else if (currentStep === 3 && hasDebts === true) {
-      // After debt entry, go to confirm
+    } else if (currentStep === 3) {
       setCurrentStep(4);
-    } else if (currentStep === 3 && hasDebts === false) {
-      // Should not happen — if no debts, confirm is step 3
-      // This case is handled by isConfirmStep
-    } else {
-      setCurrentStep(currentStep + 1);
+    } else if (currentStep === 4) {
+      setCurrentStep(5);
     }
   };
 
   const handlePrevStep = () => {
-    if (currentStep === 4) {
-      // Go back to debt entry (step 3)
-      setCurrentStep(3);
-    } else if (currentStep === 3 && hasDebts === false) {
-      // Back from confirm (when no debts) — go to debt question
-      setHasDebts(null);
-      setCurrentStep(3);
-    } else if (currentStep === 3 && hasDebts === true) {
-      // Back from debt entry — go to debt question
-      setHasDebts(null);
-    } else if (currentStep === 3 && hasDebts === null) {
-      // Back from debt question — go to categories
-      setCurrentStep(2);
+    if (currentStep === 5) {
+      if (hasSavings === true) {
+        setCurrentStep(4);
+      } else {
+        setHasSavings(null);
+        setCurrentStep(4);
+      }
+    } else if (currentStep === 4) {
+      if (hasSavings === true) {
+        setHasSavings(null);
+      } else {
+        if (hasDebts === true) {
+          setCurrentStep(3);
+        } else {
+          setHasDebts(null);
+          setCurrentStep(3);
+        }
+      }
+    } else if (currentStep === 3) {
+      if (hasDebts === true) {
+        setHasDebts(null);
+      } else {
+        setCurrentStep(2);
+      }
     } else {
       setCurrentStep(currentStep - 1);
     }
@@ -235,6 +310,27 @@ export default function Settings() {
           name: "Debt",
           isDebtGroup: true,
           budgetGroupItems: validDebtItems,
+        });
+      }
+    }
+
+    if (hasSavings && savingsItems.length > 0) {
+      const validSavingsItems = savingsItems
+        .filter((s) => s.name.trim())
+        .map((s) => ({
+          id: s.id,
+          name: s.name.trim(),
+          assigned: 0,
+          type: "savings",
+          target: parseFloat(s.target) || 0,
+          startingBalance: parseFloat(s.startingBalance) || 0,
+        }));
+
+      if (validSavingsItems.length > 0) {
+        finalBudgetGroups.push({
+          name: "Savings",
+          isSavingsGroup: true,
+          budgetGroupItems: validSavingsItems,
         });
       }
     }
@@ -295,10 +391,13 @@ export default function Settings() {
   };
 
   const totalGroups =
-    budgetGroups.length + (hasDebts && debtItems.length > 0 ? 1 : 0);
+    budgetGroups.length +
+    (hasDebts && debtItems.length > 0 ? 1 : 0) +
+    (hasSavings && savingsItems.length > 0 ? 1 : 0);
   const totalItems =
     budgetGroups.reduce((acc, g) => acc + g.budgetGroupItems.length, 0) +
-    (hasDebts ? debtItems.filter((d) => d.name.trim()).length : 0);
+    (hasDebts ? debtItems.filter((d) => d.name.trim()).length : 0) +
+    (hasSavings ? savingsItems.filter((s) => s.name.trim()).length : 0);
 
   // Determine stepper state for each node
   const getStepState = (stepNum) => {
@@ -602,7 +701,10 @@ export default function Settings() {
               <button
                 type="button"
                 className="btn-debt-answer btn-debt-no"
-                onClick={() => setHasDebts(false)}
+                onClick={() => {
+                  setHasDebts(false);
+                  setCurrentStep(4);
+                }}
               >
                 No, skip this step
               </button>
@@ -742,6 +844,213 @@ export default function Settings() {
           </div>
         )}
 
+        {/* Step 4: Savings Question Gate (when unanswered) */}
+        {isSavingsQuestionStep && (
+          <div className="wizard-step step-savings-question">
+            <div className="step-icon-header">
+              <FontAwesomeIcon
+                icon={faPiggyBank}
+                size="2x"
+                className="wizard-icon"
+              />
+            </div>
+            <h2>Do You Want to Set Up Savings Goals?</h2>
+            <p className="wizard-description">
+              Track your savings goals like emergency funds, holidays, or major
+              purchases. We can also help recommend a buffer size based on your
+              household circumstances.
+            </p>
+            <div className="debt-question-buttons">
+              <button
+                type="button"
+                className="btn-debt-answer btn-debt-yes"
+                onClick={() => {
+                  setHasSavings(true);
+                  if (savingsItems.length === 0) {
+                    handleAddSavingsItem();
+                  }
+                }}
+              >
+                Yes, set up savings
+              </button>
+              <button
+                type="button"
+                className="btn-debt-answer btn-debt-no"
+                onClick={() => {
+                  setHasSavings(false);
+                  setCurrentStep(5);
+                }}
+              >
+                No, skip this step
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 4: Savings Entry / Wizard (when hasSavings === true) */}
+        {isSavingsEntryStep && (
+          <div className="wizard-step step-savings">
+            <h2>Add Your Savings Goals</h2>
+            <p className="wizard-description">
+              Answer a few questions to get a recommended emergency fund size,
+              or add custom goals directly.
+            </p>
+
+            {/* Risk Assessment Panel */}
+            <div className="savings-risk-panel">
+              <h3>Emergency Fund Recommender</h3>
+              <div className="debt-fields-grid risk-grid">
+                <div
+                  className="form-group checkbox-group"
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    id="sole-breadwinner-chk"
+                    checked={isSoleBreadwinner}
+                    onChange={(e) => setIsSoleBreadwinner(e.target.checked)}
+                  />
+                  <label
+                    htmlFor="sole-breadwinner-chk"
+                    style={{ cursor: "pointer", userSelect: "none" }}
+                  >
+                    Are you the sole breadwinner?
+                  </label>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="employment-status-select">
+                    Employment Status
+                  </label>
+                  <select
+                    id="employment-status-select"
+                    value={employmentStatus}
+                    onChange={(e) => setEmploymentStatus(e.target.value)}
+                    className="wizard-select"
+                  >
+                    <option value="permanent">Permanent Employee</option>
+                    <option value="contractor">Contractor / Freelancer</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="monthly-expenses-input">
+                    Monthly Living Expenses (£)
+                  </label>
+                  <input
+                    type="number"
+                    id="monthly-expenses-input"
+                    value={monthlyExpensesInput}
+                    onChange={(e) => setMonthlyExpensesInput(e.target.value)}
+                    placeholder="0"
+                    className="debt-input"
+                  />
+                </div>
+              </div>
+
+              <div className="risk-recommendation-box">
+                <p>
+                  💡 <strong>Recommendation:</strong> Based on your job
+                  stability and household, we recommend a{" "}
+                  <strong>{recommendedBuffer.months}-month buffer</strong> of{" "}
+                  <strong>£{recommendedBuffer.amount.toLocaleString()}</strong>.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleApplyRecommendedBuffer}
+                  className="btn-apply-recommended"
+                >
+                  Apply Emergency Fund Target
+                </button>
+              </div>
+            </div>
+
+            <div className="debts-list-container">
+              {savingsItems.map((item, index) => (
+                <div key={item.id} className="debt-entry-card">
+                  <div className="debt-entry-header">
+                    <span className="debt-entry-number">Goal {index + 1}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteSavingsItem(index)}
+                      className="btn-delete-group"
+                      title="Remove goal"
+                    >
+                      <FontAwesomeIcon icon={faTrashCan} size="sm" />
+                    </button>
+                  </div>
+
+                  <div className="debt-fields-grid">
+                    <div className="form-group">
+                      <label>Goal Name</label>
+                      <input
+                        type="text"
+                        value={item.name}
+                        onChange={(e) =>
+                          handleUpdateSavingsItem(index, "name", e.target.value)
+                        }
+                        placeholder="e.g. Emergency Fund"
+                        className="debt-input"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>Overall Target (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={item.target}
+                        onChange={(e) =>
+                          handleUpdateSavingsItem(
+                            index,
+                            "target",
+                            e.target.value
+                          )
+                        }
+                        placeholder="0.00"
+                        className="debt-input"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>Starting Balance (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={item.startingBalance}
+                        onChange={(e) =>
+                          handleUpdateSavingsItem(
+                            index,
+                            "startingBalance",
+                            e.target.value
+                          )
+                        }
+                        placeholder="0.00"
+                        className="debt-input"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              className="btn-add-debt-entry"
+              onClick={handleAddSavingsItem}
+            >
+              <FontAwesomeIcon icon={faPlus} className="spacing-right" />
+              Add Another Savings Goal
+            </button>
+          </div>
+        )}
+
         {/* Confirm Step */}
         {isConfirmStep && (
           <div className="wizard-step step-confirm">
@@ -779,6 +1088,17 @@ export default function Settings() {
                     <span className="summary-label">Debt Being Tracked:</span>
                     <span className="summary-value">
                       {debtItems.filter((d) => d.name.trim()).length} debts
+                    </span>
+                  </div>
+                )}
+              {hasSavings &&
+                savingsItems.filter((s) => s.name.trim()).length > 0 && (
+                  <div className="summary-row">
+                    <span className="summary-label">
+                      Savings Goals Tracked:
+                    </span>
+                    <span className="summary-value">
+                      {savingsItems.filter((s) => s.name.trim()).length} goals
                     </span>
                   </div>
                 )}
@@ -844,7 +1164,7 @@ export default function Settings() {
             <div /> // Placeholder to push next button right
           )}
 
-          {!isConfirmStep && !isDebtQuestionStep ? (
+          {!isConfirmStep && !isDebtQuestionStep && !isSavingsQuestionStep ? (
             <button
               type="button"
               onClick={handleNextStep}
