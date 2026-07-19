@@ -77,12 +77,17 @@ describe("Budget", () => {
 
     const { container } = render(<Budget />);
 
-    // Find the Planned input field for the debt item
-    const input = container.querySelector("#debt_Planned_text_d1");
-    expect(input).toBeInTheDocument();
+    // Click the Planned amount (£0.00) to enter edit mode
+    const plannedText = container.querySelector(
+      ".debt-item-planned .editable-field__text"
+    );
+    expect(plannedText).toBeInTheDocument();
+    fireEvent.click(plannedText);
 
-    // Edit the planned value
+    // Find the input that appeared and change its value
+    const input = container.querySelector(".debt-item-planned input");
     fireEvent.change(input, { target: { value: "1000" } });
+    fireEvent.blur(input);
 
     // Verify template defaults in localStorage has been updated
     const updatedDefaults = JSON.parse(
@@ -141,10 +146,15 @@ describe("Budget", () => {
     expect(unassignedSalaryEl).toBeInTheDocument();
     expect(unassignedSalaryEl.textContent).toBe("£5000.00 left to assign");
 
-    // Edit the planned value in June-2026 to 150
-    const input = container.querySelector("#debt_Planned_text_d1");
-    expect(input).toBeInTheDocument();
+    // Click the Planned amount (£0.00) to enter edit mode, then change to 150
+    const plannedText = container.querySelector(
+      ".debt-item-planned .editable-field__text"
+    );
+    expect(plannedText).toBeInTheDocument();
+    fireEvent.click(plannedText);
+    const input = container.querySelector(".debt-item-planned input");
     fireEvent.change(input, { target: { value: "150" } });
+    fireEvent.blur(input);
 
     // Verify unassigned salary in June-2026 is reduced to 4850.00
     expect(unassignedSalaryEl.textContent).toBe("£4850.00 left to assign");
@@ -200,10 +210,15 @@ describe("Budget", () => {
     // Render for June-2026
     const { rerender, container } = render(<Budget />);
 
-    // Edit the Rent assigned value in June-2026 to 1000
-    const input = container.querySelector("#Housing_Assigned_text_h1");
-    expect(input).toBeInTheDocument();
+    // Click the Assigned amount (£0.00) for Rent to enter edit mode, then change to 1000
+    const assignedText = container.querySelector(
+      ".group-item-assigned .editable-field__text"
+    );
+    expect(assignedText).toBeInTheDocument();
+    fireEvent.click(assignedText);
+    const input = container.querySelector(".group-item-assigned input");
     fireEvent.change(input, { target: { value: "1000" } });
+    fireEvent.blur(input);
 
     // Spy on localStorage.setItem
     const setItemSpy = vi.spyOn(Storage.prototype, "setItem");

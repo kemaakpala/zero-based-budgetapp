@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -7,66 +7,10 @@ import {
   faCheck,
   faTriangleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
+import EditableField from "../EditableField/EditableField";
 import "./styles/Hero.css";
 
 const SEGMENT_COLORS = ["#1a73e8", "#6c3eb6", "#e67c00", "#0d8a72", "#c81e1e"];
-
-const EditableField = ({ value, onSave, type = "text", prefix = "" }) => {
-  const [editing, setEditing] = useState(false);
-  const [val, setVal] = useState(value);
-  const inputRef = useRef(null);
-
-  useEffect(() => {
-    setVal(value);
-  }, [value]);
-
-  const handleBlur = () => {
-    setEditing(false);
-    onSave(val);
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      inputRef.current.blur();
-    }
-  };
-
-  if (editing) {
-    return (
-      <div style={{ display: "inline-flex", alignItems: "center" }}>
-        {prefix && <span className="hero-currency-inline">{prefix}</span>}
-        <input
-          ref={inputRef}
-          type={type}
-          value={val}
-          onChange={(e) => setVal(e.target.value)}
-          onBlur={handleBlur}
-          onKeyDown={handleKeyDown}
-          className="hero-inplace-input"
-          autoFocus
-        />
-      </div>
-    );
-  }
-
-  return (
-    <span
-      onClick={() => setEditing(true)}
-      className="hero-inplace-text"
-      title="Click to edit"
-    >
-      {prefix}
-      {value}
-    </span>
-  );
-};
-
-EditableField.propTypes = {
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  onSave: PropTypes.func.isRequired,
-  type: PropTypes.string,
-  prefix: PropTypes.string,
-};
 
 const Hero = ({
   monthLabel = "",
