@@ -9,6 +9,8 @@ import {
   TransactionLog,
   AddTransactionModal,
   ViewTransactionsModal,
+  SavingsGroup,
+  SavingsFormModal,
 } from "../../Component";
 import "./styles/Budget.css";
 import { BudgetCycleCalculator } from "../../utils/budgetCycle";
@@ -23,6 +25,9 @@ import {
   updateTemplateDebtAssigned,
   addTemplateDebtItem,
   updateTemplateDebtItem,
+  updateTemplateSavingsBalance,
+  addTemplateSavingsItem,
+  updateTemplateSavingsItem,
 } from "../../utils/budgetStore";
 import { generateUniqueId } from "../../utils/utils";
 
@@ -109,6 +114,10 @@ function Budget() {
   const [debtFormModalOpen, setDebtFormModalOpen] = useState(false);
   const [editingDebtItem, setEditingDebtItem] = useState(null);
 
+  // Savings Modal States
+  const [savingsFormModalOpen, setSavingsFormModalOpen] = useState(false);
+  const [editingSavingsItem, setEditingSavingsItem] = useState(null);
+
   const loadedMonthRef = useRef(null);
 
   // Sync state with url parameter (Cycle loading)
@@ -164,15 +173,29 @@ function Budget() {
   };
 
   const handleFieldChange = (itemId, fieldName, value) => {
+    const targetItem = findBudgetItem(itemId);
+
     dispatch({
       type: "UPDATE_ITEM_FIELD",
       payload: { itemId, fieldName, value },
     });
 
-    // If it's a debt item and fieldName is "assigned", update the template defaults
-    const targetItem = findBudgetItem(itemId);
-    if (targetItem && targetItem.type === "debt" && fieldName === "assigned") {
-      updateTemplateDebtAssigned(storageAdapter, itemId, value);
+    if (targetItem) {
+      if (targetItem.type === "debt" && fieldName === "assigned") {
+        updateTemplateDebtAssigned(storageAdapter, itemId, value);
+      } else if (targetItem.type === "savings") {
+        if (fieldName === "assigned") {
+          const oldAssigned = parseFloat(targetItem.assigned) || 0;
+          const newAssigned = parseFloat(value) || 0;
+          const diff = newAssigned - oldAssigned;
+          updateTemplateSavingsBalance(storageAdapter, itemId, diff);
+        } else {
+          updateTemplateSavingsItem(storageAdapter, {
+            itemId,
+            [fieldName]: value,
+          });
+        }
+      }
     }
   };
 
@@ -239,28 +262,38 @@ function Budget() {
       payload: { payee, amount, budgetItemId },
     });
 
-    // Side-effect: update template balance for debt items (Option A)
     const targetItem = findBudgetItem(budgetItemId);
-    if (targetItem && targetItem.type === "debt") {
-      updateTemplateDebtBalance(
-        storageAdapter,
-        budgetItemId,
-        -parseFloat(amount)
-      );
+    if (targetItem) {
+      if (targetItem.type === "debt") {
+        updateTemplateDebtBalance(
+          storageAdapter,
+          budgetItemId,
+          -parseFloat(amount)
+        );
+      } else if (targetItem.type === "savings") {
+        updateTemplateSavingsBalance(
+          storageAdapter,
+          budgetItemId,
+          -parseFloat(amount)
+        );
+      }
     }
   };
 
   const handleDeleteTransaction = (txId) => {
-    // Side-effect: reverse template balance for debt items
     const tx = state.transactions.find((t) => t.id === txId);
     if (tx) {
       const targetItem = findBudgetItem(tx.budgetItemId);
-      if (targetItem && targetItem.type === "debt") {
-        updateTemplateDebtBalance(
-          storageAdapter,
-          tx.budgetItemId,
-          tx.amount // Add back the amount
-        );
+      if (targetItem) {
+        if (targetItem.type === "debt") {
+          updateTemplateDebtBalance(storageAdapter, tx.budgetItemId, tx.amount);
+        } else if (targetItem.type === "savings") {
+          updateTemplateSavingsBalance(
+            storageAdapter,
+            tx.budgetItemId,
+            tx.amount
+          );
+        }
       }
     }
 
@@ -268,13 +301,24 @@ function Budget() {
   };
 
   const handleDeleteMultipleTransactions = (txIds) => {
-    // Side-effect: reverse template balance for debt items
     for (const txId of txIds) {
       const tx = state.transactions.find((t) => t.id === txId);
       if (tx) {
         const targetItem = findBudgetItem(tx.budgetItemId);
-        if (targetItem && targetItem.type === "debt") {
-          updateTemplateDebtBalance(storageAdapter, tx.budgetItemId, tx.amount);
+        if (targetItem) {
+          if (targetItem.type === "debt") {
+            updateTemplateDebtBalance(
+              storageAdapter,
+              tx.budgetItemId,
+              tx.amount
+            );
+          } else if (targetItem.type === "savings") {
+            updateTemplateSavingsBalance(
+              storageAdapter,
+              tx.budgetItemId,
+              tx.amount
+            );
+          }
         }
       }
     }
@@ -304,6 +348,30 @@ function Budget() {
 
     setEditingDebtItem(null);
     setDebtFormModalOpen(false);
+  };
+
+  // Savings Action Dispatchers
+  const handleAddSavingsItem = (savingsData) => {
+    const newId = generateUniqueId();
+    const savingsWithId = { ...savingsData, id: newId };
+
+    // Ensure the Savings group exists
+    dispatch({ type: "ADD_SAVINGS_GROUP" });
+    dispatch({ type: "ADD_SAVINGS_ITEM", payload: savingsWithId });
+
+    // Also update the template with the new savings
+    addTemplateSavingsItem(storageAdapter, savingsWithId);
+    setSavingsFormModalOpen(false);
+  };
+
+  const handleUpdateSavingsItem = (savingsData) => {
+    dispatch({ type: "UPDATE_SAVINGS_ITEM", payload: savingsData });
+
+    // Also update the template
+    updateTemplateSavingsItem(storageAdapter, savingsData);
+
+    setEditingSavingsItem(null);
+    setSavingsFormModalOpen(false);
   };
 
   // Derived values on render (Single Source of Truth)
@@ -364,6 +432,27 @@ function Budget() {
               onAddDebtClick={() => {
                 setEditingDebtItem(null);
                 setDebtFormModalOpen(true);
+              }}
+            />
+          ) : group.isSavingsGroup ? (
+            <SavingsGroup
+              key={group.name}
+              budgetGroup={group}
+              onSaveField={handleFieldChange}
+              onRecordPaymentClick={(item) => {
+                setActiveAddTransactionItem(item);
+              }}
+              onViewPaymentsClick={(item) => {
+                setActiveViewTransactionsItem(item);
+              }}
+              onEditSavingsClick={(item) => {
+                setEditingSavingsItem(item);
+                setSavingsFormModalOpen(true);
+              }}
+              onDeleteItemClick={handleDeleteItem}
+              onAddSavingsClick={() => {
+                setEditingSavingsItem(null);
+                setSavingsFormModalOpen(true);
               }}
             />
           ) : (
@@ -445,6 +534,23 @@ function Budget() {
             handleUpdateDebtItem(data);
           } else {
             handleAddDebtItem(data);
+          }
+        }}
+      />
+
+      {/* Savings Form Modal (Add/Edit) */}
+      <SavingsFormModal
+        isOpen={savingsFormModalOpen}
+        savingsItem={editingSavingsItem}
+        onClose={() => {
+          setSavingsFormModalOpen(false);
+          setEditingSavingsItem(null);
+        }}
+        onSubmit={(data) => {
+          if (editingSavingsItem) {
+            handleUpdateSavingsItem(data);
+          } else {
+            handleAddSavingsItem(data);
           }
         }}
       />
