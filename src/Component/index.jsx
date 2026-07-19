@@ -1,5 +1,7 @@
 import Button from "./Button/Button";
 import TextField from "./TextField/TextField";
+import SelectField from "./SelectField/SelectField";
+import EditableField from "./EditableField/EditableField";
 import Hero from "./Hero/Hero";
 import BudgetForm from "./BudgetForm/BudgetForm";
 import BudgetGroup from "./BudgetGroup/BudgetGroup";
@@ -12,6 +14,8 @@ import ViewTransactionsModal from "./TransactionModals/ViewTransactionsModal";
 export {
   Button,
   TextField,
+  SelectField,
+  EditableField,
   Hero,
   BudgetForm,
   BudgetGroup,
