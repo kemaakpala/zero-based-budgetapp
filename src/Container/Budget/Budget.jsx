@@ -349,7 +349,7 @@ function Budget() {
             <DebtGroup
               key={group.name}
               budgetGroup={group}
-              onChangeHandler={handleFieldChange}
+              onSaveField={handleFieldChange}
               onRecordPaymentClick={(item) => {
                 setActiveAddTransactionItem(item);
               }}
@@ -372,8 +372,7 @@ function Budget() {
               groupIndex={groupIndex}
               budgetGroup={group}
               viewMode={viewMode}
-              onChangeHandler={handleFieldChange}
-              onBlurHandler={() => {}}
+              onSaveField={handleFieldChange}
               onAddTransactionClick={(gIdx, iIdx, item) => {
                 setActiveAddTransactionItem(item);
               }}
