@@ -30,8 +30,8 @@
 }
 
 .editable-field__input {
-  border: 1px solid var(--clr-primary, #1a73e8);
-  background-color: #ffffff;
+  border: 1px solid var(--clr-primary-a0);
+  background-color: var(--clr-surface-a10, #ffffff);
   border-radius: 4px;
   padding: 0.15rem 0.35rem;
   font-size: 0.875rem;

@@ -4,32 +4,34 @@
   --clr-light-a0: #ffffff;
 
   /** Theme-aware text contrast variables */
-  --clr-text-on-dark: rgba(255, 255, 255, 0.9);
-  --clr-text-muted-on-dark: #adb5bd;
+  --clr-text-on-dark: #ffffff;
+  --clr-text-muted-on-dark: rgba(255, 255, 255, 0.6);
+  --clr-text-main: var(--clr-light-a0);
+  --clr-text-muted: var(--clr-text-muted-on-dark);
 
   /** Dark theme primary colors */
-  --clr-primary-a0: #21f6ac;
-  --clr-primary-a10: #55f8b5;
-  --clr-primary-a20: #74f9be;
-  --clr-primary-a30: #8dfbc7;
-  --clr-primary-a40: #a3fcd1;
-  --clr-primary-a50: #b7fdda;
+  --clr-primary-a0: #1f7d53;
+  --clr-primary-a10: #255f38;
+  --clr-primary-a20: #1f7d53;
+  --clr-primary-a30: #1f7d53;
+  --clr-primary-a40: #255f38;
+  --clr-primary-a50: #1f7d53;
 
   /** Dark theme surface colors */
-  --clr-surface-a0: #01017e;
-  --clr-surface-a10: #341d8d;
-  --clr-surface-a20: #52389b;
-  --clr-surface-a30: #6c52aa;
-  --clr-surface-a40: #856db8;
-  --clr-surface-a50: #9d88c6;
+  --clr-surface-a0: #18230f;
+  --clr-surface-a10: #27391c;
+  --clr-surface-a20: #18230f;
+  --clr-surface-a30: #18230f;
+  --clr-surface-a40: #18230f;
+  --clr-surface-a50: #18230f;
 
   /** Dark theme tonal surface colors */
-  --clr-surface-tonal-a0: #30368a;
-  --clr-surface-tonal-a10: #4a4997;
-  --clr-surface-tonal-a20: #615ea4;
-  --clr-surface-tonal-a30: #7873b1;
-  --clr-surface-tonal-a40: #8e89be;
-  --clr-surface-tonal-a50: #a59fcb;
+  --clr-surface-tonal-a0: #255f38;
+  --clr-surface-tonal-a10: #27391c;
+  --clr-surface-tonal-a20: #18230f;
+  --clr-surface-tonal-a30: #27391c;
+  --clr-surface-tonal-a40: #255f38;
+  --clr-surface-tonal-a50: #1f7d53;
 }
 
 .App {
@@ -54,6 +56,18 @@
   font-weight: bold;
   font-size: 0.875rem;
   border-radius: 0.25rem;
+}
+button.form-control {
+  background-color: transparent;
+  border: none;
+  background: none;
+  box-shadow: none;
+  color: var(--clr-primary-a0);
+  cursor: pointer;
+}
+button.form-control:hover {
+  color: var(--clr-primary-a10);
+  background-color: transparent;
 }
 .form-control::placeholder {
   color: var(--clr-surface-a50);

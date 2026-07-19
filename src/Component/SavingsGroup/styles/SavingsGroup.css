@@ -1,6 +1,6 @@
 .savings-group-container {
   border: 1px solid var(--clr-surface-a10);
-  background-color: var(--clr-surface-a10);
+  /* background-color: var(--clr-surface-a10); */
   border-radius: 0.5rem;
   margin-bottom: 1rem;
   padding: 1rem;

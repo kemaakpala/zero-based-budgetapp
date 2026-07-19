@@ -78,8 +78,8 @@ hr {
 
 .months-nav {
   padding: 0.75rem 1rem;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
+  background-color: var(--clr-surface-a10, #f8f9fa);
+  border-bottom: 1px solid var(--clr-surface-a20, #e9ecef);
   overflow-x: auto;
   display: flex;
   justify-content: center;
@@ -99,7 +99,7 @@ hr {
 
 .month-link {
   text-decoration: none;
-  color: #6c757d;
+  color: var(--clr-text-muted, #6c757d);
   font-weight: 500;
   padding: 0.4rem 0.8rem;
   border-radius: 6px;
@@ -110,13 +110,13 @@ hr {
 }
 
 .month-link:hover {
-  background-color: #e9ecef;
-  color: #212529;
+  background-color: var(--clr-surface-a20, #e9ecef);
+  color: var(--clr-text-main, #212529);
 }
 
 .month-link--active {
-  background-color: #1a73e8;
-  color: #ffffff !important;
+  background-color: var(--clr-primary-a0, #1a73e8);
+  color: var(--clr-light-a0, #ffffff) !important;
   font-weight: 600;
-  box-shadow: 0 2px 4px rgba(26, 115, 232, 0.25);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
 }

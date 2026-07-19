@@ -14,7 +14,7 @@
   margin-bottom: 1rem;
   padding: 1rem;
   border-radius: 0.5rem;
-  background-color: var(--clr-surface-a10);
+  background-color: transparent;
   border: 1px solid var(--clr-surface-a10);
 }
 

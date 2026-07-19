@@ -14,106 +14,9 @@ section {
   padding: 1rem;
 }
 
-.hero-container,
 .form {
   width: 100%;
   max-width: 600px;
-}
-.hero-container {
-  flex: 0 1;
-  border: 1px solid #e9ecef;
-  padding: 1.25rem;
-  border-radius: 12px;
-  margin-bottom: 1.5rem;
-  background-color: #ffffff;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-}
-
-/* Hero header & meta */
-.hero-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 1rem;
-}
-.hero-meta h2 {
-  font-size: 1.25rem;
-  margin: 0;
-  font-weight: 700;
-  color: #212529;
-}
-.cycle-range {
-  font-size: 0.75rem;
-  color: #6c757d;
-  margin: 0.25rem 0 0 0;
-  font-weight: 500;
-}
-
-/* View Mode Toggle Switch */
-.view-mode-toggle {
-  display: flex;
-  background-color: #f1f3f5;
-  padding: 3px;
-  border-radius: 20px;
-  border: 1px solid #e9ecef;
-}
-.toggle-btn {
-  background: none;
-  border: none;
-  padding: 0.35rem 0.85rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #495057;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.toggle-btn.active {
-  background-color: #ffffff;
-  color: #1a73e8;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-/* Hero Grid Layout */
-.hero-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  width: 100%;
-  margin-top: 0.5rem;
-}
-.hero-block {
-  background-color: #f8f9fa;
-  border: 1px solid #e9ecef;
-  padding: 1.25rem;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  transition: all 0.2s ease;
-}
-.hero-block h3 {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  color: #6c757d;
-  margin: 0 0 0.5rem 0;
-  letter-spacing: 0.5px;
-  font-weight: 600;
-}
-.hero-block .amount {
-  font-size: 1.75rem;
-  margin: 0;
-  display: flex;
-  align-items: baseline;
-  color: #212529;
-  font-weight: 700;
-}
-.hero-block .amount span:first-child {
-  font-size: 1.1rem;
-  font-weight: 500;
-  margin-right: 0.15rem;
-  color: #495057;
 }
 
 /* Salary display & edit */
@@ -230,14 +133,15 @@ section {
   border-radius: 8px;
   font-weight: 600;
   font-size: 0.9rem;
-  border: 1px solid #1a73e8;
+  border: none;
   background-color: transparent;
-  color: #1a73e8;
+  color: var(--clr-primary-a0);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 .form-actions__Button:hover {
-  background-color: #e8f0fe;
+  color: var(--clr-primary-a10);
+  background-color: transparent;
 }
 
 .budget-group-draggable {
