@@ -130,7 +130,7 @@ const SavingsItemRow = ({
         className="savings-item-progress-wrapper"
         title={`${progressPercent}% saved`}
       >
-        <ProgressBar progress={progressPercent} />
+        <ProgressBar percentage={progressPercent} />
       </div>
     </div>
   );

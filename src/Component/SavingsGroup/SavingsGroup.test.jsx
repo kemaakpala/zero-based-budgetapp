@@ -45,6 +45,24 @@ describe("SavingsGroup", () => {
     expect(screen.getByText("£600.00")).toBeInTheDocument();
   });
 
+  it("renders progress bar with correct percentage width", () => {
+    render(
+      <SavingsGroup
+        budgetGroup={createSavingsGroup()}
+        onSaveField={noop}
+        onRecordPaymentClick={noop}
+        onViewPaymentsClick={noop}
+        onEditSavingsClick={noop}
+        onDeleteItemClick={noop}
+        onAddSavingsClick={noop}
+      />
+    );
+
+    const progressBar = screen.getByRole("progressbar");
+    // Emergency Fund target is 1000, currentBalance is 400, so progress is 40%
+    expect(progressBar).toHaveStyle("width: 40%");
+  });
+
   it("calls onAddSavingsClick when Add Savings Goal button is clicked", () => {
     const onAddSavingsClick = vi.fn();
     render(
