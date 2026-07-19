@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { DEBT_TYPES } from "../../utils/constants";
+import TextField from "../TextField/TextField";
+import SelectField from "../SelectField/SelectField";
 import "../TransactionModals/styles/TransactionModals.css";
 
 const DebtFormModal = ({ isOpen, debtItem, onClose, onSubmit }) => {
@@ -56,9 +58,9 @@ const DebtFormModal = ({ isOpen, debtItem, onClose, onSubmit }) => {
         </div>
         <div className="modal-body">
           <div className="form-group">
-            <label>Name</label>
-            <input
-              type="text"
+            <TextField
+              id="debtName"
+              label="Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Barclaycard"
@@ -66,21 +68,18 @@ const DebtFormModal = ({ isOpen, debtItem, onClose, onSubmit }) => {
             />
           </div>
           <div className="form-group">
-            <label>Debt Type</label>
-            <select
+            <SelectField
+              id="debtType"
+              label="Debt Type"
               value={debtType}
               onChange={(e) => setDebtType(e.target.value)}
-            >
-              {DEBT_TYPES.map((dt) => (
-                <option key={dt.value} value={dt.value}>
-                  {dt.label}
-                </option>
-              ))}
-            </select>
+              options={DEBT_TYPES}
+            />
           </div>
           <div className="form-group">
-            <label>Outstanding Balance (£)</label>
-            <input
+            <TextField
+              id="debtOutstandingBalance"
+              label="Outstanding Balance (£)"
               type="number"
               step="0.01"
               min="0"
@@ -90,8 +89,9 @@ const DebtFormModal = ({ isOpen, debtItem, onClose, onSubmit }) => {
             />
           </div>
           <div className="form-group">
-            <label>Minimum Payment (£)</label>
-            <input
+            <TextField
+              id="debtMinimumPayment"
+              label="Minimum Payment (£)"
               type="number"
               step="0.01"
               min="0"
@@ -101,8 +101,9 @@ const DebtFormModal = ({ isOpen, debtItem, onClose, onSubmit }) => {
             />
           </div>
           <div className="form-group">
-            <label>Interest Rate (% — optional)</label>
-            <input
+            <TextField
+              id="debtInterestRate"
+              label="Interest Rate (% — optional)"
               type="number"
               step="0.1"
               min="0"

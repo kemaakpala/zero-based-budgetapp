@@ -11,7 +11,7 @@ import "./styles/DebtGroup.css";
 
 const DebtGroup = ({
   budgetGroup,
-  onChangeHandler,
+  onSaveField,
   onRecordPaymentClick,
   onViewPaymentsClick,
   onEditDebtClick,
@@ -70,7 +70,7 @@ const DebtGroup = ({
           <DebtItemRow
             key={item.id}
             item={item}
-            onChangeHandler={onChangeHandler}
+            onSaveField={onSaveField}
             onRecordPaymentClick={onRecordPaymentClick}
             onViewPaymentsClick={onViewPaymentsClick}
             onEditDebtClick={onEditDebtClick}
@@ -87,7 +87,7 @@ DebtGroup.propTypes = {
     name: PropTypes.string.isRequired,
     budgetGroupItems: PropTypes.array.isRequired,
   }).isRequired,
-  onChangeHandler: PropTypes.func.isRequired,
+  onSaveField: PropTypes.func.isRequired,
   onRecordPaymentClick: PropTypes.func.isRequired,
   onViewPaymentsClick: PropTypes.func.isRequired,
   onEditDebtClick: PropTypes.func.isRequired,
