@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import TextField from "../TextField/TextField";
 import "./styles/TransactionModals.css";
 
 const AddTransactionModal = ({ isOpen, budgetItem, onClose, onSubmit }) => {
@@ -38,25 +39,31 @@ const AddTransactionModal = ({ isOpen, budgetItem, onClose, onSubmit }) => {
         </div>
         <div className="modal-body">
           <div className="form-group">
-            <label>{isDebt ? "Debt Item" : "Budget Item"}</label>
-            <input type="text" value={budgetItem.name || ""} disabled />
+            <TextField
+              id="budgetItemName"
+              label={isDebt ? "Debt Item" : "Budget Item"}
+              value={budgetItem.name || ""}
+              onChange={() => {}}
+              disabled
+            />
           </div>
 
           {isDebt && (
             <div className="form-group">
-              <label>Current Outstanding Balance</label>
-              <input
-                type="text"
+              <TextField
+                id="currentBalance"
+                label="Current Outstanding Balance"
                 value={`£${currentBalance.toFixed(2)}`}
+                onChange={() => {}}
                 disabled
               />
             </div>
           )}
 
           <div className="form-group">
-            <label>Payee / Description</label>
-            <input
-              type="text"
+            <TextField
+              id="txName"
+              label="Payee / Description"
               value={txName}
               onChange={(e) => setTxName(e.target.value)}
               placeholder={
@@ -66,8 +73,9 @@ const AddTransactionModal = ({ isOpen, budgetItem, onClose, onSubmit }) => {
             />
           </div>
           <div className="form-group">
-            <label>Amount (£)</label>
-            <input
+            <TextField
+              id="txAmount"
+              label="Amount (£)"
               type="number"
               step="0.01"
               value={txAmount}
