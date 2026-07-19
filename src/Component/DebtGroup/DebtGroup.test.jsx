@@ -40,7 +40,7 @@ describe("DebtGroup", () => {
     render(
       <DebtGroup
         budgetGroup={createDebtGroup()}
-        onChangeHandler={noop}
+        onSaveField={noop}
         onRecordPaymentClick={noop}
         onViewPaymentsClick={noop}
         onEditDebtClick={noop}
@@ -57,7 +57,7 @@ describe("DebtGroup", () => {
     // Active debt is visible
     expect(screen.getByText("Barclaycard")).toBeInTheDocument();
     expect(screen.getByText("£3200.00")).toBeInTheDocument();
-    expect(screen.getByText("£150.00")).toBeInTheDocument();
+    expect(screen.getAllByText("£150.00").length).toBeGreaterThanOrEqual(1);
 
     // Paid-off debt is hidden by default
     expect(screen.queryByText("Old Loan")).not.toBeInTheDocument();
@@ -67,7 +67,7 @@ describe("DebtGroup", () => {
     render(
       <DebtGroup
         budgetGroup={createDebtGroup()}
-        onChangeHandler={noop}
+        onSaveField={noop}
         onRecordPaymentClick={noop}
         onViewPaymentsClick={noop}
         onEditDebtClick={noop}
@@ -92,7 +92,7 @@ describe("DebtGroup", () => {
     render(
       <DebtGroup
         budgetGroup={createDebtGroup()}
-        onChangeHandler={noop}
+        onSaveField={noop}
         onRecordPaymentClick={noop}
         onViewPaymentsClick={noop}
         onEditDebtClick={noop}
