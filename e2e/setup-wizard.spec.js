@@ -39,6 +39,14 @@ test.describe("Setup wizard → dashboard (fresh user)", () => {
     ).toBeVisible();
     await page.getByRole("button", { name: "No, skip this step" }).click();
 
+    // Step 4: Savings question — skip savings
+    await expect(
+      page.getByRole("heading", {
+        name: "Do You Want to Set Up Savings Goals?",
+      })
+    ).toBeVisible();
+    await page.getByRole("button", { name: "No, skip this step" }).click();
+
     // Confirm step — verify the summary shows £3,500.00
     await expect(
       page.getByRole("heading", { name: "Confirm Your Budget Setup" })
