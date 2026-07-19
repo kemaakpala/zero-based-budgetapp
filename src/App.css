@@ -3,6 +3,10 @@
   --clr-dark-a0: #000000;
   --clr-light-a0: #ffffff;
 
+  /** Theme-aware text contrast variables */
+  --clr-text-on-dark: rgba(255, 255, 255, 0.9);
+  --clr-text-muted-on-dark: #adb5bd;
+
   /** Dark theme primary colors */
   --clr-primary-a0: #21f6ac;
   --clr-primary-a10: #55f8b5;

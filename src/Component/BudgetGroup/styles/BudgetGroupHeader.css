@@ -18,6 +18,9 @@
 .size1 {
   font-size: 1rem;
 }
+.size2 {
+  font-size: 0.875rem;
+}
 .group-header-column {
   display: flex;
   /* width: calc((95% - 0.5rem) / 4); */
@@ -37,11 +40,15 @@
 }
 
 .group-header-column.group-header-field-title {
-  flex: 0 1 25%;
+  flex: 1 1 0%;
   font-size: 0.95rem;
+  justify-content: flex-end;
+  text-align: right;
 }
 
 .group-header-column:last-child {
   justify-content: flex-end;
   position: relative;
+  width: 17.5px;
+  flex: 0 0 17.5px;
 }

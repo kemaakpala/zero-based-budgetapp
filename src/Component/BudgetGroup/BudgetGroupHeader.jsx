@@ -39,7 +39,11 @@ const BudgetGroupHeader = ({
         <span
           className="grip-handle"
           title="Drag grip handle to reorder group"
-          style={{ marginRight: "0.5rem", cursor: "grab", color: "#adb5bd" }}
+          style={{
+            marginRight: "0.5rem",
+            cursor: "grab",
+            color: "var(--clr-text-muted-on-dark)",
+          }}
         >
           <FontAwesomeIcon icon={faGripVertical} />
         </span>
@@ -58,7 +62,7 @@ const BudgetGroupHeader = ({
           key={name}
           className="group-header-column group-header-field-title"
         >
-          <h3 className="size1">{name}</h3>
+          <h4 className="size2">{name}</h4>
         </div>
       ))}
       <div className="group-header-column">
