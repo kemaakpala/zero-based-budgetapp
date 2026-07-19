@@ -336,6 +336,66 @@ export const budgetReducer = (state, action) => {
       };
     }
 
+    case "ADD_SAVINGS_GROUP": {
+      const alreadyExists = state.budgetGroups.some((g) => g.isSavingsGroup);
+      if (alreadyExists) return state;
+
+      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+      updatedGroups.push({
+        name: "Savings",
+        isSavingsGroup: true,
+        budgetGroupItems: [],
+      });
+      return {
+        ...state,
+        budgetGroups: updatedGroups,
+      };
+    }
+
+    case "ADD_SAVINGS_ITEM": {
+      const { id, name, target, startingBalance } = action.payload;
+      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+      const savingsGroup = updatedGroups.find(
+        (g) => g.isSavingsGroup || g.name === "Savings"
+      );
+      if (!savingsGroup) return state;
+
+      const newSavingsItem = {
+        id: id || generateUniqueId(),
+        name,
+        assigned: 0,
+        type: "savings",
+        target: parseFloat(target) || 0,
+        startingBalance: parseFloat(startingBalance) || 0,
+      };
+      savingsGroup.budgetGroupItems.push(newSavingsItem);
+      return {
+        ...state,
+        budgetGroups: updatedGroups,
+      };
+    }
+
+    case "UPDATE_SAVINGS_ITEM": {
+      const { itemId, name, target, startingBalance } = action.payload;
+      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+
+      for (const group of updatedGroups) {
+        for (const item of group.budgetGroupItems) {
+          if (item.id === itemId && item.type === "savings") {
+            if (name !== undefined) item.name = name;
+            if (target !== undefined) item.target = parseFloat(target) || 0;
+            if (startingBalance !== undefined)
+              item.startingBalance = parseFloat(startingBalance) || 0;
+            break;
+          }
+        }
+      }
+      return {
+        ...state,
+        budgetGroups: updatedGroups,
+      };
+    }
+
     default:
       return state;
   }

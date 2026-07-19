@@ -123,6 +123,25 @@ export const getEnrichedGroups = (
           (parseFloat(item.outstandingBalance) || 0) <= 0;
       }
 
+      // Add savings-specific derived fields
+      if (item.type === "savings") {
+        const currentBalance =
+          (parseFloat(item.startingBalance) || 0) + assigned - spent;
+        const toSave = Math.max(
+          (parseFloat(item.target) || 0) - currentBalance,
+          0
+        );
+        enrichedItem.currentBalance = currentBalance;
+        enrichedItem.toSave = toSave;
+        enrichedItem.status = [
+          {
+            label: "To Save",
+            value: toSave.toFixed(2),
+            type: "text",
+          },
+        ];
+      }
+
       return enrichedItem;
     }),
   }));
@@ -272,5 +291,87 @@ export const updateTemplateDebtItem = (storageAdapter, debtData) => {
     }
   } catch (e) {
     console.error("Error updating template debt item", e);
+  }
+};
+
+export const updateTemplateSavingsBalance = (
+  storageAdapter,
+  itemId,
+  amountChange
+) => {
+  const raw = storageAdapter.get("budget_app_defaults");
+  if (!raw) return;
+
+  try {
+    const template = JSON.parse(raw);
+    for (const group of template.budgetGroups || []) {
+      for (const item of group.budgetGroupItems || []) {
+        if (item.id === itemId && item.type === "savings") {
+          item.startingBalance =
+            (parseFloat(item.startingBalance) || 0) + amountChange;
+          storageAdapter.set("budget_app_defaults", JSON.stringify(template));
+          return;
+        }
+      }
+    }
+  } catch (e) {
+    console.error("Error updating template savings balance", e);
+  }
+};
+
+export const addTemplateSavingsItem = (storageAdapter, savingsData) => {
+  const raw = storageAdapter.get("budget_app_defaults");
+  try {
+    const template = JSON.parse(raw || "{}");
+    template.budgetGroups = template.budgetGroups || [];
+
+    let savingsGroup = template.budgetGroups.find(
+      (g) => g.isSavingsGroup || g.name === "Savings"
+    );
+    if (!savingsGroup) {
+      savingsGroup = {
+        name: "Savings",
+        isSavingsGroup: true,
+        budgetGroupItems: [],
+      };
+      template.budgetGroups.push(savingsGroup);
+    }
+
+    savingsGroup.budgetGroupItems.push({
+      id: savingsData.id,
+      name: savingsData.name,
+      assigned: 0,
+      type: "savings",
+      target: parseFloat(savingsData.target) || 0,
+      startingBalance: parseFloat(savingsData.startingBalance) || 0,
+    });
+
+    storageAdapter.set("budget_app_defaults", JSON.stringify(template));
+  } catch (e) {
+    console.error("Error adding template savings item", e);
+  }
+};
+
+export const updateTemplateSavingsItem = (storageAdapter, savingsData) => {
+  const raw = storageAdapter.get("budget_app_defaults");
+  if (!raw) return;
+
+  try {
+    const template = JSON.parse(raw);
+    for (const group of template.budgetGroups || []) {
+      for (const item of group.budgetGroupItems || []) {
+        if (item.id === savingsData.itemId && item.type === "savings") {
+          if (savingsData.name !== undefined) item.name = savingsData.name;
+          if (savingsData.target !== undefined)
+            item.target = parseFloat(savingsData.target) || 0;
+          if (savingsData.startingBalance !== undefined)
+            item.startingBalance = parseFloat(savingsData.startingBalance) || 0;
+          storageAdapter.set("budget_app_defaults", JSON.stringify(template));
+          return;
+        }
+      }
+    }
+  } catch (e) {
+    console.error("Error updating template savings item", e);
   }
 };
