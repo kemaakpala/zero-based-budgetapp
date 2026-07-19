@@ -21,3 +21,74 @@
 .group-content--hidden {
   display: none;
 }
+
+/* 1. Standardize Row Containers */
+.group-header,
+.group-item,
+.debt-item-row {
+  display: flex;
+  width: 100%;
+  padding: 0 1rem;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+/* 2. Global Anchor (First Column) */
+.group-header-column:first-child,
+.group-header-title,
+.group-item-name,
+.debt-item-row > div:first-child {
+  flex: 0 0 30% !important; /* All data starts at the 30% mark */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 3. Flexible Data Columns (Middle) */
+.group-header-field-title,
+.group-item-fields:not(.group-item-name),
+.group-item-status,
+.debt-item-row > div:not(:first-child):not(:last-child) {
+  flex: 1 1 0% !important;
+  text-align: right;
+  min-width: 0;
+}
+
+/* 4. Action Column (Last Column) */
+.group-header-column:last-child,
+.group-item-action,
+.debt-item-action,
+.debt-item-row > div:last-child {
+  flex: 0 0 30px !important;
+  display: flex;
+  justify-content: center;
+}
+
+/* 5. Typographic Refinement & Icon Scaling */
+.group-header-column.group-header-title h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.group-handle {
+  width: 14px;
+}
+.grip-handle,
+.group-actions__button {
+  height: 14px;
+}
+
+/* Zero-Margin Icons in Action Column to prevent horizontal drift */
+.group-header-column:last-child button,
+.group-header-column:last-child svg,
+.group-item-action button,
+.group-item-action svg,
+.debt-item-action button,
+.debt-item-action svg {
+  margin: 0 !important;
+}
+
+/* 6. Contextual Word Wrapping */
+.group-header-column.group-header-field-title h3 {
+  white-space: normal;
+  word-break: break-word;
+}

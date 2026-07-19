@@ -11,32 +11,47 @@
   flex: 1;
 }
 .group-item-column {
-  width: calc((95% - 0.5rem) / 3);
   flex-direction: column; /* stack the children */
 }
-.group-item > :first-child {
+
+.group-item-name {
   flex: 0 1 50%;
+  align-items: flex-start;
 }
+
+.group-item-assigned,
+.group-item-status {
+  flex: 1 1 0%;
+  align-items: flex-end;
+  text-align: right;
+}
+
 .group-item-fields__label {
   visibility: hidden;
   height: 0;
 }
 
 .group-item-status__text {
-  margin: 0 0 0 0.5rem;
+  margin: 0;
   font-size: 0.875rem;
-}
-.group-item-column:last-child {
-  justify-content: flex-start;
-}
-.group-item-column:last-child > button {
-  margin-left: auto;
-}
-.group-item-action {
-  position: relative;
 }
 
 .group-item-status__text--negative {
-  color: #f44336;
+  color: #f44336 !important; /* ensure negative overrides default */
   font-weight: 600;
+}
+
+/* 1. Fix Legibility and Weight */
+.group-container .editable-field__text,
+.group-container .group-item-status__text {
+  color: var(--clr-text-on-dark);
+  font-weight: 600;
+}
+
+/* 3. Match Action Column Widths */
+.group-item-action {
+  position: relative;
+  width: 17.5px;
+  flex: 0 0 17.5px;
+  justify-content: flex-end;
 }

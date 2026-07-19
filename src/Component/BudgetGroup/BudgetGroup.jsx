@@ -8,8 +8,7 @@ import BudgetGroupItem from "./BudgetGroupItem";
 const BudgetGroup = ({
   budgetGroup,
   groupIndex,
-  onChangeHandler,
-  onBlurHandler,
+  onSaveField,
   onAddTransactionClick,
   onViewTransactionsClick,
   onDeleteItemClick,
@@ -65,8 +64,7 @@ const BudgetGroup = ({
             budgetGroupName={name}
             groupIndex={groupIndex}
             budgetGroupItems={budgetGroupItems}
-            onChangeHandler={onChangeHandler}
-            onBlurHandler={onBlurHandler}
+            onSaveField={onSaveField}
             onAddTransactionClick={onAddTransactionClick}
             onViewTransactionsClick={onViewTransactionsClick}
             onDeleteItemClick={onDeleteItemClick}
@@ -89,8 +87,7 @@ BudgetGroup.propTypes = {
     budgetGroupItems: PropTypes.array.isRequired,
   }),
   groupIndex: PropTypes.number,
-  onChangeHandler: PropTypes.func,
-  onBlurHandler: PropTypes.func,
+  onSaveField: PropTypes.func,
   onAddTransactionClick: PropTypes.func,
   onViewTransactionsClick: PropTypes.func,
   onDeleteItemClick: PropTypes.func,
