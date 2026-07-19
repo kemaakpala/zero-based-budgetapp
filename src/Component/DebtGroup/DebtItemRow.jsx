@@ -9,12 +9,12 @@ import {
   faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
 import Button from "../Button/Button";
-import TextField from "../TextField/TextField";
+import EditableField from "../EditableField/EditableField";
 import PopOverMenu from "../PopOverMenu/PopOverMenu";
 
 const DebtItemRow = ({
   item,
-  onChangeHandler,
+  onSaveField,
   onRecordPaymentClick,
   onViewPaymentsClick,
   onEditDebtClick,
@@ -59,14 +59,12 @@ const DebtItemRow = ({
 
       {/* Planned (editable) */}
       <div className="debt-item-cell debt-item-planned">
-        <TextField
-          id={`debt_Planned_text_${id}`}
-          inputName={`debt_Planned_text_${id}`}
-          variant="debt-planned"
-          defaultVal={assigned.toString()}
+        <EditableField
+          value={assigned.toFixed(2)}
+          onSave={(v) => onSaveField(id, "assigned", v)}
+          type="number"
+          prefix="£"
           placeholder="0.00"
-          onChange={(e) => onChangeHandler(id, "assigned", e.target.value)}
-          onBlur={() => {}}
         />
       </div>
 
@@ -147,7 +145,7 @@ DebtItemRow.propTypes = {
     spent: PropTypes.number,
     isPaidOff: PropTypes.bool,
   }).isRequired,
-  onChangeHandler: PropTypes.func.isRequired,
+  onSaveField: PropTypes.func.isRequired,
   onRecordPaymentClick: PropTypes.func.isRequired,
   onViewPaymentsClick: PropTypes.func.isRequired,
   onEditDebtClick: PropTypes.func.isRequired,

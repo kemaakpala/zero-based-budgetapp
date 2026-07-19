@@ -8,7 +8,7 @@ import {
   faList,
 } from "@fortawesome/free-solid-svg-icons";
 import Button from "../Button/Button";
-import TextField from "../TextField/TextField";
+import EditableField from "../EditableField/EditableField";
 import ProgressBar from "../ProgressBar";
 import { removeSpace } from "../../utils/utils";
 import "./styles/BudgetGroupItem.css";
@@ -18,8 +18,7 @@ const BudgetGroupItem = ({
   budgetGroupName,
   groupIndex,
   budgetGroupItems,
-  onChangeHandler,
-  onBlurHandler,
+  onSaveField,
   onAddTransactionClick,
   onViewTransactionsClick,
   onDeleteItemClick,
@@ -57,46 +56,22 @@ const BudgetGroupItem = ({
       <React.Fragment key={id}>
         <div className="group-item">
           {/* Name Field */}
-          <div className="group-item-column group-item-fields">
-            <label
-              className="group-item-fields__label"
-              htmlFor={`${budgetGroupName}_Name_text_${id}`}
-            >
-              Name:
-            </label>
-            <TextField
-              id={`${budgetGroupName}_Name_text_${id}`}
-              className="form-control group-item-fields__input"
-              type="text"
-              name={`${budgetGroupName}_Name_text_${id}`}
-              defaultVal={name}
+          <div className="group-item-column group-item-fields group-item-name">
+            <EditableField
+              value={name}
+              onSave={(v) => onSaveField(id, "name", v)}
               placeholder="Item Name"
-              onChange={(e) => onChangeHandler(id, "name", e.target.value)}
-              onBlur={(e) => {
-                onBlurHandler(id, "name", e.target.value);
-              }}
             />
           </div>
 
           {/* Assigned Field */}
-          <div className="group-item-column group-item-fields">
-            <label
-              className="group-item-fields__label"
-              htmlFor={`${budgetGroupName}_Assigned_text_${id}`}
-            >
-              Assigned:
-            </label>
-            <TextField
-              id={`${budgetGroupName}_Assigned_text_${id}`}
-              className="form-control group-item-fields__input"
-              type="text"
-              name={`${budgetGroupName}_Assigned_text_${id}`}
-              defaultVal={assigned.toString()}
+          <div className="group-item-column group-item-fields group-item-assigned">
+            <EditableField
+              value={assigned.toFixed(2)}
+              onSave={(v) => onSaveField(id, "assigned", v)}
+              type="number"
+              prefix="£"
               placeholder="0.00"
-              onChange={(e) => onChangeHandler(id, "assigned", e.target.value)}
-              onBlur={(e) => {
-                onBlurHandler(id, "assigned", e.target.value);
-              }}
             />
           </div>
 
@@ -198,8 +173,7 @@ BudgetGroupItem.propTypes = {
       type: PropTypes.string,
     })
   ),
-  onChangeHandler: PropTypes.func,
-  onBlurHandler: PropTypes.func,
+  onSaveField: PropTypes.func,
   onAddTransactionClick: PropTypes.func,
   onViewTransactionsClick: PropTypes.func,
   onDeleteItemClick: PropTypes.func,
