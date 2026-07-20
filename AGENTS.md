@@ -4,6 +4,29 @@ This file provides context and rules for AI coding agents working in this reposi
 
 ---
 
+## Git & Commit Workflow (CRITICAL)
+
+Before editing any files or running commands that modify the repository, you MUST check the current git branch:
+
+1. Run `git status` or check git branch information.
+2. If you are on `main`, you **MUST** create and check out a new branch off `main` before performing any edits or implementation steps:
+   - For features: `git checkout -b feat/your-feature-name`
+   - For bugfixes: `git checkout -b fix/your-bugfix-name`
+3. If you are already on a feature branch (e.g., `feat/` or `fix/`), you should continue working on it.
+4. **Never edit files or commit directly to the `main` branch.**
+
+When committing changes, always use the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) format:
+
+- Use `feat: ...` for features.
+- Use `fix: ...` for bug fixes.
+- Use `docs: ...` for documentation updates.
+- Use `style: ...` for formatting or CSS changes.
+- Use `refactor: ...` for code refactoring.
+- Use `test: ...` for adding/updating tests.
+- Use `chore: ...` for dependency updates or boilerplate/tooling config updates.
+
+---
+
 ## Domain Language
 
 Use the terms defined in `CONTEXT.md`. Key rules:
@@ -179,20 +202,6 @@ Budget (container, owns reducer)
 - FontAwesome icons via `@fortawesome/react-fontawesome`
 - Prettier + Husky + lint-staged for formatting
 - No TypeScript (plain JSX)
-
----
-
-## Commit Messages
-
-When committing changes, always use the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) format:
-
-- Use `feat: ...` for features.
-- Use `fix: ...` for bug fixes.
-- Use `docs: ...` for documentation updates.
-- Use `style: ...` for formatting or CSS changes.
-- Use `refactor: ...` for code refactoring.
-- Use `test: ...` for adding/updating tests.
-- Use `chore: ...` for dependency updates or boilerplate/tooling config updates.
 
 ---
 
