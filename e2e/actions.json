@@ -9,6 +9,11 @@
       "selector": "h2:has-text('Set Your Starting Monthly Income')"
     },
     {
+      "type": "screenshot",
+      "selector": ".setup-wizard-container",
+      "path": "/home/patrick/.gemini/antigravity-ide/brain/dff3d248-20cd-40dd-ae8e-e94c274c09de/step1_salary.png"
+    },
+    {
       "type": "click",
       "selector": "button:has-text('Next')"
     },
@@ -22,12 +27,37 @@
     },
     {
       "type": "screenshot",
-      "selector": ".wizard-step.step-categories",
-      "path": "/home/patrick/.gemini/antigravity-ide/brain/7cc3bdcd-d917-4500-bb30-50f9ad2505be/step2_screenshot.png"
+      "selector": ".setup-wizard-container",
+      "path": "/home/patrick/.gemini/antigravity-ide/brain/dff3d248-20cd-40dd-ae8e-e94c274c09de/step2_categories.png"
     },
     {
-      "type": "dump",
-      "selector": ".group-card"
+      "type": "click",
+      "selector": "button:has-text('Next')"
+    },
+    {
+      "type": "wait",
+      "selector": "h2:has-text('Do You Have Any Debt?')"
+    },
+    {
+      "type": "click",
+      "selector": "button:has-text('No, skip this step')"
+    },
+    {
+      "type": "wait",
+      "selector": "h2:has-text('Do You Want to Set Up Savings Goals?')"
+    },
+    {
+      "type": "click",
+      "selector": "button:has-text('No, skip this step')"
+    },
+    {
+      "type": "wait",
+      "selector": "h2:has-text('Confirm Your Budget Setup')"
+    },
+    {
+      "type": "screenshot",
+      "selector": ".setup-wizard-container",
+      "path": "/home/patrick/.gemini/antigravity-ide/brain/dff3d248-20cd-40dd-ae8e-e94c274c09de/step5_confirm.png"
     }
   ]
 }
