@@ -1,2 +1,9 @@
-npx lint-staged
+current_branch=$(git symbolic-ref --short HEAD 2>/dev/null)
 
+if [ "$current_branch" = "main" ]; then
+  echo "❌ Error: Committing directly to the 'main' branch is prohibited."
+  echo "Please create a feature or bugfix branch first (e.g., git checkout -b feat/your-feature-name)."
+  exit 1
+fi
+
+npx lint-staged
