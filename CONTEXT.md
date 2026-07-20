@@ -97,3 +97,28 @@ _Avoid_: Settled, cleared, closed
 
 A dedicated, system-level **Budget Group** (named "Debt") that contains only **Debt Items**. Created automatically when the user indicates they have debts during setup.
 _Avoid_: Debt Repayment Group, loans group
+
+### Savings Item
+
+A specialised **Budget Item** with `type: "savings"` that represents a financial goal the user is saving towards (e.g. Emergency Fund, Holiday Fund). It contains metadata: **Goal** and **Starting Balance**. Lives in the **Savings Group**.
+_Avoid_: Savings category, target item
+
+### Goal
+
+The target amount of money the user aims to accumulate for a **Savings Item**.
+_Avoid_: Target, target amount, savings target
+
+### Starting Balance
+
+The initial funds already saved for a **Savings Item** before the start of the current **Budget Cycle**. Stored in the **Budget Template** and updated dynamically if edited.
+_Avoid_: Initial savings, account balance
+
+### To Save
+
+The remaining amount of money needed to reach the **Goal** of a **Savings Item**. Derived as `Goal - (Starting Balance + Assigned Amount - Spent)`. This is derived, never stored.
+_Avoid_: Remaining goal, gap to target
+
+### Savings Group
+
+A dedicated, system-level **Budget Group** (named "Savings") that contains only **Savings Items**. Created automatically when the user indicates they want to track savings.
+_Avoid_: Savings bucket, goals group

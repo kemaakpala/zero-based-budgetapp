@@ -17,6 +17,8 @@ This file tracks features, optimizations, and user experience enhancements defer
 - [x] **GitHub Actions CI Pipeline**: Set up a CI workflow that runs the test suite (`npm test`) on every push and pull request to `main`. This is a prerequisite for moving to a feature-branch workflow with merge protection.
 - [x] **Playwright End-to-End Tests**: Integrated Playwright for automated E2E testing of critical user flows (setup wizard, adding Budget Items, recording Transactions, month navigation).
 - [x] **Standardize Editable Fields**: Extracted a unified click-to-edit `EditableField` component and replaced raw HTML inputs with upgraded `TextField` and `SelectField` primitives across the application.
+- [x] **Consolidate Budget Template Management**: Unified the 7 shallow template helper functions in `helpers.js` into a deep, chainable `BudgetTemplate` class to isolate localStorage defaults management.
+- [x] **Savings Goal Naming Alignment**: Renamed the savings item property `target` to `goal` across reducer actions, helpers, hooks, components, and tests to align with the domain glossary.
 
 ## Planned
 

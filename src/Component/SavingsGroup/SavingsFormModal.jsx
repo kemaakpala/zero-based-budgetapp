@@ -7,18 +7,18 @@ const SavingsFormModal = ({ isOpen, savingsItem, onClose, onSubmit }) => {
   const isEditMode = !!savingsItem;
 
   const [name, setName] = useState("");
-  const [target, setTarget] = useState("");
+  const [goal, setGoal] = useState("");
   const [startingBalance, setStartingBalance] = useState("");
 
   useEffect(() => {
     if (isOpen) {
       if (isEditMode) {
         setName(savingsItem.name || "");
-        setTarget(savingsItem.target?.toString() || "");
+        setGoal(savingsItem.goal?.toString() || "");
         setStartingBalance(savingsItem.startingBalance?.toString() || "");
       } else {
         setName("");
-        setTarget("");
+        setGoal("");
         setStartingBalance("");
       }
     }
@@ -32,7 +32,7 @@ const SavingsFormModal = ({ isOpen, savingsItem, onClose, onSubmit }) => {
     onSubmit({
       ...(isEditMode ? { itemId: savingsItem.id } : {}),
       name: name.trim(),
-      target: parseFloat(target) || 0,
+      goal: parseFloat(goal) || 0,
       startingBalance: parseFloat(startingBalance) || 0,
     });
   };
@@ -59,13 +59,13 @@ const SavingsFormModal = ({ isOpen, savingsItem, onClose, onSubmit }) => {
           </div>
           <div className="form-group">
             <TextField
-              id="savingsTarget"
-              label="Overall Target (£)"
+              id="savingsGoal"
+              label="Goal Amount (£)"
               type="number"
               step="0.01"
               min="0"
-              value={target}
-              onChange={(e) => setTarget(e.target.value)}
+              value={goal}
+              onChange={(e) => setGoal(e.target.value)}
               placeholder="0.00"
             />
           </div>
@@ -104,7 +104,7 @@ SavingsFormModal.propTypes = {
   savingsItem: PropTypes.shape({
     id: PropTypes.string,
     name: PropTypes.string,
-    target: PropTypes.number,
+    goal: PropTypes.number,
     startingBalance: PropTypes.number,
   }),
   onClose: PropTypes.func.isRequired,

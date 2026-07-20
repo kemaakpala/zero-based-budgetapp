@@ -5,18 +5,16 @@ import {
   saveBudgetData,
   getEnrichedGroups,
   calculateSummary,
-  updateTemplateDebtBalance,
-  updateTemplateDebtAssigned,
-  addTemplateDebtItem,
-  updateTemplateDebtItem,
-  updateTemplateSavingsBalance,
-  addTemplateSavingsItem,
-  updateTemplateSavingsItem,
 } from "./helpers";
+import { BudgetTemplate } from "./BudgetTemplate";
 import { generateUniqueId } from "../utils";
 
 export function useBudgetStore(monthKey, storageAdapter) {
   const [viewMode, setViewMode] = useState("remaining"); // 'remaining' or 'spent'
+  const budgetTemplate = useMemo(
+    () => new BudgetTemplate(storageAdapter),
+    [storageAdapter]
+  );
 
   // Core Store Reducer with lazy/synchronous initialization on mount
   const [state, dispatch] = useReducer(budgetReducer, null, () =>
@@ -89,17 +87,18 @@ export function useBudgetStore(monthKey, storageAdapter) {
 
     if (targetItem) {
       if (targetItem.type === "debt" && fieldName === "assigned") {
-        updateTemplateDebtAssigned(storageAdapter, itemId, value);
+        budgetTemplate.updateDebtAssigned(itemId, value);
       } else if (targetItem.type === "savings") {
         if (fieldName === "assigned") {
           const oldAssigned = parseFloat(targetItem.assigned) || 0;
           const newAssigned = parseFloat(value) || 0;
           const diff = newAssigned - oldAssigned;
-          updateTemplateSavingsBalance(storageAdapter, itemId, diff);
+          budgetTemplate.updateSavingsBalance(itemId, diff);
         } else {
-          updateTemplateSavingsItem(storageAdapter, {
+          const key = fieldName === "target" ? "goal" : fieldName;
+          budgetTemplate.updateSavingsItem({
             itemId,
-            [fieldName]: value,
+            [key]: value,
           });
         }
       }
@@ -145,17 +144,9 @@ export function useBudgetStore(monthKey, storageAdapter) {
     const targetItem = findBudgetItem(budgetItemId);
     if (targetItem) {
       if (targetItem.type === "debt") {
-        updateTemplateDebtBalance(
-          storageAdapter,
-          budgetItemId,
-          -parseFloat(amount)
-        );
+        budgetTemplate.updateDebtBalance(budgetItemId, -parseFloat(amount));
       } else if (targetItem.type === "savings") {
-        updateTemplateSavingsBalance(
-          storageAdapter,
-          budgetItemId,
-          -parseFloat(amount)
-        );
+        budgetTemplate.updateSavingsBalance(budgetItemId, -parseFloat(amount));
       }
     }
   };
@@ -166,13 +157,9 @@ export function useBudgetStore(monthKey, storageAdapter) {
       const targetItem = findBudgetItem(tx.budgetItemId);
       if (targetItem) {
         if (targetItem.type === "debt") {
-          updateTemplateDebtBalance(storageAdapter, tx.budgetItemId, tx.amount);
+          budgetTemplate.updateDebtBalance(tx.budgetItemId, tx.amount);
         } else if (targetItem.type === "savings") {
-          updateTemplateSavingsBalance(
-            storageAdapter,
-            tx.budgetItemId,
-            tx.amount
-          );
+          budgetTemplate.updateSavingsBalance(tx.budgetItemId, tx.amount);
         }
       }
     }
@@ -187,17 +174,9 @@ export function useBudgetStore(monthKey, storageAdapter) {
         const targetItem = findBudgetItem(tx.budgetItemId);
         if (targetItem) {
           if (targetItem.type === "debt") {
-            updateTemplateDebtBalance(
-              storageAdapter,
-              tx.budgetItemId,
-              tx.amount
-            );
+            budgetTemplate.updateDebtBalance(tx.budgetItemId, tx.amount);
           } else if (targetItem.type === "savings") {
-            updateTemplateSavingsBalance(
-              storageAdapter,
-              tx.budgetItemId,
-              tx.amount
-            );
+            budgetTemplate.updateSavingsBalance(tx.budgetItemId, tx.amount);
           }
         }
       }
@@ -213,27 +192,30 @@ export function useBudgetStore(monthKey, storageAdapter) {
     dispatch({ type: "ADD_DEBT_REPAYMENT_GROUP" });
     dispatch({ type: "ADD_DEBT_ITEM", payload: debtWithId });
 
-    addTemplateDebtItem(storageAdapter, debtWithId);
+    budgetTemplate.addDebtItem(debtWithId);
   };
 
   const handleUpdateDebtItem = (debtData) => {
     dispatch({ type: "UPDATE_DEBT_ITEM", payload: debtData });
-    updateTemplateDebtItem(storageAdapter, debtData);
+    budgetTemplate.updateDebtItem(debtData);
   };
 
   const handleAddSavingsItem = (savingsData) => {
     const newId = generateUniqueId();
-    const savingsWithId = { ...savingsData, id: newId };
+    const { target, goal, ...rest } = savingsData;
+    const savingsWithId = { ...rest, goal: goal ?? target, id: newId };
 
     dispatch({ type: "ADD_SAVINGS_GROUP" });
     dispatch({ type: "ADD_SAVINGS_ITEM", payload: savingsWithId });
 
-    addTemplateSavingsItem(storageAdapter, savingsWithId);
+    budgetTemplate.addSavingsItem(savingsWithId);
   };
 
   const handleUpdateSavingsItem = (savingsData) => {
-    dispatch({ type: "UPDATE_SAVINGS_ITEM", payload: savingsData });
-    updateTemplateSavingsItem(storageAdapter, savingsData);
+    const { target, goal, ...rest } = savingsData;
+    const dataWithGoal = { ...rest, goal: goal ?? target };
+    dispatch({ type: "UPDATE_SAVINGS_ITEM", payload: dataWithGoal });
+    budgetTemplate.updateSavingsItem(dataWithGoal);
   };
 
   // Memoized derived calculations

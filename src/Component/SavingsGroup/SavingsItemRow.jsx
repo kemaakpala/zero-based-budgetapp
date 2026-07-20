@@ -22,7 +22,7 @@ const SavingsItemRow = ({
   onEditSavingsClick,
   onDeleteItemClick,
 }) => {
-  const { id, name: itemName, assigned, target = 0, currentBalance = 0 } = item;
+  const { id, name: itemName, assigned, goal = 0, currentBalance = 0 } = item;
   const [showPopOver, setShowPopOver] = useState(false);
 
   const popOverHandler = (e) => {
@@ -36,7 +36,7 @@ const SavingsItemRow = ({
 
   // Option C: Overall Progress percentage for the progress bar tooltip
   const progressPercent =
-    target > 0 ? Math.min(Math.round((currentBalance / target) * 100), 100) : 0;
+    goal > 0 ? Math.min(Math.round((currentBalance / goal) * 100), 100) : 0;
 
   return (
     <div className="savings-item-row-wrapper">
@@ -141,7 +141,7 @@ SavingsItemRow.propTypes = {
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     assigned: PropTypes.number.isRequired,
-    target: PropTypes.number,
+    goal: PropTypes.number,
     currentBalance: PropTypes.number,
     toSave: PropTypes.number,
   }).isRequired,

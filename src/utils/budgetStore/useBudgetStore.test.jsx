@@ -231,6 +231,70 @@ describe("useBudgetStore custom hook", () => {
     ).toBe(1000);
   });
 
+  it("should sync savings item template changes", () => {
+    const templateWithSavings = {
+      ...initialTemplate,
+      budgetGroups: [
+        {
+          name: "Savings",
+          isSavingsGroup: true,
+          budgetGroupItems: [
+            {
+              id: "sav-1",
+              name: "Emergency Fund",
+              type: "savings",
+              assigned: 0,
+              goal: 1000,
+              startingBalance: 200,
+            },
+          ],
+        },
+      ],
+    };
+    storageAdapter.set(
+      "budget_app_defaults",
+      JSON.stringify(templateWithSavings)
+    );
+
+    const { result } = renderHook(() =>
+      useBudgetStore("July-2026", storageAdapter)
+    );
+
+    // Update Savings Item Assigned amount & check template startingBalance update
+    act(() => {
+      result.current.handleFieldChange("sav-1", "assigned", 100);
+    });
+    expect(
+      result.current.state.budgetGroups[0].budgetGroupItems[0].assigned
+    ).toBe(100);
+
+    let template = JSON.parse(storageAdapter.get("budget_app_defaults"));
+    // startingBalance should have updated: 200 + 100 = 300
+    expect(template.budgetGroups[0].budgetGroupItems[0].startingBalance).toBe(
+      300
+    );
+
+    // Add transaction to savings item & check template balance deduction
+    act(() => {
+      result.current.handleAddTransaction("Car repair", 150, "sav-1");
+    });
+    template = JSON.parse(storageAdapter.get("budget_app_defaults"));
+    // startingBalance: 300 - 150 = 150
+    expect(template.budgetGroups[0].budgetGroupItems[0].startingBalance).toBe(
+      150
+    );
+
+    // Delete transaction & verify template balance reverts
+    const txId = result.current.state.transactions[0].id;
+    act(() => {
+      result.current.handleDeleteTransaction(txId);
+    });
+    template = JSON.parse(storageAdapter.get("budget_app_defaults"));
+    expect(template.budgetGroups[0].budgetGroupItems[0].startingBalance).toBe(
+      300
+    );
+  });
+
   it("should handle month/cycle transition", () => {
     const { result, rerender } = renderHook(
       ({ month }) => useBudgetStore(month, storageAdapter),
