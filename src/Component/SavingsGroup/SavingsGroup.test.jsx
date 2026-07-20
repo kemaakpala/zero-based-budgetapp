@@ -13,7 +13,7 @@ const createSavingsGroup = (overrides = {}) => ({
       name: "Emergency Fund",
       assigned: 200,
       type: "savings",
-      target: 1000,
+      goal: 1000,
       currentBalance: 400,
       toSave: 600,
     },
@@ -59,7 +59,7 @@ describe("SavingsGroup", () => {
     );
 
     const progressBar = screen.getByRole("progressbar");
-    // Emergency Fund target is 1000, currentBalance is 400, so progress is 40%
+    // Emergency Fund goal is 1000, currentBalance is 400, so progress is 40%
     expect(progressBar).toHaveStyle("width: 40%");
   });
 

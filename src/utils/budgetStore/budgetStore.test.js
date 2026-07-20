@@ -5,11 +5,8 @@ import {
   saveBudgetData,
   getEnrichedGroups,
   calculateSummary,
-  updateTemplateDebtBalance,
-  updateTemplateSavingsBalance,
-  addTemplateSavingsItem,
-  updateTemplateSavingsItem,
 } from "./index";
+import { BudgetTemplate } from "./BudgetTemplate";
 
 describe("BudgetCycleStore Modules", () => {
   describe("InMemoryStorageAdapter", () => {
@@ -478,7 +475,7 @@ describe("BudgetCycleStore Modules", () => {
 
     it("updates template debt balance correctly", () => {
       const adapter = new InMemoryStorageAdapter();
-      const template = {
+      const templateData = {
         startingSalary: 5000,
         budgetGroups: [
           {
@@ -498,12 +495,13 @@ describe("BudgetCycleStore Modules", () => {
           },
         ],
       };
-      adapter.set("budget_app_defaults", JSON.stringify(template));
+      const template = new BudgetTemplate(adapter);
+      template.save(templateData);
 
       // Simulate a payment of 150
-      updateTemplateDebtBalance(adapter, "d1", -150);
+      template.updateDebtBalance("d1", -150);
 
-      const updated = JSON.parse(adapter.get("budget_app_defaults"));
+      const updated = template.get();
       const debtItem = updated.budgetGroups[0].budgetGroupItems[0];
       expect(debtItem.outstandingBalance).toBe(3050);
     });
@@ -566,14 +564,14 @@ describe("BudgetCycleStore Modules", () => {
         payload: {
           id: "sav-1",
           name: "Trip Fund",
-          target: 1000,
+          goal: 1000,
           startingBalance: 200,
         },
       });
       expect(nextState.budgetGroups[0].budgetGroupItems.length).toBe(1);
       const item = nextState.budgetGroups[0].budgetGroupItems[0];
       expect(item.name).toBe("Trip Fund");
-      expect(item.target).toBe(1000);
+      expect(item.goal).toBe(1000);
       expect(item.startingBalance).toBe(200);
       expect(item.type).toBe("savings");
 
@@ -583,13 +581,13 @@ describe("BudgetCycleStore Modules", () => {
         payload: {
           itemId: "sav-1",
           name: "Tokyo Trip",
-          target: 1200,
+          goal: 1200,
           startingBalance: 250,
         },
       });
       const updatedItem = nextState.budgetGroups[0].budgetGroupItems[0];
       expect(updatedItem.name).toBe("Tokyo Trip");
-      expect(updatedItem.target).toBe(1200);
+      expect(updatedItem.goal).toBe(1200);
       expect(updatedItem.startingBalance).toBe(250);
     });
 
@@ -604,7 +602,7 @@ describe("BudgetCycleStore Modules", () => {
               name: "Emergency Fund",
               type: "savings",
               assigned: 200,
-              target: 1000,
+              goal: 1000,
               startingBalance: 400,
             },
           ],
@@ -624,7 +622,7 @@ describe("BudgetCycleStore Modules", () => {
       expect(item.spent).toBe(150);
       // currentBalance = startingBalance + assigned - spent = 400 + 200 - 150 = 450
       expect(item.currentBalance).toBe(450);
-      // toSave = target - currentBalance = 1000 - 450 = 550
+      // toSave = goal - currentBalance = 1000 - 450 = 550
       expect(item.toSave).toBe(550);
       expect(item.status[0].label).toBe("To Save");
       expect(item.status[0].value).toBe("550.00");
@@ -632,7 +630,7 @@ describe("BudgetCycleStore Modules", () => {
 
     it("manages savings template updates correctly", () => {
       const adapter = new InMemoryStorageAdapter();
-      const template = {
+      const templateData = {
         budgetGroups: [
           {
             name: "Savings",
@@ -643,49 +641,179 @@ describe("BudgetCycleStore Modules", () => {
                 name: "Emergency Fund",
                 type: "savings",
                 assigned: 0,
-                target: 1000,
+                goal: 1000,
                 startingBalance: 200,
               },
             ],
           },
         ],
       };
-      adapter.set("budget_app_defaults", JSON.stringify(template));
+      const template = new BudgetTemplate(adapter);
+      template.save(templateData);
 
       // 1. Update savings balance in template
-      updateTemplateSavingsBalance(adapter, "sav-1", 100);
-      let updated = JSON.parse(adapter.get("budget_app_defaults"));
+      template.updateSavingsBalance("sav-1", 100);
+      let updated = template.get();
       expect(updated.budgetGroups[0].budgetGroupItems[0].startingBalance).toBe(
         300
       );
 
       // 2. Update savings item metadata in template
-      updateTemplateSavingsItem(adapter, {
+      template.updateSavingsItem({
         itemId: "sav-1",
         name: "Sinking Fund",
-        target: 1500,
+        goal: 1500,
         startingBalance: 350,
       });
-      updated = JSON.parse(adapter.get("budget_app_defaults"));
+      updated = template.get();
       const item = updated.budgetGroups[0].budgetGroupItems[0];
       expect(item.name).toBe("Sinking Fund");
-      expect(item.target).toBe(1500);
+      expect(item.goal).toBe(1500);
       expect(item.startingBalance).toBe(350);
 
       // 3. Add template savings item
-      addTemplateSavingsItem(adapter, {
+      template.addSavingsItem({
         id: "sav-2",
         name: "Car Goal",
-        target: 5000,
+        goal: 5000,
         startingBalance: 500,
       });
-      updated = JSON.parse(adapter.get("budget_app_defaults"));
+      updated = template.get();
       expect(updated.budgetGroups[0].budgetGroupItems.length).toBe(2);
       expect(updated.budgetGroups[0].budgetGroupItems[1].name).toBe("Car Goal");
-      expect(updated.budgetGroups[0].budgetGroupItems[1].target).toBe(5000);
+      expect(updated.budgetGroups[0].budgetGroupItems[1].goal).toBe(5000);
       expect(updated.budgetGroups[0].budgetGroupItems[1].startingBalance).toBe(
         500
       );
+    });
+  });
+
+  describe("BudgetTemplate", () => {
+    it("returns null if no template defaults exist in storage", () => {
+      const adapter = new InMemoryStorageAdapter();
+      const template = new BudgetTemplate(adapter);
+      expect(template.get()).toBeNull();
+    });
+
+    it("saves template data correctly and supports chaining", () => {
+      const adapter = new InMemoryStorageAdapter();
+      const template = new BudgetTemplate(adapter);
+      const data = { startingSalary: 5000, budgetGroups: [] };
+      const returned = template.save(data);
+      expect(returned).toBe(template);
+      expect(template.get()).toEqual(data);
+    });
+
+    it("handles debt operations: add, update balance, update assigned, update item", () => {
+      const adapter = new InMemoryStorageAdapter();
+      const template = new BudgetTemplate(adapter);
+
+      // 1. Add debt item
+      template.addDebtItem({
+        id: "d1",
+        name: "Credit Card A",
+        outstandingBalance: 1500,
+        minimumPayment: 50,
+        debtType: "credit-card",
+      });
+
+      let data = template.get();
+      expect(data.budgetGroups.length).toBe(1);
+      expect(data.budgetGroups[0].name).toBe("Debt");
+      expect(data.budgetGroups[0].isDebtGroup).toBe(true);
+      expect(data.budgetGroups[0].budgetGroupItems[0]).toEqual({
+        id: "d1",
+        name: "Credit Card A",
+        assigned: 0,
+        type: "debt",
+        outstandingBalance: 1500,
+        minimumPayment: 50,
+        debtType: "credit-card",
+        interestRate: undefined,
+      });
+
+      // 2. Update outstanding balance
+      template.updateDebtBalance("d1", -150);
+      data = template.get();
+      expect(data.budgetGroups[0].budgetGroupItems[0].outstandingBalance).toBe(
+        1350
+      );
+
+      // 3. Update assigned amount
+      template.updateDebtAssigned("d1", 100);
+      data = template.get();
+      expect(data.budgetGroups[0].budgetGroupItems[0].assigned).toBe(100);
+
+      // 4. Update metadata
+      template.updateDebtItem({
+        itemId: "d1",
+        name: "New Name",
+        outstandingBalance: 1000,
+        minimumPayment: 60,
+        debtType: "personal-loan",
+        interestRate: 5.5,
+      });
+      data = template.get();
+      expect(data.budgetGroups[0].budgetGroupItems[0]).toEqual({
+        id: "d1",
+        name: "New Name",
+        assigned: 100,
+        type: "debt",
+        outstandingBalance: 1000,
+        minimumPayment: 60,
+        debtType: "personal-loan",
+        interestRate: 5.5,
+      });
+    });
+
+    it("handles savings operations: add, update balance, update item", () => {
+      const adapter = new InMemoryStorageAdapter();
+      const template = new BudgetTemplate(adapter);
+
+      // 1. Add savings item
+      template.addSavingsItem({
+        id: "sav-1",
+        name: "Emergency Fund",
+        goal: 1000,
+        startingBalance: 200,
+      });
+
+      let data = template.get();
+      expect(data.budgetGroups.length).toBe(1);
+      expect(data.budgetGroups[0].name).toBe("Savings");
+      expect(data.budgetGroups[0].isSavingsGroup).toBe(true);
+      expect(data.budgetGroups[0].budgetGroupItems[0]).toEqual({
+        id: "sav-1",
+        name: "Emergency Fund",
+        assigned: 0,
+        type: "savings",
+        goal: 1000,
+        startingBalance: 200,
+      });
+
+      // 2. Update savings balance
+      template.updateSavingsBalance("sav-1", 100);
+      data = template.get();
+      expect(data.budgetGroups[0].budgetGroupItems[0].startingBalance).toBe(
+        300
+      );
+
+      // 3. Update savings item metadata
+      template.updateSavingsItem({
+        itemId: "sav-1",
+        name: "Sinking Fund",
+        goal: 1500,
+        startingBalance: 350,
+      });
+      data = template.get();
+      expect(data.budgetGroups[0].budgetGroupItems[0]).toEqual({
+        id: "sav-1",
+        name: "Sinking Fund",
+        assigned: 0,
+        type: "savings",
+        goal: 1500,
+        startingBalance: 350,
+      });
     });
   });
 });

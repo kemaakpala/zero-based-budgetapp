@@ -5,12 +5,6 @@ export {
   saveBudgetData,
   getEnrichedGroups,
   calculateSummary,
-  updateTemplateDebtBalance,
-  updateTemplateDebtAssigned,
-  addTemplateDebtItem,
-  updateTemplateDebtItem,
-  updateTemplateSavingsBalance,
-  addTemplateSavingsItem,
-  updateTemplateSavingsItem,
 } from "./helpers";
+export { BudgetTemplate } from "./BudgetTemplate";
 export { useBudgetStore } from "./useBudgetStore";
