@@ -1,0 +1,33 @@
+{
+  "actions": [
+    {
+      "type": "goto",
+      "url": "/settings"
+    },
+    {
+      "type": "wait",
+      "selector": "h2:has-text('Set Your Starting Monthly Income')"
+    },
+    {
+      "type": "click",
+      "selector": "button:has-text('Next')"
+    },
+    {
+      "type": "wait",
+      "selector": "h2:has-text('Customize Budget Categories')"
+    },
+    {
+      "type": "wait",
+      "timeout": 500
+    },
+    {
+      "type": "screenshot",
+      "selector": ".wizard-step.step-categories",
+      "path": "screenshots/step2_screenshot.png"
+    },
+    {
+      "type": "dump",
+      "selector": ".group-card"
+    }
+  ]
+}
