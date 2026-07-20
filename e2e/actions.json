@@ -9,6 +9,11 @@
       "selector": "h2:has-text('Set Your Starting Monthly Income')"
     },
     {
+      "type": "screenshot",
+      "selector": ".setup-wizard-container",
+      "path": "screenshots/step1_salary.png"
+    },
+    {
       "type": "click",
       "selector": "button:has-text('Next')"
     },
@@ -22,12 +27,37 @@
     },
     {
       "type": "screenshot",
-      "selector": ".wizard-step.step-categories",
-      "path": "screenshots/step2_screenshot.png"
+      "selector": ".setup-wizard-container",
+      "path": "screenshots/step2_categories.png"
     },
     {
-      "type": "dump",
-      "selector": ".group-card"
+      "type": "click",
+      "selector": "button:has-text('Next')"
+    },
+    {
+      "type": "wait",
+      "selector": "h2:has-text('Do You Have Any Debt?')"
+    },
+    {
+      "type": "click",
+      "selector": "button:has-text('No, skip this step')"
+    },
+    {
+      "type": "wait",
+      "selector": "h2:has-text('Do You Want to Set Up Savings Goals?')"
+    },
+    {
+      "type": "click",
+      "selector": "button:has-text('No, skip this step')"
+    },
+    {
+      "type": "wait",
+      "selector": "h2:has-text('Confirm Your Budget Setup')"
+    },
+    {
+      "type": "screenshot",
+      "selector": ".setup-wizard-container",
+      "path": "screenshots/step5_confirm.png"
     }
   ]
 }
