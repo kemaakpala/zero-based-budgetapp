@@ -1,0 +1,33 @@
+{
+  "actions": [
+    {
+      "type": "goto",
+      "url": "/settings"
+    },
+    {
+      "type": "wait",
+      "selector": "h2:has-text('Set Your Starting Monthly Income')"
+    },
+    {
+      "type": "click",
+      "selector": "button:has-text('Next')"
+    },
+    {
+      "type": "wait",
+      "selector": "h2:has-text('Customize Budget Categories')"
+    },
+    {
+      "type": "wait",
+      "timeout": 500
+    },
+    {
+      "type": "screenshot",
+      "selector": ".wizard-step.step-categories",
+      "path": "/home/patrick/.gemini/antigravity-ide/brain/7cc3bdcd-d917-4500-bb30-50f9ad2505be/step2_screenshot.png"
+    },
+    {
+      "type": "dump",
+      "selector": ".group-card"
+    }
+  ]
+}

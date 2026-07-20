@@ -235,3 +235,17 @@ Triage labels map to canonical roles (needs-triage, needs-info, ready-for-agent,
 ### Domain docs
 
 Single-context repository layout. See [docs/agents/domain.md](file:///home/patrick/dev/zero-based-budgetapp/docs/agents/domain.md).
+
+---
+
+## Browser Diagnostics Workaround (CDP Fallback)
+
+If the platform's `open_browser_url` or `browser_subagent` fails with a CDP error (e.g., `failed to resolve CDP URLs: get CDP version info: could not resolve IP for 127.0.0.1`), DO NOT attempt to retry or exit. Instead, utilize the local Playwright runner workaround:
+
+1. Define the target browser actions (goto, click, fill, wait, screenshot, dump) in [actions.json](file:///home/patrick/dev/zero-based-budgetapp/e2e/actions.json).
+2. Set screenshot paths to save directly to the current conversation's brain folder (e.g., `/home/patrick/.gemini/antigravity-ide/brain/<conversation-id>/filename.png`).
+3. Run the Playwright spec via the terminal:
+   ```bash
+   npx playwright test e2e/runner.spec.js
+   ```
+4. Verify the output logs and check the saved screenshots in the conversation folder.
