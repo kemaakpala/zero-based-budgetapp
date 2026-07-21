@@ -21,7 +21,7 @@ export class InMemoryStorageAdapter implements StorageAdapter {
   }
 
   get(key: string): string | null {
-    return this.store.get(key) || null;
+    return this.store.get(key) ?? null;
   }
 
   set(key: string, value: string): void {
