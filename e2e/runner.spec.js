@@ -38,12 +38,34 @@ test("run interactive actions from actions.json", async ({ page }) => {
         break;
 
       case "screenshot":
-        const targetPath = action.path;
-        // Ensure directory exists
-        const dir = path.dirname(targetPath);
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir, { recursive: true });
+        let targetPath = action.path;
+
+        // Resolve path: use SCREENSHOT_DIR override if provided, otherwise resolve relative paths under e2e/
+        if (process.env.SCREENSHOT_DIR) {
+          const filename = path.basename(targetPath);
+          targetPath = path.join(process.env.SCREENSHOT_DIR, filename);
+        } else if (!path.isAbsolute(targetPath)) {
+          targetPath = path.resolve(__dirname, targetPath);
         }
+
+        // Ensure directory exists
+        let dir = path.dirname(targetPath);
+        try {
+          if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+          }
+        } catch (err) {
+          console.warn(
+            `Failed to create directory ${dir}: ${err.message}. Falling back to workspace folder.`
+          );
+          const filename = path.basename(targetPath);
+          const fallbackDir = path.join(__dirname, "screenshots");
+          if (!fs.existsSync(fallbackDir)) {
+            fs.mkdirSync(fallbackDir, { recursive: true });
+          }
+          targetPath = path.join(fallbackDir, filename);
+        }
+
         if (action.selector) {
           await page.locator(action.selector).screenshot({ path: targetPath });
         } else {
