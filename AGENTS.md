@@ -189,7 +189,7 @@ Budget (container, owns reducer)
 - This project follows **test-driven development** — use the `tdd` skill when building features or fixing bugs
 - Test runner: **Vitest** (`npm test` runs `vitest run`)
 - DOM testing: **@testing-library/react** + **jsdom**
-- For tests that need storage, use `InMemoryStorageAdapter` from `src/utils/budgetStore/adapters.js`
+- For tests that need storage, use `InMemoryStorageAdapter` from `src/utils/budgetStore/adapters.ts`
 - ID generation uses `window.crypto.getRandomValues` — in test environments, ensure a polyfill or mock is available
 
 ---
@@ -201,7 +201,7 @@ Budget (container, owns reducer)
 - Vanilla CSS (no Tailwind, no CSS-in-JS)
 - FontAwesome icons via `@fortawesome/react-fontawesome`
 - Prettier + Husky + lint-staged for formatting
-- No TypeScript (plain JSX)
+- TypeScript (supported for utility/store modules, transitioning from JS)
 
 ---
 
@@ -215,7 +215,7 @@ Budget (container, owns reducer)
 | Future work tracker       | `FUTURE_IMPROVEMENTS.md`               |
 | Budget state reducer      | `src/utils/budgetStore/reducer.js`     |
 | Derived value helpers     | `src/utils/budgetStore/helpers.js`     |
-| Storage abstraction       | `src/utils/budgetStore/adapters.js`    |
+| Storage abstraction       | `src/utils/budgetStore/adapters.ts`    |
 | Budget cycle calculator   | `src/utils/budgetCycle/budgetCycle.js` |
 | Main dashboard container  | `src/Container/Budget/Budget.jsx`      |
 | Setup wizard              | `src/Settings/Settings.jsx`            |
