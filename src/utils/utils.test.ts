@@ -1,3 +1,5 @@
+import { describe, beforeAll, it, expect } from "vitest";
+import * as nodeCrypto from "crypto";
 import {
   generateUniqueId,
   formatBudgetItemAmount,
@@ -7,11 +9,11 @@ import {
 
 describe("utils", () => {
   beforeAll(() => {
-    const crypto = require("crypto");
-    Object.defineProperty(global, "crypto", {
+    Object.defineProperty(globalThis, "crypto", {
       value: {
-        getRandomValues: function (buffer) {
-          return crypto.randomFillSync(buffer);
+        getRandomValues: function <T extends ArrayBufferView>(buffer: T): T {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          return nodeCrypto.randomFillSync(buffer as any) as any;
         },
       },
       writable: true,

@@ -1,10 +1,18 @@
+export interface BudgetCycleOptions {
+  paydayDay?: number;
+  weekendBehavior?: "preceding-friday" | "following-monday" | "exact";
+}
+
 export class BudgetCycleCalculator {
-  constructor(options = {}) {
+  public paydayDay: number;
+  public weekendBehavior: "preceding-friday" | "following-monday" | "exact";
+
+  constructor(options: BudgetCycleOptions = {}) {
     this.paydayDay = options.paydayDay ?? 20;
     this.weekendBehavior = options.weekendBehavior ?? "preceding-friday";
   }
 
-  calculatePayday(year, monthIndex) {
+  public calculatePayday(year: number, monthIndex: number): Date {
     const date = new Date(year, monthIndex, this.paydayDay);
     const dayOfWeek = date.getDay(); // 0 = Sunday, 6 = Saturday
 
@@ -24,7 +32,10 @@ export class BudgetCycleCalculator {
     return date;
   }
 
-  getCycleRange(year, monthIndex) {
+  public getCycleRange(
+    year: number,
+    monthIndex: number
+  ): { start: Date; end: Date } {
     const start = this.calculatePayday(year, monthIndex);
 
     // Next month calculation
@@ -40,7 +51,7 @@ export class BudgetCycleCalculator {
     return { start, end };
   }
 
-  formatDate(date) {
+  public formatDate(date: Date): string {
     const day = date.getDate();
     const month = date.toLocaleString("default", { month: "long" });
     const year = date.getFullYear();
@@ -53,7 +64,7 @@ export class BudgetCycleCalculator {
     return `${month} ${day}${suffix}, ${year}`;
   }
 
-  formatCycleRange(range) {
+  public formatCycleRange(range: { start: Date; end: Date }): string {
     return `${this.formatDate(range.start)} - ${this.formatDate(range.end)}`;
   }
 }
