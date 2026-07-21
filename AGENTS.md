@@ -100,8 +100,16 @@ New months are initialised from `budget_app_defaults` (the saved Budget Template
 {
   id: string,        // crypto-generated 32-char hex UUID
   name: string,      // e.g. "Rent / Mortgage"
-  assigned: number,   // planned amount (float)
-  type: "expense"    // currently always "expense" — income types not yet implemented
+  assigned: number,  // planned amount (float)
+  type: "expense" | "debt" | "savings",
+  // Debt-specific metadata (when type is "debt")
+  outstandingBalance?: number,
+  minimumPayment?: number,
+  debtType?: string,
+  interestRate?: number,
+  // Savings-specific metadata (when type is "savings")
+  goal?: number,
+  startingBalance?: number
 }
 ```
 
@@ -110,7 +118,7 @@ New months are initialised from `budget_app_defaults` (the saved Budget Template
 ```js
 {
   id: string,         // crypto-generated 32-char hex UUID
-  name: string,       // payee name (e.g. "Tesco")
+  payee: string,      // payee name (e.g. "Tesco")
   amount: number,     // spent amount (float, always positive)
   budgetItemId: string, // FK to Budget Item id
   date: string        // ISO 8601 timestamp
