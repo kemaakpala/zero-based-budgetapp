@@ -166,8 +166,8 @@ src/
 ├── utils/
 │   ├── budgetStore/    # Reducer, helpers, adapters (core business logic)
 │   ├── budgetCycle/    # BudgetCycleCalculator class (payday & cycle date logic)
-│   ├── utils.js        # Shared utilities (ID generation, formatting, defaults)
-│   └── constants.js    # Enum-like constants
+│   ├── utils.ts        # Shared utilities (ID generation, formatting, defaults)
+│   └── constants.ts    # Enum-like constants
 └── mocks/              # Test fixture data
 ```
 
@@ -221,10 +221,10 @@ Budget (container, owns reducer)
 | Git workflow & guidelines | `CONTRIBUTING.md`                      |
 | Architectural decisions   | `docs/adr/*.md`                        |
 | Future work tracker       | `FUTURE_IMPROVEMENTS.md`               |
-| Budget state reducer      | `src/utils/budgetStore/reducer.js`     |
-| Derived value helpers     | `src/utils/budgetStore/helpers.js`     |
+| Budget state reducer      | `src/utils/budgetStore/reducer.ts`     |
+| Derived value helpers     | `src/utils/budgetStore/helpers.ts`     |
 | Storage abstraction       | `src/utils/budgetStore/adapters.ts`    |
-| Budget cycle calculator   | `src/utils/budgetCycle/budgetCycle.js` |
+| Budget cycle calculator   | `src/utils/budgetCycle/budgetCycle.ts` |
 | Main dashboard container  | `src/Container/Budget/Budget.jsx`      |
 | Setup wizard              | `src/Settings/Settings.jsx`            |
 

@@ -116,3 +116,19 @@ export type BudgetAction =
         startingBalance?: string | number;
       };
     };
+
+export interface EnrichedBudgetItem extends BudgetItem {
+  spent: number;
+  remaining: number;
+  status: { label: string; value: string; type: string }[];
+  isPaidOff?: boolean;
+  currentBalance?: number;
+  toSave?: number;
+}
+
+export interface EnrichedBudgetGroup extends Omit<
+  BudgetGroup,
+  "budgetGroupItems"
+> {
+  budgetGroupItems: EnrichedBudgetItem[];
+}

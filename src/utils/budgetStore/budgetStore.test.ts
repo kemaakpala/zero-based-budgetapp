@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { describe, it, expect } from "vitest";
 import {
   budgetReducer,
   InMemoryStorageAdapter,
@@ -7,6 +9,7 @@ import {
   calculateSummary,
 } from "./index";
 import { BudgetTemplate } from "./BudgetTemplate";
+import { BudgetState } from "./types";
 
 describe("BudgetCycleStore Modules", () => {
   describe("InMemoryStorageAdapter", () => {
@@ -33,13 +36,13 @@ describe("BudgetCycleStore Modules", () => {
               id: "h1",
               name: "Rent / Mortgage",
               assigned: 1000.0,
-              type: "expense",
+              type: "expense" as const,
             },
           ],
         },
       ],
       transactions: [],
-    };
+    } as unknown as BudgetState;
 
     it("handles LOAD_CYCLE", () => {
       const newState = {
@@ -51,9 +54,9 @@ describe("BudgetCycleStore Modules", () => {
       };
       const result = budgetReducer(initialState, {
         type: "LOAD_CYCLE",
-        payload: newState,
+        payload: newState as any,
       });
-      expect(result.incomes[0].amount).toBe(4000.0);
+      expect(result.incomes![0].amount).toBe(4000.0);
       expect(result.budgetGroups.length).toBe(0);
     });
 
@@ -63,25 +66,25 @@ describe("BudgetCycleStore Modules", () => {
         type: "ADD_INCOME",
         payload: { name: "Side Hustle", amount: 500, received: false },
       });
-      expect(state.incomes.length).toBe(2);
-      expect(state.incomes[1].name).toBe("Side Hustle");
-      expect(state.incomes[1].amount).toBe(500);
+      expect(state.incomes!.length).toBe(2);
+      expect(state.incomes![1].name).toBe("Side Hustle");
+      expect(state.incomes![1].amount).toBe(500);
 
-      const newIncomeId = state.incomes[1].id;
+      const newIncomeId = state.incomes![1].id;
 
       // Update income field
       state = budgetReducer(state, {
         type: "UPDATE_INCOME_FIELD",
         payload: { incomeId: newIncomeId, fieldName: "amount", value: 600 },
       });
-      expect(state.incomes[1].amount).toBe(600);
+      expect(state.incomes![1].amount).toBe(600);
 
       // Delete income
       state = budgetReducer(state, {
         type: "DELETE_INCOME",
         payload: { incomeId: newIncomeId },
       });
-      expect(state.incomes.length).toBe(1);
+      expect(state.incomes!.length).toBe(1);
     });
 
     it("handles UPDATE_ITEM_FIELD", () => {
@@ -106,11 +109,11 @@ describe("BudgetCycleStore Modules", () => {
       const stateWithTx = {
         ...initialState,
         transactions: [
-          { id: "tx1", name: "Landlord", amount: 1000, budgetItemId: "h1" },
-          { id: "tx2", name: "Other", amount: 200, budgetItemId: "h2" },
+          { id: "tx1", payee: "Landlord", amount: 1000, budgetItemId: "h1" },
+          { id: "tx2", payee: "Other", amount: 200, budgetItemId: "h2" },
         ],
       };
-      const result = budgetReducer(stateWithTx, {
+      const result = budgetReducer(stateWithTx as any, {
         type: "DELETE_ITEM",
         payload: "h1",
       });
@@ -142,12 +145,12 @@ describe("BudgetCycleStore Modules", () => {
           },
         ],
         transactions: [
-          { id: "tx1", name: "Tesco", amount: 50, budgetItemId: "item2" },
-          { id: "tx2", name: "Landlord", amount: 1000, budgetItemId: "item1" },
+          { id: "tx1", payee: "Tesco", amount: 50, budgetItemId: "item2" },
+          { id: "tx2", payee: "Landlord", amount: 1000, budgetItemId: "item1" },
         ],
       };
       // Delete Group 2 (index 1)
-      const result = budgetReducer(stateWithGroupsAndTx, {
+      const result = budgetReducer(stateWithGroupsAndTx as any, {
         type: "DELETE_GROUP",
         payload: { groupIndex: 1 },
       });
@@ -180,10 +183,10 @@ describe("BudgetCycleStore Modules", () => {
       const stateWithTx = {
         ...initialState,
         transactions: [
-          { id: "tx1", name: "Landlord", amount: 1000, budgetItemId: "h1" },
+          { id: "tx1", payee: "Landlord", amount: 1000, budgetItemId: "h1" },
         ],
       };
-      const result = budgetReducer(stateWithTx, {
+      const result = budgetReducer(stateWithTx as any, {
         type: "DELETE_TRANSACTION",
         payload: "tx1",
       });
@@ -194,12 +197,12 @@ describe("BudgetCycleStore Modules", () => {
       const stateWithTx = {
         ...initialState,
         transactions: [
-          { id: "tx1", name: "Tx 1", amount: 10, budgetItemId: "h1" },
-          { id: "tx2", name: "Tx 2", amount: 20, budgetItemId: "h1" },
-          { id: "tx3", name: "Tx 3", amount: 30, budgetItemId: "h1" },
+          { id: "tx1", payee: "Tx 1", amount: 10, budgetItemId: "h1" },
+          { id: "tx2", payee: "Tx 2", amount: 20, budgetItemId: "h1" },
+          { id: "tx3", payee: "Tx 3", amount: 30, budgetItemId: "h1" },
         ],
       };
-      const result = budgetReducer(stateWithTx, {
+      const result = budgetReducer(stateWithTx as any, {
         type: "DELETE_MULTIPLE_TRANSACTIONS",
         payload: ["tx1", "tx3"],
       });
@@ -259,8 +262,8 @@ describe("BudgetCycleStore Modules", () => {
         },
       });
       const debtGroup = result.budgetGroups.find((g) => g.isDebtGroup);
-      expect(debtGroup.budgetGroupItems.length).toBe(1);
-      const item = debtGroup.budgetGroupItems[0];
+      expect(debtGroup!.budgetGroupItems.length).toBe(1);
+      const item = debtGroup!.budgetGroupItems[0];
       expect(item.name).toBe("Barclaycard");
       expect(item.type).toBe("debt");
       expect(item.outstandingBalance).toBe(3200);
@@ -294,7 +297,7 @@ describe("BudgetCycleStore Modules", () => {
         },
       });
       const debtGroup = result.budgetGroups.find((g) => g.isDebtGroup);
-      expect(debtGroup.budgetGroupItems[0].id).toBe("custom-id-999");
+      expect(debtGroup!.budgetGroupItems[0].id).toBe("custom-id-999");
     });
 
     it("handles UPDATE_DEBT_ITEM", () => {
@@ -320,7 +323,7 @@ describe("BudgetCycleStore Modules", () => {
           },
         ],
       };
-      const result = budgetReducer(stateWithDebt, {
+      const result = budgetReducer(stateWithDebt as any, {
         type: "UPDATE_DEBT_ITEM",
         payload: {
           itemId: "d1",
@@ -332,7 +335,7 @@ describe("BudgetCycleStore Modules", () => {
         },
       });
       const debtGroup = result.budgetGroups.find((g) => g.isDebtGroup);
-      const item = debtGroup.budgetGroupItems[0];
+      const item = debtGroup!.budgetGroupItems[0];
       expect(item.name).toBe("Barclays Visa");
       expect(item.outstandingBalance).toBe(2800);
       expect(item.minimumPayment).toBe(100);
@@ -345,7 +348,7 @@ describe("BudgetCycleStore Modules", () => {
       const adapter = new InMemoryStorageAdapter();
       // Test default fallback
       const data1 = loadBudgetData("June-2026", adapter);
-      expect(data1.incomes[0].amount).toBe(5000.0);
+      expect(data1.incomes![0].amount).toBe(5000.0);
       expect(data1.budgetGroups.length).toBeGreaterThan(0);
       expect(data1.paydayDay).toBe(20);
       expect(data1.weekendBehavior).toBe("preceding-friday");
@@ -361,7 +364,7 @@ describe("BudgetCycleStore Modules", () => {
       };
       adapter.set("budget_app_defaults", JSON.stringify(defaults));
       const data2 = loadBudgetData("June-2026", adapter);
-      expect(data2.incomes[0].amount).toBe(4500.0);
+      expect(data2.incomes![0].amount).toBe(4500.0);
       expect(data2.budgetGroups[0].name).toBe("CustomGroup");
       expect(data2.paydayDay).toBe(25);
       expect(data2.weekendBehavior).toBe("following-monday");
@@ -376,9 +379,9 @@ describe("BudgetCycleStore Modules", () => {
         budgetGroups: [],
         transactions: [],
       };
-      saveBudgetData("June-2026", state, adapter);
+      saveBudgetData("June-2026", state as any, adapter);
 
-      const loaded = JSON.parse(adapter.get("budget_app_data_June-2026"));
+      const loaded = JSON.parse(adapter.get("budget_app_data_June-2026")!);
       expect(loaded.incomes[0].amount).toBe(6000.0);
     });
 
@@ -397,13 +400,13 @@ describe("BudgetCycleStore Modules", () => {
         },
       ];
       const transactions = [
-        { id: "tx1", name: "Landlord", amount: 800, budgetItemId: "h1" },
+        { id: "tx1", payee: "Landlord", amount: 800, budgetItemId: "h1" },
       ];
 
       // remaining view
       const enrichedRemaining = getEnrichedGroups(
-        budgetGroups,
-        transactions,
+        budgetGroups as any,
+        transactions as any,
         "remaining"
       );
       const itemRemaining = enrichedRemaining[0].budgetGroupItems[0];
@@ -414,8 +417,8 @@ describe("BudgetCycleStore Modules", () => {
 
       // spent view
       const enrichedSpent = getEnrichedGroups(
-        budgetGroups,
-        transactions,
+        budgetGroups as any,
+        transactions as any,
         "spent"
       );
       const itemSpent = enrichedSpent[0].budgetGroupItems[0];
@@ -453,15 +456,15 @@ describe("BudgetCycleStore Modules", () => {
       const transactions = [
         {
           id: "tx1",
-          name: "Barclaycard Payment",
+          payee: "Barclaycard Payment",
           amount: 150,
           budgetItemId: "d1",
         },
       ];
 
       const enriched = getEnrichedGroups(
-        budgetGroups,
-        transactions,
+        budgetGroups as any,
+        transactions as any,
         "remaining"
       );
       const debtGroup = enriched[0];
@@ -496,13 +499,13 @@ describe("BudgetCycleStore Modules", () => {
         ],
       };
       const template = new BudgetTemplate(adapter);
-      template.save(templateData);
+      template.save(templateData as any);
 
       // Simulate a payment of 150
       template.updateDebtBalance("d1", -150);
 
       const updated = template.get();
-      const debtItem = updated.budgetGroups[0].budgetGroupItems[0];
+      const debtItem = updated!.budgetGroups[0].budgetGroupItems[0];
       expect(debtItem.outstandingBalance).toBe(3050);
     });
 
@@ -530,7 +533,7 @@ describe("BudgetCycleStore Modules", () => {
         ],
       };
 
-      const summary = calculateSummary(state);
+      const summary = calculateSummary(state as any);
       expect(summary.totalIncome).toBe(3000.0);
       expect(summary.totalAssigned).toBe(1200.0);
       expect(summary.unassignedIncome).toBe(1800.0);
@@ -540,7 +543,7 @@ describe("BudgetCycleStore Modules", () => {
       state.incomes = [
         { id: "inc-1", name: "Salary", amount: 1000.0, received: true },
       ];
-      const summary2 = calculateSummary(state);
+      const summary2 = calculateSummary(state as any);
       expect(summary2.unassignedIncome).toBe(-200.0);
       expect(summary2.isOverallocated).toBe(true);
     });
@@ -549,7 +552,9 @@ describe("BudgetCycleStore Modules", () => {
       const state = { budgetGroups: [] };
 
       // 1. ADD_SAVINGS_GROUP
-      let nextState = budgetReducer(state, { type: "ADD_SAVINGS_GROUP" });
+      let nextState = budgetReducer(state as any, {
+        type: "ADD_SAVINGS_GROUP",
+      });
       expect(nextState.budgetGroups.length).toBe(1);
       expect(nextState.budgetGroups[0].name).toBe("Savings");
       expect(nextState.budgetGroups[0].isSavingsGroup).toBe(true);
@@ -600,7 +605,7 @@ describe("BudgetCycleStore Modules", () => {
             {
               id: "sav-1",
               name: "Emergency Fund",
-              type: "savings",
+              type: "savings" as const,
               assigned: 200,
               goal: 1000,
               startingBalance: 400,
@@ -613,8 +618,8 @@ describe("BudgetCycleStore Modules", () => {
       ];
 
       const enriched = getEnrichedGroups(
-        budgetGroups,
-        transactions,
+        budgetGroups as any,
+        transactions as any,
         "remaining"
       );
       const item = enriched[0].budgetGroupItems[0];
@@ -649,11 +654,11 @@ describe("BudgetCycleStore Modules", () => {
         ],
       };
       const template = new BudgetTemplate(adapter);
-      template.save(templateData);
+      template.save(templateData as any);
 
       // 1. Update savings balance in template
       template.updateSavingsBalance("sav-1", 100);
-      let updated = template.get();
+      let updated = template.get()!;
       expect(updated.budgetGroups[0].budgetGroupItems[0].startingBalance).toBe(
         300
       );
@@ -665,7 +670,7 @@ describe("BudgetCycleStore Modules", () => {
         goal: 1500,
         startingBalance: 350,
       });
-      updated = template.get();
+      updated = template.get()!;
       const item = updated.budgetGroups[0].budgetGroupItems[0];
       expect(item.name).toBe("Sinking Fund");
       expect(item.goal).toBe(1500);
@@ -678,7 +683,7 @@ describe("BudgetCycleStore Modules", () => {
         goal: 5000,
         startingBalance: 500,
       });
-      updated = template.get();
+      updated = template.get()!;
       expect(updated.budgetGroups[0].budgetGroupItems.length).toBe(2);
       expect(updated.budgetGroups[0].budgetGroupItems[1].name).toBe("Car Goal");
       expect(updated.budgetGroups[0].budgetGroupItems[1].goal).toBe(5000);
@@ -698,7 +703,7 @@ describe("BudgetCycleStore Modules", () => {
     it("saves template data correctly and supports chaining", () => {
       const adapter = new InMemoryStorageAdapter();
       const template = new BudgetTemplate(adapter);
-      const data = { startingSalary: 5000, budgetGroups: [] };
+      const data = { startingSalary: 5000, budgetGroups: [] } as any;
       const returned = template.save(data);
       expect(returned).toBe(template);
       expect(template.get()).toEqual(data);
@@ -717,7 +722,7 @@ describe("BudgetCycleStore Modules", () => {
         debtType: "credit-card",
       });
 
-      let data = template.get();
+      let data = template.get()!;
       expect(data.budgetGroups.length).toBe(1);
       expect(data.budgetGroups[0].name).toBe("Debt");
       expect(data.budgetGroups[0].isDebtGroup).toBe(true);
@@ -734,14 +739,14 @@ describe("BudgetCycleStore Modules", () => {
 
       // 2. Update outstanding balance
       template.updateDebtBalance("d1", -150);
-      data = template.get();
+      data = template.get()!;
       expect(data.budgetGroups[0].budgetGroupItems[0].outstandingBalance).toBe(
         1350
       );
 
       // 3. Update assigned amount
       template.updateDebtAssigned("d1", 100);
-      data = template.get();
+      data = template.get()!;
       expect(data.budgetGroups[0].budgetGroupItems[0].assigned).toBe(100);
 
       // 4. Update metadata
@@ -753,7 +758,7 @@ describe("BudgetCycleStore Modules", () => {
         debtType: "personal-loan",
         interestRate: 5.5,
       });
-      data = template.get();
+      data = template.get()!;
       expect(data.budgetGroups[0].budgetGroupItems[0]).toEqual({
         id: "d1",
         name: "New Name",
@@ -778,7 +783,7 @@ describe("BudgetCycleStore Modules", () => {
         startingBalance: 200,
       });
 
-      let data = template.get();
+      let data = template.get()!;
       expect(data.budgetGroups.length).toBe(1);
       expect(data.budgetGroups[0].name).toBe("Savings");
       expect(data.budgetGroups[0].isSavingsGroup).toBe(true);
@@ -793,7 +798,7 @@ describe("BudgetCycleStore Modules", () => {
 
       // 2. Update savings balance
       template.updateSavingsBalance("sav-1", 100);
-      data = template.get();
+      data = template.get()!;
       expect(data.budgetGroups[0].budgetGroupItems[0].startingBalance).toBe(
         300
       );
@@ -805,7 +810,7 @@ describe("BudgetCycleStore Modules", () => {
         goal: 1500,
         startingBalance: 350,
       });
-      data = template.get();
+      data = template.get()!;
       expect(data.budgetGroups[0].budgetGroupItems[0]).toEqual({
         id: "sav-1",
         name: "Sinking Fund",
