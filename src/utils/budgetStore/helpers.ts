@@ -1,5 +1,13 @@
 import { DEFAULT_BUDGET_GROUPS } from "../utils";
 import { BudgetTemplate } from "./BudgetTemplate";
+import { StorageAdapter } from "./adapters";
+import {
+  BudgetState,
+  BudgetGroup,
+  Transaction,
+  EnrichedBudgetGroup,
+  EnrichedBudgetItem,
+} from "./types";
 
 // Data migration: strips the legacy `columns` property from persisted budget
 // groups. Before this refactor, each group stored UI column metadata (e.g.
@@ -7,14 +15,19 @@ import { BudgetTemplate } from "./BudgetTemplate";
 // computed at the component layer (BudgetGroup / DebtGroup). This sanitizer
 // ensures old localStorage blobs are cleaned up on first load. Safe to remove
 // once no persisted data carries `columns`.
-const sanitizeBudgetGroups = (groups = []) => {
+const sanitizeBudgetGroups = (
+  groups: Array<BudgetGroup & { columns?: unknown }> = []
+): BudgetGroup[] => {
   return groups.map(({ columns, ...rest }) => ({
     ...rest,
     budgetGroupItems: rest.budgetGroupItems || [],
   }));
 };
 
-export const loadBudgetData = (monthKey, storageAdapter) => {
+export const loadBudgetData = (
+  monthKey: string,
+  storageAdapter: StorageAdapter
+): BudgetState => {
   const data = storageAdapter.get(`budget_app_data_${monthKey}`);
   if (data) {
     try {
@@ -32,6 +45,7 @@ export const loadBudgetData = (monthKey, storageAdapter) => {
         transactions: parsed.transactions || [],
         paydayDay: parsed.paydayDay ?? 20,
         weekendBehavior: parsed.weekendBehavior ?? "preceding-friday",
+        startingSalary: parsed.startingSalary ?? 5000.0,
       };
     } catch (e) {
       console.error("Error parsing budget data", e);
@@ -58,6 +72,7 @@ export const loadBudgetData = (monthKey, storageAdapter) => {
         transactions: [],
         paydayDay: parsed.paydayDay ?? 20,
         weekendBehavior: parsed.weekendBehavior ?? "preceding-friday",
+        startingSalary: parsed.startingSalary ?? 5000.0,
       };
     } catch (e) {
       console.error("Error parsing default budget template", e);
@@ -79,18 +94,23 @@ export const loadBudgetData = (monthKey, storageAdapter) => {
     transactions: [],
     paydayDay: 20,
     weekendBehavior: "preceding-friday",
+    startingSalary: 5000.0,
   };
 };
 
-export const saveBudgetData = (monthKey, state, storageAdapter) => {
+export const saveBudgetData = (
+  monthKey: string,
+  state: BudgetState,
+  storageAdapter: StorageAdapter
+): void => {
   storageAdapter.set(`budget_app_data_${monthKey}`, JSON.stringify(state));
 };
 
 export const getEnrichedGroups = (
-  budgetGroups = [],
-  transactions = [],
-  viewMode = "remaining"
-) => {
+  budgetGroups: BudgetGroup[] = [],
+  transactions: Transaction[] = [],
+  viewMode: string = "remaining"
+): EnrichedBudgetGroup[] => {
   return budgetGroups.map((group) => ({
     ...group,
     budgetGroupItems: group.budgetGroupItems.map((item) => {
@@ -99,10 +119,10 @@ export const getEnrichedGroups = (
       );
       const spent = itemTransactions.reduce((sum, tx) => sum + tx.amount, 0);
 
-      const assigned = parseFloat(item.assigned) || 0;
+      const assigned = parseFloat(String(item.assigned)) || 0;
       const remaining = assigned - spent;
 
-      const enrichedItem = {
+      const enrichedItem: EnrichedBudgetItem = {
         ...item,
         spent,
         remaining,
@@ -121,15 +141,15 @@ export const getEnrichedGroups = (
       // Add debt-specific derived fields
       if (item.type === "debt") {
         enrichedItem.isPaidOff =
-          (parseFloat(item.outstandingBalance) || 0) <= 0;
+          (parseFloat(String(item.outstandingBalance)) || 0) <= 0;
       }
 
       // Add savings-specific derived fields
       if (item.type === "savings") {
         const currentBalance =
-          (parseFloat(item.startingBalance) || 0) + assigned - spent;
+          (parseFloat(String(item.startingBalance)) || 0) + assigned - spent;
         const toSave = Math.max(
-          (parseFloat(item.goal) || 0) - currentBalance,
+          (parseFloat(String(item.goal)) || 0) - currentBalance,
           0
         );
         enrichedItem.currentBalance = currentBalance;
@@ -148,7 +168,14 @@ export const getEnrichedGroups = (
   }));
 };
 
-export const calculateSummary = (state) => {
+export const calculateSummary = (
+  state?: BudgetState
+): {
+  totalIncome: number;
+  totalAssigned: number;
+  unassignedIncome: number;
+  isOverallocated: boolean;
+} => {
   if (!state) {
     return {
       totalIncome: 0,
@@ -161,7 +188,7 @@ export const calculateSummary = (state) => {
   const { incomes = [], budgetGroups = [] } = state;
 
   const totalIncome = incomes.reduce(
-    (sum, inc) => sum + (parseFloat(inc.amount) || 0),
+    (sum, inc) => sum + (parseFloat(String(inc.amount)) || 0),
     0
   );
 
@@ -169,7 +196,7 @@ export const calculateSummary = (state) => {
     return (
       total +
       group.budgetGroupItems.reduce((gTotal, item) => {
-        const assigned = parseFloat(item.assigned) || 0;
+        const assigned = parseFloat(String(item.assigned)) || 0;
         return gTotal + assigned;
       }, 0)
     );

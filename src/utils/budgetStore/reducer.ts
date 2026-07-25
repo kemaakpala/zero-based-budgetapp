@@ -1,18 +1,31 @@
 import { generateUniqueId, formatBudgetItemAmount } from "../utils";
+import {
+  BudgetState,
+  BudgetAction,
+  BudgetGroup,
+  Income,
+  BudgetItem,
+} from "./types";
 
-const updateDebtItemBalance = (budgetGroups, itemId, amountChange) => {
+const updateDebtItemBalance = (
+  budgetGroups: BudgetGroup[],
+  itemId: string,
+  amountChange: number
+): void => {
   for (const group of budgetGroups) {
     for (const item of group.budgetGroupItems) {
       if (item.id === itemId && item.type === "debt") {
-        item.outstandingBalance =
-          (parseFloat(item.outstandingBalance) || 0) + amountChange;
+        item.outstandingBalance = (item.outstandingBalance ?? 0) + amountChange;
         return;
       }
     }
   }
 };
 
-export const budgetReducer = (state, action) => {
+export const budgetReducer = (
+  state: BudgetState,
+  action: BudgetAction
+): BudgetState => {
   switch (action.type) {
     case "LOAD_CYCLE":
       return action.payload;
@@ -26,7 +39,10 @@ export const budgetReducer = (state, action) => {
           {
             id: generateUniqueId(),
             name: (name || "New Income").trim(),
-            amount: parseFloat(amount) || 0,
+            amount:
+              typeof amount === "number"
+                ? amount
+                : parseFloat(amount || "") || 0,
             received: !!received,
           },
         ],
@@ -48,8 +64,12 @@ export const budgetReducer = (state, action) => {
         incomes: (state.incomes || []).map((inc) => {
           if (inc.id === incomeId) {
             const parsed =
-              fieldName === "amount" ? parseFloat(value) || 0 : value;
-            return { ...inc, [fieldName]: parsed };
+              fieldName === "amount"
+                ? typeof value === "number"
+                  ? value
+                  : parseFloat(value as string) || 0
+                : value;
+            return { ...inc, [fieldName]: parsed } as Income;
           }
           return inc;
         }),
@@ -58,16 +78,22 @@ export const budgetReducer = (state, action) => {
 
     case "UPDATE_ITEM_FIELD": {
       const { itemId, fieldName, value } = action.payload;
-      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+      const updatedGroups: BudgetGroup[] = JSON.parse(
+        JSON.stringify(state.budgetGroups)
+      );
 
       let found = false;
       for (const group of updatedGroups) {
         for (const item of group.budgetGroupItems) {
           if (item.id === itemId) {
             if (fieldName === "assigned") {
-              item.assigned = parseFloat(formatBudgetItemAmount(value)) || 0;
+              item.assigned =
+                parseFloat(formatBudgetItemAmount(value as string | number)) ||
+                0;
             } else {
-              item[fieldName] = value;
+              (item as unknown as Record<string, unknown>)[
+                fieldName as string
+              ] = value;
             }
             found = true;
             break;
@@ -84,12 +110,14 @@ export const budgetReducer = (state, action) => {
 
     case "ADD_ITEM": {
       const { groupIndex } = action.payload;
-      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+      const updatedGroups: BudgetGroup[] = JSON.parse(
+        JSON.stringify(state.budgetGroups)
+      );
       const newItem = {
         id: generateUniqueId(),
         name: "New Item",
         assigned: 0,
-        type: "expense",
+        type: "expense" as const,
       };
       updatedGroups[groupIndex].budgetGroupItems.push(newItem);
       return {
@@ -100,9 +128,11 @@ export const budgetReducer = (state, action) => {
 
     case "DELETE_ITEM": {
       const itemId = action.payload;
-      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+      const updatedGroups: BudgetGroup[] = JSON.parse(
+        JSON.stringify(state.budgetGroups)
+      );
 
-      let itemToDelete = null;
+      let itemToDelete: BudgetItem | null = null;
       for (const group of updatedGroups) {
         const index = group.budgetGroupItems.findIndex(
           (item) => item.id === itemId
@@ -128,7 +158,9 @@ export const budgetReducer = (state, action) => {
 
     case "ADD_GROUP": {
       const { name } = action.payload;
-      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+      const updatedGroups: BudgetGroup[] = JSON.parse(
+        JSON.stringify(state.budgetGroups)
+      );
       updatedGroups.push({
         name,
         budgetGroupItems: [],
@@ -141,7 +173,9 @@ export const budgetReducer = (state, action) => {
 
     case "DELETE_GROUP": {
       const { groupIndex } = action.payload;
-      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+      const updatedGroups: BudgetGroup[] = JSON.parse(
+        JSON.stringify(state.budgetGroups)
+      );
 
       const itemsInDeletedGroup =
         updatedGroups[groupIndex]?.budgetGroupItems || [];
@@ -162,7 +196,9 @@ export const budgetReducer = (state, action) => {
 
     case "RENAME_GROUP": {
       const { groupIndex, newName } = action.payload;
-      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+      const updatedGroups: BudgetGroup[] = JSON.parse(
+        JSON.stringify(state.budgetGroups)
+      );
       if (updatedGroups[groupIndex]) {
         updatedGroups[groupIndex].name = newName.trim();
       }
@@ -174,7 +210,9 @@ export const budgetReducer = (state, action) => {
 
     case "MOVE_GROUP": {
       const { groupIndex, direction } = action.payload;
-      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+      const updatedGroups: BudgetGroup[] = JSON.parse(
+        JSON.stringify(state.budgetGroups)
+      );
       const targetIndex = direction === "up" ? groupIndex - 1 : groupIndex + 1;
       if (targetIndex >= 0 && targetIndex < updatedGroups.length) {
         const temp = updatedGroups[groupIndex];
@@ -189,7 +227,9 @@ export const budgetReducer = (state, action) => {
 
     case "SWAP_GROUPS": {
       const { index1, index2 } = action.payload;
-      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+      const updatedGroups: BudgetGroup[] = JSON.parse(
+        JSON.stringify(state.budgetGroups)
+      );
       if (
         index1 >= 0 &&
         index1 < updatedGroups.length &&
@@ -211,13 +251,19 @@ export const budgetReducer = (state, action) => {
       const newTx = {
         id: generateUniqueId(),
         payee: payee.trim(),
-        amount: parseFloat(amount) || 0,
+        amount: typeof amount === "number" ? amount : parseFloat(amount) || 0,
         budgetItemId,
         date: new Date().toISOString(),
       };
 
-      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
-      updateDebtItemBalance(updatedGroups, budgetItemId, -parseFloat(amount));
+      const updatedGroups: BudgetGroup[] = JSON.parse(
+        JSON.stringify(state.budgetGroups)
+      );
+      updateDebtItemBalance(
+        updatedGroups,
+        budgetItemId,
+        -(typeof amount === "number" ? amount : parseFloat(amount) || 0)
+      );
 
       return {
         ...state,
@@ -230,7 +276,9 @@ export const budgetReducer = (state, action) => {
       const txId = action.payload;
       const tx = state.transactions.find((t) => t.id === txId);
 
-      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+      const updatedGroups: BudgetGroup[] = JSON.parse(
+        JSON.stringify(state.budgetGroups)
+      );
       if (tx) {
         updateDebtItemBalance(updatedGroups, tx.budgetItemId, tx.amount);
       }
@@ -246,7 +294,9 @@ export const budgetReducer = (state, action) => {
       const txIds = action.payload;
       const txs = state.transactions.filter((t) => txIds.includes(t.id));
 
-      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+      const updatedGroups: BudgetGroup[] = JSON.parse(
+        JSON.stringify(state.budgetGroups)
+      );
       for (const tx of txs) {
         updateDebtItemBalance(updatedGroups, tx.budgetItemId, tx.amount);
       }
@@ -262,7 +312,9 @@ export const budgetReducer = (state, action) => {
       const alreadyExists = state.budgetGroups.some((g) => g.isDebtGroup);
       if (alreadyExists) return state;
 
-      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+      const updatedGroups: BudgetGroup[] = JSON.parse(
+        JSON.stringify(state.budgetGroups)
+      );
       updatedGroups.push({
         name: "Debt",
         isDebtGroup: true,
@@ -283,7 +335,9 @@ export const budgetReducer = (state, action) => {
         debtType,
         interestRate,
       } = action.payload;
-      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+      const updatedGroups: BudgetGroup[] = JSON.parse(
+        JSON.stringify(state.budgetGroups)
+      );
       const debtGroup = updatedGroups.find((g) => g.isDebtGroup);
       if (!debtGroup) return state;
 
@@ -291,13 +345,24 @@ export const budgetReducer = (state, action) => {
         id: id || generateUniqueId(),
         name,
         assigned: 0,
-        type: "debt",
-        outstandingBalance: parseFloat(outstandingBalance) || 0,
-        minimumPayment: parseFloat(minimumPayment) || 0,
+        type: "debt" as const,
+        outstandingBalance:
+          typeof outstandingBalance === "number"
+            ? outstandingBalance
+            : parseFloat(outstandingBalance) || 0,
+        minimumPayment:
+          typeof minimumPayment === "number"
+            ? minimumPayment
+            : parseFloat(minimumPayment) || 0,
         debtType: debtType || "other",
-        interestRate: interestRate ? parseFloat(interestRate) : undefined,
+        interestRate: interestRate
+          ? typeof interestRate === "number"
+            ? interestRate
+            : parseFloat(interestRate)
+          : undefined,
       };
       debtGroup.budgetGroupItems.push(newDebtItem);
+
       return {
         ...state,
         budgetGroups: updatedGroups,
@@ -313,19 +378,33 @@ export const budgetReducer = (state, action) => {
         debtType: newDebtType,
         interestRate: newInterestRate,
       } = action.payload;
-      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+      const updatedGroups: BudgetGroup[] = JSON.parse(
+        JSON.stringify(state.budgetGroups)
+      );
 
       for (const group of updatedGroups) {
         for (const item of group.budgetGroupItems) {
           if (item.id === itemId && item.type === "debt") {
             if (debtName !== undefined) item.name = debtName;
-            if (newBalance !== undefined)
-              item.outstandingBalance = parseFloat(newBalance) || 0;
-            if (newMinPayment !== undefined)
-              item.minimumPayment = parseFloat(newMinPayment) || 0;
+            if (newBalance !== undefined) {
+              item.outstandingBalance =
+                typeof newBalance === "number"
+                  ? newBalance
+                  : parseFloat(newBalance) || 0;
+            }
+            if (newMinPayment !== undefined) {
+              item.minimumPayment =
+                typeof newMinPayment === "number"
+                  ? newMinPayment
+                  : parseFloat(newMinPayment) || 0;
+            }
             if (newDebtType !== undefined) item.debtType = newDebtType;
-            if (newInterestRate !== undefined)
-              item.interestRate = parseFloat(newInterestRate) || undefined;
+            if (newInterestRate !== undefined) {
+              item.interestRate =
+                typeof newInterestRate === "number"
+                  ? newInterestRate
+                  : parseFloat(newInterestRate) || undefined;
+            }
             break;
           }
         }
@@ -340,7 +419,9 @@ export const budgetReducer = (state, action) => {
       const alreadyExists = state.budgetGroups.some((g) => g.isSavingsGroup);
       if (alreadyExists) return state;
 
-      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+      const updatedGroups: BudgetGroup[] = JSON.parse(
+        JSON.stringify(state.budgetGroups)
+      );
       updatedGroups.push({
         name: "Savings",
         isSavingsGroup: true,
@@ -354,7 +435,9 @@ export const budgetReducer = (state, action) => {
 
     case "ADD_SAVINGS_ITEM": {
       const { id, name, goal, startingBalance } = action.payload;
-      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+      const updatedGroups: BudgetGroup[] = JSON.parse(
+        JSON.stringify(state.budgetGroups)
+      );
       const savingsGroup = updatedGroups.find(
         (g) => g.isSavingsGroup || g.name === "Savings"
       );
@@ -364,9 +447,12 @@ export const budgetReducer = (state, action) => {
         id: id || generateUniqueId(),
         name,
         assigned: 0,
-        type: "savings",
-        goal: parseFloat(goal) || 0,
-        startingBalance: parseFloat(startingBalance) || 0,
+        type: "savings" as const,
+        goal: typeof goal === "number" ? goal : parseFloat(goal) || 0,
+        startingBalance:
+          typeof startingBalance === "number"
+            ? startingBalance
+            : parseFloat(startingBalance) || 0,
       };
       savingsGroup.budgetGroupItems.push(newSavingsItem);
       return {
@@ -377,15 +463,24 @@ export const budgetReducer = (state, action) => {
 
     case "UPDATE_SAVINGS_ITEM": {
       const { itemId, name, goal, startingBalance } = action.payload;
-      const updatedGroups = JSON.parse(JSON.stringify(state.budgetGroups));
+      const updatedGroups: BudgetGroup[] = JSON.parse(
+        JSON.stringify(state.budgetGroups)
+      );
 
       for (const group of updatedGroups) {
         for (const item of group.budgetGroupItems) {
           if (item.id === itemId && item.type === "savings") {
             if (name !== undefined) item.name = name;
-            if (goal !== undefined) item.goal = parseFloat(goal) || 0;
-            if (startingBalance !== undefined)
-              item.startingBalance = parseFloat(startingBalance) || 0;
+            if (goal !== undefined) {
+              item.goal =
+                typeof goal === "number" ? goal : parseFloat(goal) || 0;
+            }
+            if (startingBalance !== undefined) {
+              item.startingBalance =
+                typeof startingBalance === "number"
+                  ? startingBalance
+                  : parseFloat(startingBalance) || 0;
+            }
             break;
           }
         }

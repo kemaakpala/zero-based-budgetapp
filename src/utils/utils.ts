@@ -1,26 +1,28 @@
-export const generateUniqueId = () =>
+import { BudgetGroup } from "./budgetStore/types";
+
+export const generateUniqueId = (): string =>
   Array.from(window.crypto.getRandomValues(new Uint8Array(16)))
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
 
-export const removeSpace = (str) => str.replace(/\s+/g, "");
+export const removeSpace = (str: string): string => str.replace(/\s+/g, "");
 
-export const formatBudgetItemAmount = (value) => {
-  const num = parseFloat(value);
+export const formatBudgetItemAmount = (value: string | number): string => {
+  const num = typeof value === "number" ? value : parseFloat(value);
   if (isNaN(num)) {
-    return parseFloat(0).toFixed(2);
+    return (0).toFixed(2);
   }
   return num.toFixed(2);
 };
 
-export const getFullYear = () => {
+export const getFullYear = (): string => {
   const date = new Date();
   const month = date.toLocaleString("default", { month: "long" });
   const year = date.getFullYear();
   return `${month} ${year}`;
 };
 
-export const DEFAULT_BUDGET_GROUPS = [
+export const DEFAULT_BUDGET_GROUPS: BudgetGroup[] = [
   {
     name: "Housing",
     budgetGroupItems: [
