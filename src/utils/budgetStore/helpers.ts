@@ -1,7 +1,7 @@
 import { DEFAULT_BUDGET_GROUPS } from "../utils";
 import { BudgetTemplate } from "./BudgetTemplate";
-import { StorageAdapter } from "./adapters";
-import {
+import type { StorageAdapter } from "./adapters";
+import type {
   BudgetState,
   BudgetGroup,
   Transaction,

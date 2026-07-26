@@ -1,5 +1,5 @@
 import { generateUniqueId, formatBudgetItemAmount } from "../utils";
-import {
+import type {
   BudgetState,
   BudgetAction,
   BudgetGroup,
@@ -119,7 +119,7 @@ export const budgetReducer = (
         assigned: 0,
         type: "expense" as const,
       };
-      updatedGroups[groupIndex].budgetGroupItems.push(newItem);
+      updatedGroups[groupIndex]!.budgetGroupItems.push(newItem);
       return {
         ...state,
         budgetGroups: updatedGroups,
@@ -138,7 +138,7 @@ export const budgetReducer = (
           (item) => item.id === itemId
         );
         if (index !== -1) {
-          itemToDelete = group.budgetGroupItems[index];
+          itemToDelete = group.budgetGroupItems[index] ?? null;
           group.budgetGroupItems.splice(index, 1);
           break;
         }
@@ -215,8 +215,8 @@ export const budgetReducer = (
       );
       const targetIndex = direction === "up" ? groupIndex - 1 : groupIndex + 1;
       if (targetIndex >= 0 && targetIndex < updatedGroups.length) {
-        const temp = updatedGroups[groupIndex];
-        updatedGroups[groupIndex] = updatedGroups[targetIndex];
+        const temp = updatedGroups[groupIndex]!;
+        updatedGroups[groupIndex] = updatedGroups[targetIndex]!;
         updatedGroups[targetIndex] = temp;
       }
       return {
@@ -236,8 +236,8 @@ export const budgetReducer = (
         index2 >= 0 &&
         index2 < updatedGroups.length
       ) {
-        const temp = updatedGroups[index1];
-        updatedGroups[index1] = updatedGroups[index2];
+        const temp = updatedGroups[index1]!;
+        updatedGroups[index1] = updatedGroups[index2]!;
         updatedGroups[index2] = temp;
       }
       return {

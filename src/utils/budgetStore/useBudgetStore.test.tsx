@@ -31,17 +31,17 @@ describe("useBudgetStore custom hook", () => {
     storageAdapter.set("budget_app_defaults", JSON.stringify(initialTemplate));
   });
 
-  it("should initialize synchronously from storage adapter", () => {
+  it("should initialize store state from template or month data", () => {
     // 1. If month data is empty, should load from template
     const { result } = renderHook(() =>
       useBudgetStore("July-2026", storageAdapter)
     );
 
-    expect(result.current.state.incomes![0].amount).toBe(5000);
-    expect(result.current.state.budgetGroups[0].name).toBe("Housing");
-    expect(result.current.state.budgetGroups[0].budgetGroupItems[0].name).toBe(
-      "Rent"
-    );
+    expect(result.current.state.incomes![0]!.amount).toBe(5000);
+    expect(result.current.state.budgetGroups[0]!.name).toBe("Housing");
+    expect(
+      result.current.state.budgetGroups[0]!.budgetGroupItems[0]!.name
+    ).toBe("Rent");
 
     // 2. If month data already exists, should load month data
     const monthData = {
@@ -55,7 +55,7 @@ describe("useBudgetStore custom hook", () => {
     const { result: result2 } = renderHook(() =>
       useBudgetStore("July-2026", storageAdapter)
     );
-    expect(result2.current.state.incomes![0].amount).toBe(6000);
+    expect(result2.current.state.incomes![0]!.amount).toBe(6000);
   });
 
   it("should toggle viewMode correctly", () => {
@@ -80,15 +80,15 @@ describe("useBudgetStore custom hook", () => {
       result.current.handleAddIncome();
     });
     expect(result.current.state.incomes!.length).toBe(2);
-    expect(result.current.state.incomes![1].name).toBe("New Income");
+    expect(result.current.state.incomes![1]!.name).toBe("New Income");
 
-    const newIncomeId = result.current.state.incomes![1].id;
+    const newIncomeId = result.current.state.incomes![1]!.id;
 
     // Update Income Field
     act(() => {
       result.current.handleUpdateIncomeField(newIncomeId, "amount", 500);
     });
-    expect(result.current.state.incomes![1].amount).toBe(500);
+    expect(result.current.state.incomes![1]!.amount).toBe(500);
 
     // Delete Income
     act(() => {
@@ -111,48 +111,49 @@ describe("useBudgetStore custom hook", () => {
       result.current.handleAddGroup("Food");
     });
     expect(result.current.state.budgetGroups.length).toBe(2);
-    expect(result.current.state.budgetGroups[1].name).toBe("Food");
+    expect(result.current.state.budgetGroups[1]!.name).toBe("Food");
 
     // Rename Group
     act(() => {
       result.current.handleRenameGroup(1, "Dining Out");
     });
-    expect(result.current.state.budgetGroups[1].name).toBe("Dining Out");
+    expect(result.current.state.budgetGroups[1]!.name).toBe("Dining Out");
 
     // Add Item to Group
     act(() => {
       result.current.handleAddItem(1);
     });
-    expect(result.current.state.budgetGroups[1].budgetGroupItems.length).toBe(
+    expect(result.current.state.budgetGroups[1]!.budgetGroupItems.length).toBe(
       1
     );
-    expect(result.current.state.budgetGroups[1].budgetGroupItems[0].name).toBe(
-      "New Item"
-    );
+    expect(
+      result.current.state.budgetGroups[1]!.budgetGroupItems[0]!.name
+    ).toBe("New Item");
 
-    const itemId = result.current.state.budgetGroups[1].budgetGroupItems[0].id;
+    const itemId =
+      result.current.state.budgetGroups[1]!.budgetGroupItems[0]!.id;
 
     // Edit Item Field
     act(() => {
       result.current.handleFieldChange(itemId, "assigned", 200);
     });
     expect(
-      result.current.state.budgetGroups[1].budgetGroupItems[0].assigned
+      result.current.state.budgetGroups[1]!.budgetGroupItems[0]!.assigned
     ).toBe(200);
 
     // Swap Groups
     act(() => {
       result.current.handleSwapGroups(0, 1);
     });
-    expect(result.current.state.budgetGroups[0].name).toBe("Dining Out");
-    expect(result.current.state.budgetGroups[1].name).toBe("Housing");
+    expect(result.current.state.budgetGroups[0]!.name).toBe("Dining Out");
+    expect(result.current.state.budgetGroups[1]!.name).toBe("Housing");
 
     // Delete Group
     act(() => {
       result.current.handleDeleteGroup(0);
     });
     expect(result.current.state.budgetGroups.length).toBe(1);
-    expect(result.current.state.budgetGroups[0].name).toBe("Housing");
+    expect(result.current.state.budgetGroups[0]!.name).toBe("Housing");
   });
 
   it("should handle transaction operations", () => {
@@ -167,10 +168,10 @@ describe("useBudgetStore custom hook", () => {
       result.current.handleAddTransaction("Landlord", 1000, itemId);
     });
     expect(result.current.state.transactions.length).toBe(1);
-    expect(result.current.state.transactions[0].payee).toBe("Landlord");
-    expect(result.current.state.transactions[0].amount).toBe(1000);
+    expect(result.current.state.transactions[0]!.payee).toBe("Landlord");
+    expect(result.current.state.transactions[0]!.amount).toBe(1000);
 
-    const txId = result.current.state.transactions[0].id;
+    const txId = result.current.state.transactions[0]!.id;
 
     // Delete Transaction
     act(() => {
@@ -210,7 +211,7 @@ describe("useBudgetStore custom hook", () => {
       result.current.handleFieldChange("debt-1", "assigned", 100);
     });
     expect(
-      result.current.state.budgetGroups[0].budgetGroupItems[0].assigned
+      result.current.state.budgetGroups[0]!.budgetGroupItems[0]!.assigned
     ).toBe(100);
 
     let template = JSON.parse(storageAdapter.get("budget_app_defaults")!);
@@ -227,7 +228,7 @@ describe("useBudgetStore custom hook", () => {
     ).toBe(800);
 
     // Delete payment transaction & verify template balance reverts
-    const txId = result.current.state.transactions[0].id;
+    const txId = result.current.state.transactions[0]!.id;
     act(() => {
       result.current.handleDeleteTransaction(txId);
     });
@@ -271,7 +272,7 @@ describe("useBudgetStore custom hook", () => {
       result.current.handleFieldChange("sav-1", "assigned", 100);
     });
     expect(
-      result.current.state.budgetGroups[0].budgetGroupItems[0].assigned
+      result.current.state.budgetGroups[0]!.budgetGroupItems[0]!.assigned
     ).toBe(100);
 
     let template = JSON.parse(storageAdapter.get("budget_app_defaults")!);
@@ -291,7 +292,7 @@ describe("useBudgetStore custom hook", () => {
     );
 
     // Delete transaction & verify template balance reverts
-    const txId = result.current.state.transactions[0].id;
+    const txId = result.current.state.transactions[0]!.id;
     act(() => {
       result.current.handleDeleteTransaction(txId);
     });
@@ -307,7 +308,7 @@ describe("useBudgetStore custom hook", () => {
       { initialProps: { month: "July-2026" } }
     );
 
-    expect(result.current.state.incomes![0].amount).toBe(5000);
+    expect(result.current.state.incomes![0]!.amount).toBe(5000);
 
     // Save specific data for August-2026
     const augustData = {
@@ -324,6 +325,6 @@ describe("useBudgetStore custom hook", () => {
     // Transition monthKey
     rerender({ month: "August-2026" });
 
-    expect(result.current.state.incomes![0].amount).toBe(5500);
+    expect(result.current.state.incomes![0]!.amount).toBe(5500);
   });
 });

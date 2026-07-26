@@ -1,5 +1,5 @@
-import { StorageAdapter } from "./adapters";
-import { BudgetState } from "./types";
+import type { StorageAdapter } from "./adapters";
+import type { BudgetState } from "./types";
 
 export class BudgetTemplate {
   private storageAdapter: StorageAdapter;
