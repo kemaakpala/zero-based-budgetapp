@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState, useEffect, Fragment } from "react";
+import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -14,7 +15,24 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { DEFAULT_BUDGET_GROUPS, generateUniqueId } from "../utils/utils";
 import { DEBT_TYPES } from "../utils/constants";
+import type { BudgetGroup, Income } from "../utils/budgetStore/types";
 import "./styles/Settings.css";
+
+export interface DebtDraftItem {
+  id: string;
+  name: string;
+  outstandingBalance: string;
+  minimumPayment: string;
+  debtType: string;
+  interestRate: string;
+}
+
+export interface SavingsDraftItem {
+  id: string;
+  name: string;
+  target: string;
+  startingBalance: string;
+}
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -25,7 +43,7 @@ export default function Settings() {
     if (savedDefaults) {
       try {
         const parsed = JSON.parse(savedDefaults);
-        const incomes = parsed.incomes || [];
+        const incomes: Income[] = parsed.incomes || [];
         const incomeVal =
           incomes.length > 0
             ? incomes.reduce((s, i) => s + i.amount, 0)
@@ -33,7 +51,7 @@ export default function Settings() {
         return {
           initialIncome: incomeVal,
           budgetGroups:
-            parsed.budgetGroups ||
+            (parsed.budgetGroups as BudgetGroup[]) ||
             JSON.parse(JSON.stringify(DEFAULT_BUDGET_GROUPS)),
           paydayDay: parsed.paydayDay ?? 20,
           weekendBehavior: parsed.weekendBehavior ?? "preceding-friday",
@@ -44,7 +62,9 @@ export default function Settings() {
     }
     return {
       initialIncome: 5000.0,
-      budgetGroups: JSON.parse(JSON.stringify(DEFAULT_BUDGET_GROUPS)),
+      budgetGroups: JSON.parse(
+        JSON.stringify(DEFAULT_BUDGET_GROUPS)
+      ) as BudgetGroup[],
       paydayDay: 20,
       weekendBehavior: "preceding-friday",
     };
@@ -54,7 +74,9 @@ export default function Settings() {
 
   const [currentStep, setCurrentStep] = useState(1);
   const [initialIncome, setInitialIncome] = useState(initialData.initialIncome);
-  const [budgetGroups, setBudgetGroups] = useState(initialData.budgetGroups);
+  const [budgetGroups, setBudgetGroups] = useState<BudgetGroup[]>(
+    initialData.budgetGroups
+  );
   const [paydayDay, setPaydayDay] = useState(initialData.paydayDay);
   const [weekendBehavior, setWeekendBehavior] = useState(
     initialData.weekendBehavior
@@ -62,18 +84,18 @@ export default function Settings() {
   const [newGroupName, setNewGroupName] = useState("");
 
   // Debt tracking state
-  const [hasDebts, setHasDebts] = useState(null); // null = unanswered, true/false
-  const [debtItems, setDebtItems] = useState([]);
+  const [hasDebts, setHasDebts] = useState<boolean | null>(null); // null = unanswered, true/false
+  const [debtItems, setDebtItems] = useState<DebtDraftItem[]>([]);
 
   // Savings tracking state
-  const [hasSavings, setHasSavings] = useState(null); // null = unanswered, true/false
-  const [savingsItems, setSavingsItems] = useState([]);
+  const [hasSavings, setHasSavings] = useState<boolean | null>(null); // null = unanswered, true/false
+  const [savingsItems, setSavingsItems] = useState<SavingsDraftItem[]>([]);
   const [isSoleBreadwinner, setIsSoleBreadwinner] = useState(false);
   const [employmentStatus, setEmploymentStatus] = useState("permanent"); // "permanent" | "contractor"
   const [monthlyExpensesInput, setMonthlyExpensesInput] = useState("");
 
   // Initialize estimated monthly expenses baseline
-  React.useEffect(() => {
+  useEffect(() => {
     if (monthlyExpensesInput === "" && initialIncome > 0) {
       setMonthlyExpensesInput((initialIncome * 0.7).toFixed(0));
     }
@@ -103,13 +125,17 @@ export default function Settings() {
     ]);
   };
 
-  const handleUpdateSavingsItem = (index, field, value) => {
+  const handleUpdateSavingsItem = (
+    index: number,
+    field: keyof SavingsDraftItem,
+    value: string
+  ) => {
     const updated = [...savingsItems];
-    updated[index][field] = value;
+    updated[index] = { ...updated[index]!, [field]: value };
     setSavingsItems(updated);
   };
 
-  const handleDeleteSavingsItem = (index) => {
+  const handleDeleteSavingsItem = (index: number) => {
     const updated = [...savingsItems];
     updated.splice(index, 1);
     setSavingsItems(updated);
@@ -141,15 +167,15 @@ export default function Settings() {
   };
 
   // Auto-focus logic or helpers
-  const handleIncomePreset = (amount) => {
+  const handleIncomePreset = (amount: number) => {
     setInitialIncome(amount);
   };
 
   // Group Handlers
-  const handleAddGroup = (e) => {
+  const handleAddGroup = (e: FormEvent) => {
     e.preventDefault();
     if (!newGroupName.trim()) return;
-    const newGroup = {
+    const newGroup: BudgetGroup = {
       name: newGroupName.trim(),
       budgetGroupItems: [],
     };
@@ -157,43 +183,47 @@ export default function Settings() {
     setNewGroupName("");
   };
 
-  const handleDeleteGroup = (groupIndex) => {
+  const handleDeleteGroup = (groupIndex: number) => {
     const updated = [...budgetGroups];
     updated.splice(groupIndex, 1);
     setBudgetGroups(updated);
   };
 
-  const handleRenameGroup = (groupIndex, newName) => {
+  const handleRenameGroup = (groupIndex: number, newName: string) => {
     if (!newName.trim()) return;
     const updated = [...budgetGroups];
-    updated[groupIndex].name = newName.trim();
+    updated[groupIndex]!.name = newName.trim();
     setBudgetGroups(updated);
   };
 
   // Item Handlers
-  const handleAddItem = (groupIndex, itemName) => {
+  const handleAddItem = (groupIndex: number, itemName: string) => {
     if (!itemName || !itemName.trim()) return;
     const updated = [...budgetGroups];
     const newItem = {
       id: generateUniqueId(),
       name: itemName.trim(),
       assigned: 0,
-      type: "expense",
+      type: "expense" as const,
     };
-    updated[groupIndex].budgetGroupItems.push(newItem);
+    updated[groupIndex]!.budgetGroupItems.push(newItem);
     setBudgetGroups(updated);
   };
 
-  const handleDeleteItem = (groupIndex, itemIndex) => {
+  const handleDeleteItem = (groupIndex: number, itemIndex: number) => {
     const updated = [...budgetGroups];
-    updated[groupIndex].budgetGroupItems.splice(itemIndex, 1);
+    updated[groupIndex]!.budgetGroupItems.splice(itemIndex, 1);
     setBudgetGroups(updated);
   };
 
-  const handleRenameItem = (groupIndex, itemIndex, newName) => {
+  const handleRenameItem = (
+    groupIndex: number,
+    itemIndex: number,
+    newName: string
+  ) => {
     if (!newName.trim()) return;
     const updated = [...budgetGroups];
-    updated[groupIndex].budgetGroupItems[itemIndex].name = newName.trim();
+    updated[groupIndex]!.budgetGroupItems[itemIndex]!.name = newName.trim();
     setBudgetGroups(updated);
   };
 
@@ -212,13 +242,17 @@ export default function Settings() {
     ]);
   };
 
-  const handleUpdateDebtItem = (index, field, value) => {
+  const handleUpdateDebtItem = (
+    index: number,
+    field: keyof DebtDraftItem,
+    value: string
+  ) => {
     const updated = [...debtItems];
-    updated[index][field] = value;
+    updated[index] = { ...updated[index]!, [field]: value };
     setDebtItems(updated);
   };
 
-  const handleDeleteDebtItem = (index) => {
+  const handleDeleteDebtItem = (index: number) => {
     const updated = [...debtItems];
     updated.splice(index, 1);
     setDebtItems(updated);
@@ -289,7 +323,7 @@ export default function Settings() {
   // Finish setup and save
   const handleFinishSetup = () => {
     // Build final budget groups including debt group if applicable
-    let finalBudgetGroups = [...budgetGroups];
+    const finalBudgetGroups = [...budgetGroups];
 
     if (hasDebts && debtItems.length > 0) {
       const validDebtItems = debtItems
@@ -298,7 +332,7 @@ export default function Settings() {
           id: d.id,
           name: d.name.trim(),
           assigned: 0,
-          type: "debt",
+          type: "debt" as const,
           outstandingBalance: parseFloat(d.outstandingBalance) || 0,
           minimumPayment: parseFloat(d.minimumPayment) || 0,
           debtType: d.debtType || "other",
@@ -321,7 +355,7 @@ export default function Settings() {
           id: s.id,
           name: s.name.trim(),
           assigned: 0,
-          type: "savings",
+          type: "savings" as const,
           target: parseFloat(s.target) || 0,
           startingBalance: parseFloat(s.startingBalance) || 0,
         }));
@@ -400,7 +434,7 @@ export default function Settings() {
     (hasSavings ? savingsItems.filter((s) => s.name.trim()).length : 0);
 
   // Determine stepper state for each node
-  const getStepState = (stepNum) => {
+  const getStepState = (stepNum: number) => {
     if (hasDebts) {
       return {
         active: currentStep >= stepNum,
@@ -426,7 +460,7 @@ export default function Settings() {
       {/* Step Tracker */}
       <div className="stepper">
         {stepperSteps.map((step, idx) => (
-          <React.Fragment key={step.label}>
+          <Fragment key={step.label}>
             {idx > 0 && (
               <div className="step-connector">
                 <div
@@ -449,7 +483,7 @@ export default function Settings() {
               </span>
               <span className="step-label">{step.label}</span>
             </div>
-          </React.Fragment>
+          </Fragment>
         ))}
       </div>
 
@@ -467,7 +501,8 @@ export default function Settings() {
             <h2>Set Your Starting Monthly Income</h2>
             <p className="wizard-description">
               In a zero-based budget, you assign every single pound of your
-              income a job. Let's start with how much money you earn each month.
+              income a job. Let&apos;s start with how much money you earn each
+              month.
             </p>
 
             <div className="salary-input-container">
@@ -717,8 +752,8 @@ export default function Settings() {
           <div className="wizard-step step-debts">
             <h2>Add Your Debt</h2>
             <p className="wizard-description">
-              List all your active debts. We'll track your payoff progress on
-              the budget dashboard.
+              List all your active debts. We&apos;ll track your payoff progress
+              on the budget dashboard.
             </p>
 
             <div className="debts-list-container">
@@ -1137,8 +1172,8 @@ export default function Settings() {
                   categories.
                 </li>
                 <li>
-                  <span className="check-bullet">✓</span> Keep your "Left to
-                  Assign" balance at exactly £0.00.
+                  <span className="check-bullet">✓</span> Keep your &quot;Left
+                  to Assign&quot; balance at exactly £0.00.
                 </li>
                 <li>
                   <span className="check-bullet">✓</span> Track transactions on

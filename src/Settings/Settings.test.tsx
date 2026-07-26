@@ -1,11 +1,12 @@
-import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import Settings from "./Settings";
+import { describe, vi, it, expect, beforeEach } from "vitest";
+import type { BudgetGroup } from "../utils/budgetStore/types";
 
 const mockNavigate = vi.fn();
 
 vi.mock("react-router-dom", async (importOriginal) => {
-  const actual = await importOriginal();
+  const actual = await importOriginal<typeof import("react-router-dom")>();
   return {
     ...actual,
     useNavigate: () => mockNavigate,
@@ -27,7 +28,7 @@ describe("Settings Onboarding Wizard", () => {
     ).toBeInTheDocument();
 
     // Check input displays default value of 5000
-    const incomeInput = screen.getByPlaceholderText("0.00");
+    const incomeInput = screen.getByPlaceholderText("0.00") as HTMLInputElement;
     expect(incomeInput.value).toBe("5000");
 
     // Change input value to 3500
@@ -35,11 +36,15 @@ describe("Settings Onboarding Wizard", () => {
     expect(incomeInput.value).toBe("3500");
 
     // Change payday settings: Day = 25, Weekend Strategy = "following-monday"
-    const paydaySelect = screen.getByLabelText("Monthly Payday Day");
+    const paydaySelect = screen.getByLabelText(
+      "Monthly Payday Day"
+    ) as HTMLSelectElement;
     fireEvent.change(paydaySelect, { target: { value: "25" } });
     expect(paydaySelect.value).toBe("25");
 
-    const weekendSelect = screen.getByLabelText("Weekend Payday Behavior");
+    const weekendSelect = screen.getByLabelText(
+      "Weekend Payday Behavior"
+    ) as HTMLSelectElement;
     fireEvent.change(weekendSelect, { target: { value: "following-monday" } });
     expect(weekendSelect.value).toBe("following-monday");
 
@@ -104,20 +109,24 @@ describe("Settings Onboarding Wizard", () => {
     expect(localStorage.getItem("budget_app_setup_completed")).toBe("true");
 
     const savedDefaults = JSON.parse(
-      localStorage.getItem("budget_app_defaults")
+      localStorage.getItem("budget_app_defaults")!
     );
     expect(savedDefaults.incomes[0].amount).toBe(3500);
     expect(
-      savedDefaults.budgetGroups.some((g) => g.name === "Subscriptions")
+      savedDefaults.budgetGroups.some(
+        (g: BudgetGroup) => g.name === "Subscriptions"
+      )
     ).toBe(true);
     expect(savedDefaults.paydayDay).toBe(25);
     expect(savedDefaults.weekendBehavior).toBe("following-monday");
 
     // No debt or savings groups should be present
-    expect(savedDefaults.budgetGroups.some((g) => g.isDebtGroup)).toBe(false);
-    expect(savedDefaults.budgetGroups.some((g) => g.isSavingsGroup)).toBe(
-      false
-    );
+    expect(
+      savedDefaults.budgetGroups.some((g: BudgetGroup) => g.isDebtGroup)
+    ).toBe(false);
+    expect(
+      savedDefaults.budgetGroups.some((g: BudgetGroup) => g.isSavingsGroup)
+    ).toBe(false);
 
     // Assert redirect
     expect(mockNavigate).toHaveBeenCalled();
@@ -153,9 +162,9 @@ describe("Settings Onboarding Wizard", () => {
 
     const balanceInputs = screen.getAllByPlaceholderText("0.00");
     // First is Outstanding Balance
-    fireEvent.change(balanceInputs[0], { target: { value: "3200" } });
+    fireEvent.change(balanceInputs[0]!, { target: { value: "3200" } });
     // Second is Minimum Payment
-    fireEvent.change(balanceInputs[1], { target: { value: "85" } });
+    fireEvent.change(balanceInputs[1]!, { target: { value: "85" } });
 
     // Click "Next" to go to Savings Gate (Step 4)
     const nextBtn3 = screen.getByRole("button", { name: /Next/i });
@@ -179,7 +188,7 @@ describe("Settings Onboarding Wizard", () => {
     // Sole breadwinner check
     const breadwinnerChk = screen.getByLabelText(
       "Are you the sole breadwinner?"
-    );
+    ) as HTMLInputElement;
     expect(breadwinnerChk.checked).toBe(false);
 
     // Trigger calculation updates by making sole breadwinner true
@@ -212,10 +221,10 @@ describe("Settings Onboarding Wizard", () => {
 
     // Assert saving logic
     const savedDefaults = JSON.parse(
-      localStorage.getItem("budget_app_defaults")
+      localStorage.getItem("budget_app_defaults")!
     );
     const savingsGroup = savedDefaults.budgetGroups.find(
-      (g) => g.isSavingsGroup
+      (g: BudgetGroup) => g.isSavingsGroup
     );
     expect(savingsGroup).toBeDefined();
     expect(savingsGroup.name).toBe("Savings");

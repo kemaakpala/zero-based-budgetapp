@@ -1,4 +1,3 @@
-import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import Budget from "./Budget";
 import { describe, vi, it, expect, beforeEach } from "vitest";
@@ -80,18 +79,18 @@ describe("Budget", () => {
     // Click the Planned amount (£0.00) to enter edit mode
     const plannedText = container.querySelector(
       ".debt-item-planned .editable-field__text"
-    );
+    )!;
     expect(plannedText).toBeInTheDocument();
     fireEvent.click(plannedText);
 
     // Find the input that appeared and change its value
-    const input = container.querySelector(".debt-item-planned input");
+    const input = container.querySelector(".debt-item-planned input")!;
     fireEvent.change(input, { target: { value: "1000" } });
     fireEvent.blur(input);
 
     // Verify template defaults in localStorage has been updated
     const updatedDefaults = JSON.parse(
-      localStorage.getItem("budget_app_defaults")
+      localStorage.getItem("budget_app_defaults")!
     );
     const debtItem = updatedDefaults.budgetGroups[0].budgetGroupItems[0];
     expect(debtItem.assigned).toBe(1000);
@@ -99,8 +98,8 @@ describe("Budget", () => {
 
   it("carries over the planned debt amount and reduces left to assign when transitioning to a new month", () => {
     vi.mocked(useParams).mockReturnValue({ month: "June-2026" });
-    vi.mocked(formatBudgetItemAmount).mockImplementation((val) => {
-      const num = parseFloat(val);
+    vi.mocked(formatBudgetItemAmount).mockImplementation((val: unknown) => {
+      const num = parseFloat(String(val));
       return isNaN(num) ? "0.00" : num.toFixed(2);
     });
 
@@ -142,17 +141,17 @@ describe("Budget", () => {
     // Check starting unassigned salary is 5000.00
     const unassignedSalaryEl = container.querySelector(
       ".hero-progress-subtext"
-    );
+    )!;
     expect(unassignedSalaryEl).toBeInTheDocument();
     expect(unassignedSalaryEl.textContent).toBe("£5000.00 left to assign");
 
     // Click the Planned amount (£0.00) to enter edit mode, then change to 150
     const plannedText = container.querySelector(
       ".debt-item-planned .editable-field__text"
-    );
+    )!;
     expect(plannedText).toBeInTheDocument();
     fireEvent.click(plannedText);
-    const input = container.querySelector(".debt-item-planned input");
+    const input = container.querySelector(".debt-item-planned input")!;
     fireEvent.change(input, { target: { value: "150" } });
     fireEvent.blur(input);
 
@@ -167,15 +166,15 @@ describe("Budget", () => {
 
     // In July-2026 (a new month), the planned amount should be carried over from defaults (which was updated to 150)
     // Therefore, the left to assign amount should be 4850.00 (not 5000.00)
-    expect(container.querySelector(".hero-progress-subtext").textContent).toBe(
+    expect(container.querySelector(".hero-progress-subtext")!.textContent).toBe(
       "£4850.00 left to assign"
     );
   });
 
   it("does not save the previous month's state to the new month when transitioning", () => {
     vi.mocked(useParams).mockReturnValue({ month: "June-2026" });
-    vi.mocked(formatBudgetItemAmount).mockImplementation((val) => {
-      const num = parseFloat(val);
+    vi.mocked(formatBudgetItemAmount).mockImplementation((val: unknown) => {
+      const num = parseFloat(String(val));
       return isNaN(num) ? "0.00" : num.toFixed(2);
     });
 
@@ -213,10 +212,10 @@ describe("Budget", () => {
     // Click the Assigned amount (£0.00) for Rent to enter edit mode, then change to 1000
     const assignedText = container.querySelector(
       ".group-item-assigned .editable-field__text"
-    );
+    )!;
     expect(assignedText).toBeInTheDocument();
     fireEvent.click(assignedText);
-    const input = container.querySelector(".group-item-assigned input");
+    const input = container.querySelector(".group-item-assigned input")!;
     fireEvent.change(input, { target: { value: "1000" } });
     fireEvent.blur(input);
 
@@ -231,7 +230,7 @@ describe("Budget", () => {
     for (const call of setItemSpy.mock.calls) {
       const [key, value] = call;
       if (key === "budget_app_data_July-2026") {
-        const parsed = JSON.parse(value);
+        const parsed = JSON.parse(value as string);
         const rentItem = parsed.budgetGroups[0].budgetGroupItems[0];
         expect(rentItem.assigned).not.toBe(1000);
       }
