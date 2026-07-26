@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
+import { useState } from "react";
+import type { ReactNode, MouseEvent } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronDown,
@@ -13,6 +13,21 @@ import PopOverMenu from "../PopOverMenu/PopOverMenu";
 import Button from "../Button/Button";
 import "./styles/BudgetGroupHeader.css";
 
+export interface BudgetGroupColumnHeader {
+  name: string;
+}
+
+export interface BudgetGroupHeaderProps {
+  budgetGroupName: string;
+  columns: BudgetGroupColumnHeader[];
+  handleToggle: (e?: MouseEvent<HTMLButtonElement>) => void;
+  hideContentFlag: boolean;
+  handleHeaderClick?: (e: MouseEvent<HTMLDivElement>) => void;
+  onRenameGroupClick: () => void;
+  onDeleteGroupClick: () => void;
+  actions?: ReactNode;
+}
+
 const BudgetGroupHeader = ({
   budgetGroupName,
   columns,
@@ -22,9 +37,9 @@ const BudgetGroupHeader = ({
   onRenameGroupClick,
   onDeleteGroupClick,
   actions,
-}) => {
+}: BudgetGroupHeaderProps) => {
   const [showPopOver, setShowShowPopOver] = useState(false);
-  const popOverHandler = (event) => {
+  const popOverHandler = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     setShowShowPopOver((prevShowPopOver) => !prevShowPopOver);
   };
@@ -79,6 +94,8 @@ const BudgetGroupHeader = ({
             </Button>
             {showPopOver && (
               <PopOverMenu
+                width="11.5rem"
+                left="-6.0rem"
                 menuList={[
                   {
                     icon: faPen,
@@ -106,21 +123,6 @@ const BudgetGroupHeader = ({
       </div>
     </div>
   );
-};
-
-BudgetGroupHeader.propTypes = {
-  budgetGroupName: PropTypes.string.isRequired,
-  columns: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-  handleToggle: PropTypes.func.isRequired,
-  hideContentFlag: PropTypes.bool.isRequired,
-  handleHeaderClick: PropTypes.func.isRequired,
-  onRenameGroupClick: PropTypes.func.isRequired,
-  onDeleteGroupClick: PropTypes.func.isRequired,
-  actions: PropTypes.node,
 };
 
 export default BudgetGroupHeader;

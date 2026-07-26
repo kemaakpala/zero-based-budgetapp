@@ -6,6 +6,7 @@ export interface ButtonProps {
   variation?: string;
   color?: string;
   bgColor?: string;
+  className?: string;
   onClickHandler?: (e: MouseEvent<HTMLButtonElement>) => void;
 }
 
@@ -14,6 +15,7 @@ const Button = ({
   variation,
   color,
   bgColor,
+  className = "",
   onClickHandler,
 }: ButtonProps) => {
   let groupActionsStyledModifier = `group-actions__button--styled group-actions__button--${variation}`;
@@ -28,7 +30,7 @@ const Button = ({
   }
   return (
     <button
-      className={`form-control group-actions__button ${groupActionsStyledModifier}`}
+      className={`form-control group-actions__button ${groupActionsStyledModifier} ${className}`.trim()}
       onClick={onClickHandler}
     >
       {children}

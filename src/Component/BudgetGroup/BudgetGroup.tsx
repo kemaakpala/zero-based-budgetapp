@@ -1,9 +1,48 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
+import { useState } from "react";
+import type { ReactNode, MouseEvent } from "react";
 import "./styles/BudgetGroup.css";
 import BudgetGroupHeader from "./BudgetGroupHeader";
+import type { BudgetGroupColumnHeader } from "./BudgetGroupHeader";
 import BudgetGroupActions from "./BudgetGroupActions";
 import BudgetGroupItem from "./BudgetGroupItem";
+import type {
+  EnrichedBudgetGroup,
+  EnrichedBudgetItem,
+} from "../../utils/budgetStore/types";
+
+export interface BudgetGroupProps {
+  budgetGroup?:
+    | EnrichedBudgetGroup
+    | { name: string; budgetGroupItems: unknown[] };
+  groupIndex?: number;
+  onSaveField?: (
+    itemId: string,
+    fieldName: string,
+    value: string | number
+  ) => void;
+  onAddTransactionClick?: (
+    groupIndex?: number,
+    itemIndex?: number,
+    item?: EnrichedBudgetItem
+  ) => void;
+  onViewTransactionsClick?: (
+    groupIndex?: number,
+    itemIndex?: number,
+    item?: EnrichedBudgetItem
+  ) => void;
+  onDeleteItemClick?: (itemId: string) => void;
+  onAddItemClick?: (groupIndex?: number) => void;
+  onRenameGroupClick?: (groupIndex?: number, newName?: string) => void;
+  onDeleteGroupClick?: (groupIndex?: number, groupName?: string) => void;
+  className?: string;
+  headerActions?: ReactNode;
+  footerActions?: ReactNode;
+  children?: ReactNode;
+  name?: string;
+  columns?: BudgetGroupColumnHeader[];
+  viewMode?: string;
+  progress?: number;
+}
 
 const BudgetGroup = ({
   budgetGroup,
@@ -15,30 +54,29 @@ const BudgetGroup = ({
   onAddItemClick,
   onRenameGroupClick,
   onDeleteGroupClick,
-  // Composition props
   className = "",
   headerActions,
   footerActions,
   children,
-  // Additional direct props (for fallback/direct usage)
   name: propName,
   columns: propColumns,
   viewMode = "remaining",
-}) => {
+}: BudgetGroupProps) => {
   const name = budgetGroup?.name || propName || "";
   const columns = propColumns || [
     { name: "Assigned" },
     { name: viewMode === "spent" ? "Spent" : "Remaining" },
   ];
-  const budgetGroupItems = budgetGroup?.budgetGroupItems || [];
+  const budgetGroupItems = (budgetGroup?.budgetGroupItems ||
+    []) as EnrichedBudgetItem[];
   const [hideContent, setHideContent] = useState(false);
 
-  const clickHandler = (event) => {
-    event.preventDefault();
+  const clickHandler = (event?: MouseEvent<HTMLButtonElement>) => {
+    event?.preventDefault();
     setHideContent((prevHideContent) => !prevHideContent);
   };
 
-  const groupHeaderTitleClickHandler = (event) => {
+  const groupHeaderTitleClickHandler = (event: MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
   };
 
@@ -75,32 +113,12 @@ const BudgetGroup = ({
       {footerActions !== undefined ? (
         footerActions
       ) : (
-        <BudgetGroupActions onAddItemClick={onAddItemClick} />
+        <BudgetGroupActions
+          onAddItemClick={() => onAddItemClick?.(groupIndex)}
+        />
       )}
     </div>
   );
-};
-
-BudgetGroup.propTypes = {
-  budgetGroup: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    budgetGroupItems: PropTypes.array.isRequired,
-  }),
-  groupIndex: PropTypes.number,
-  onSaveField: PropTypes.func,
-  onAddTransactionClick: PropTypes.func,
-  onViewTransactionsClick: PropTypes.func,
-  onDeleteItemClick: PropTypes.func,
-  onAddItemClick: PropTypes.func,
-  onRenameGroupClick: PropTypes.func,
-  onDeleteGroupClick: PropTypes.func,
-  className: PropTypes.string,
-  headerActions: PropTypes.node,
-  footerActions: PropTypes.node,
-  children: PropTypes.node,
-  name: PropTypes.string,
-  columns: PropTypes.array,
-  viewMode: PropTypes.string,
 };
 
 export default BudgetGroup;

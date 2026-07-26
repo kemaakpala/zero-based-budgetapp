@@ -1,3 +1,4 @@
+import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import BudgetGroup from "./BudgetGroup";
 
@@ -16,13 +17,14 @@ export const BudgetGroupData = {
   name: "Budget Group",
   budgetGroupItems: [
     {
-      id: 1,
+      id: "1",
       name: "Item Name",
       assigned: 0,
-      type: "budgetGroup",
+      type: "expense" as const,
     },
   ],
 };
+
 describe("BudgetGroup", () => {
   it("test budget group renders", () => {
     render(<BudgetGroup budgetGroup={BudgetGroupData} />);
@@ -70,13 +72,13 @@ describe("BudgetGroup", () => {
     // Open popover
     const popoverBtn = container.querySelector(
       ".group-header-column:last-child button"
-    );
+    )!;
     fireEvent.click(popoverBtn);
 
     // Find Edit button and click it
     const editBtn = container.querySelector(
       ".popover-menu-list-item:first-child button"
-    );
+    )!;
     fireEvent.click(editBtn);
 
     expect(onRenameGroupClick).toHaveBeenCalledWith(0, "Budget Group");
@@ -95,13 +97,13 @@ describe("BudgetGroup", () => {
     // Open popover
     const popoverBtn = container.querySelector(
       ".group-header-column:last-child button"
-    );
+    )!;
     fireEvent.click(popoverBtn);
 
     // Find Delete button and click it
     const deleteBtn = container.querySelector(
       ".popover-menu-list-item:last-child button"
-    );
+    )!;
     fireEvent.click(deleteBtn);
 
     expect(onDeleteGroupClick).toHaveBeenCalledWith(0, "Budget Group");

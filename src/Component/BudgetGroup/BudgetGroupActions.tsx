@@ -1,8 +1,17 @@
+import type { ReactNode, MouseEvent } from "react";
 import Button from "../Button/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
-const BudgetGroupActions = ({ onAddItemClick, children }) => {
+export interface BudgetGroupActionsProps {
+  onAddItemClick?: (e?: MouseEvent<HTMLButtonElement>) => void;
+  children?: ReactNode;
+}
+
+const BudgetGroupActions = ({
+  onAddItemClick,
+  children,
+}: BudgetGroupActionsProps) => {
   return (
     <div className="group-actions">
       {children || (
