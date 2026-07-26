@@ -1,12 +1,19 @@
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { RouterProvider } from "react-router-dom";
+import { test, expect, vi } from "vitest";
 import browserRouter from "./Routes/router";
 import App from "./App";
 
 vi.mock("@fortawesome/react-fontawesome", () => ({
-  FontAwesomeIcon: ({ icon, ...props }) => (
+  FontAwesomeIcon: ({
+    title,
+    ...props
+  }: {
+    title?: string;
+    [key: string]: unknown;
+  }) => (
     <svg {...props}>
-      <title>{props.title}</title>
+      <title>{title}</title>
       <path d="" />
     </svg>
   ),
