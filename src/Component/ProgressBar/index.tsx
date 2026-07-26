@@ -1,5 +1,11 @@
 import "./styles/progressBar.css";
-const ProgressBar = ({ percentage, isOverspent }) => {
+
+export interface ProgressBarProps {
+  percentage: number;
+  isOverspent?: boolean;
+}
+
+const ProgressBar = ({ percentage, isOverspent }: ProgressBarProps) => {
   return (
     <div className="group-item-progress">
       <div className="progress">
@@ -12,8 +18,8 @@ const ProgressBar = ({ percentage, isOverspent }) => {
             width: `${Math.min(100, percentage)}%`,
           }}
           aria-valuenow={percentage}
-          aria-valuemin="0"
-          aria-valuemax="100"
+          aria-valuemin={0}
+          aria-valuemax={100}
         ></div>
       </div>
     </div>

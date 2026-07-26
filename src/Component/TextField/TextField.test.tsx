@@ -1,4 +1,5 @@
-import React from "react";
+import { createRef } from "react";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import TextField from "./TextField";
 
@@ -20,9 +21,9 @@ describe("TextField", () => {
   });
 
   it("renders without a label when label prop is omitted", () => {
-    render(<TextField {...defaultProps} />);
-    expect(screen.queryByRole("textbox")).toBeInTheDocument();
-    expect(screen.queryByTagName?.("label")).not.toBeDefined();
+    const { container } = render(<TextField {...defaultProps} />);
+    expect(screen.getByRole("textbox")).toBeInTheDocument();
+    expect(container.querySelector("label")).toBeNull();
   });
 
   it("calls onChange when the input value changes", () => {
@@ -49,10 +50,10 @@ describe("TextField", () => {
   });
 
   it("forwards ref to the underlying input element", () => {
-    const ref = React.createRef();
+    const ref = createRef<HTMLInputElement>();
     render(<TextField {...defaultProps} ref={ref} />);
     expect(ref.current).toBeInstanceOf(HTMLInputElement);
-    expect(ref.current.value).toBe("hello");
+    expect(ref.current?.value).toBe("hello");
   });
 
   it("renders with the specified type", () => {

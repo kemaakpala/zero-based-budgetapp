@@ -1,5 +1,21 @@
-import React from "react";
-import PropTypes from "prop-types";
+import type { ChangeEvent } from "react";
+
+export interface SelectOption {
+  value: string;
+  label: string;
+}
+
+export interface SelectFieldProps {
+  id: string;
+  value: string;
+  onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
+  options: SelectOption[];
+  label?: string;
+  name?: string;
+  variant?: string;
+  className?: string;
+  disabled?: boolean;
+}
 
 const SelectField = ({
   id,
@@ -11,7 +27,7 @@ const SelectField = ({
   variant = "primary",
   className = "",
   disabled = false,
-}) => {
+}: SelectFieldProps) => {
   const renderLabel = () => {
     if (!label) return null;
     return (
@@ -40,23 +56,6 @@ const SelectField = ({
       </select>
     </>
   );
-};
-
-SelectField.propTypes = {
-  id: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-  options: PropTypes.arrayOf(
-    PropTypes.shape({
-      value: PropTypes.string.isRequired,
-      label: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-  label: PropTypes.string,
-  name: PropTypes.string,
-  variant: PropTypes.string,
-  className: PropTypes.string,
-  disabled: PropTypes.bool,
 };
 
 export default SelectField;

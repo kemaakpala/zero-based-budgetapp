@@ -1,7 +1,26 @@
-import React from "react";
-import PropTypes from "prop-types";
+import { forwardRef } from "react";
+import type { ChangeEvent, FocusEvent, KeyboardEvent } from "react";
 
-const TextField = React.forwardRef(
+export interface TextFieldProps {
+  id: string;
+  value: string | number;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (e: FocusEvent<HTMLInputElement>) => void;
+  onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void;
+  label?: string;
+  name?: string;
+  placeholder?: string;
+  type?: string;
+  variant?: string;
+  className?: string;
+  autoFocus?: boolean;
+  disabled?: boolean;
+  step?: string;
+  min?: string;
+  max?: string;
+}
+
+const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
   (
     {
       id,
@@ -58,24 +77,5 @@ const TextField = React.forwardRef(
 );
 
 TextField.displayName = "TextField";
-
-TextField.propTypes = {
-  id: PropTypes.string.isRequired,
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  onChange: PropTypes.func.isRequired,
-  onBlur: PropTypes.func,
-  onKeyDown: PropTypes.func,
-  label: PropTypes.string,
-  name: PropTypes.string,
-  placeholder: PropTypes.string,
-  type: PropTypes.string,
-  variant: PropTypes.string,
-  className: PropTypes.string,
-  autoFocus: PropTypes.bool,
-  disabled: PropTypes.bool,
-  step: PropTypes.string,
-  min: PropTypes.string,
-  max: PropTypes.string,
-};
 
 export default TextField;
