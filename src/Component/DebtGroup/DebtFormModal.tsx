@@ -1,11 +1,33 @@
-import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
+import { useState, useEffect } from "react";
+import type { ChangeEvent } from "react";
 import { DEBT_TYPES } from "../../utils/constants";
 import TextField from "../TextField/TextField";
 import SelectField from "../SelectField/SelectField";
+import type { BudgetItem } from "../../utils/budgetStore/types";
 import "../TransactionModals/styles/TransactionModals.css";
 
-const DebtFormModal = ({ isOpen, debtItem, onClose, onSubmit }) => {
+export interface DebtFormData {
+  itemId?: string;
+  name: string;
+  outstandingBalance: number;
+  minimumPayment: number;
+  debtType: string;
+  interestRate?: number;
+}
+
+export interface DebtFormModalProps {
+  isOpen: boolean;
+  debtItem?: BudgetItem | null;
+  onClose: () => void;
+  onSubmit: (data: DebtFormData) => void;
+}
+
+const DebtFormModal = ({
+  isOpen,
+  debtItem,
+  onClose,
+  onSubmit,
+}: DebtFormModalProps) => {
   const isEditMode = !!debtItem;
 
   const [name, setName] = useState("");
@@ -16,7 +38,7 @@ const DebtFormModal = ({ isOpen, debtItem, onClose, onSubmit }) => {
 
   useEffect(() => {
     if (isOpen) {
-      if (isEditMode) {
+      if (debtItem) {
         setName(debtItem.name || "");
         setOutstandingBalance(debtItem.outstandingBalance?.toString() || "");
         setMinimumPayment(debtItem.minimumPayment?.toString() || "");
@@ -30,7 +52,7 @@ const DebtFormModal = ({ isOpen, debtItem, onClose, onSubmit }) => {
         setInterestRate("");
       }
     }
-  }, [isOpen, debtItem, isEditMode]);
+  }, [isOpen, debtItem]);
 
   if (!isOpen) return null;
 
@@ -38,7 +60,7 @@ const DebtFormModal = ({ isOpen, debtItem, onClose, onSubmit }) => {
     if (!name.trim()) return;
 
     onSubmit({
-      ...(isEditMode ? { itemId: debtItem.id } : {}),
+      ...(debtItem?.id ? { itemId: debtItem.id } : {}),
       name: name.trim(),
       outstandingBalance: parseFloat(outstandingBalance) || 0,
       minimumPayment: parseFloat(minimumPayment) || 0,
@@ -62,7 +84,9 @@ const DebtFormModal = ({ isOpen, debtItem, onClose, onSubmit }) => {
               id="debtName"
               label="Name"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setName(e.target.value)
+              }
               placeholder="e.g. Barclaycard"
               autoFocus
             />
@@ -72,7 +96,9 @@ const DebtFormModal = ({ isOpen, debtItem, onClose, onSubmit }) => {
               id="debtType"
               label="Debt Type"
               value={debtType}
-              onChange={(e) => setDebtType(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                setDebtType(e.target.value)
+              }
               options={DEBT_TYPES}
             />
           </div>
@@ -84,7 +110,9 @@ const DebtFormModal = ({ isOpen, debtItem, onClose, onSubmit }) => {
               step="0.01"
               min="0"
               value={outstandingBalance}
-              onChange={(e) => setOutstandingBalance(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setOutstandingBalance(e.target.value)
+              }
               placeholder="0.00"
             />
           </div>
@@ -96,7 +124,9 @@ const DebtFormModal = ({ isOpen, debtItem, onClose, onSubmit }) => {
               step="0.01"
               min="0"
               value={minimumPayment}
-              onChange={(e) => setMinimumPayment(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setMinimumPayment(e.target.value)
+              }
               placeholder="0.00"
             />
           </div>
@@ -109,7 +139,9 @@ const DebtFormModal = ({ isOpen, debtItem, onClose, onSubmit }) => {
               min="0"
               max="100"
               value={interestRate}
-              onChange={(e) => setInterestRate(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setInterestRate(e.target.value)
+              }
               placeholder="e.g. 19.9"
             />
           </div>
@@ -129,20 +161,6 @@ const DebtFormModal = ({ isOpen, debtItem, onClose, onSubmit }) => {
       </div>
     </div>
   );
-};
-
-DebtFormModal.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  debtItem: PropTypes.shape({
-    id: PropTypes.string,
-    name: PropTypes.string,
-    outstandingBalance: PropTypes.number,
-    minimumPayment: PropTypes.number,
-    debtType: PropTypes.string,
-    interestRate: PropTypes.number,
-  }),
-  onClose: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired,
 };
 
 export default DebtFormModal;

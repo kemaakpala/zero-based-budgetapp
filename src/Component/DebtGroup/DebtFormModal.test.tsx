@@ -1,4 +1,4 @@
-import React from "react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import DebtFormModal from "./DebtFormModal";
 
@@ -58,6 +58,8 @@ describe("DebtFormModal", () => {
     const debtItem = {
       id: "d1",
       name: "Student Loan",
+      assigned: 0,
+      type: "debt" as const,
       outstandingBalance: 12000,
       minimumPayment: 250,
       debtType: "student-loan",

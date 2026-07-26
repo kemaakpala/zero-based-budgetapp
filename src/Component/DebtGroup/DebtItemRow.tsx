@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
+import { useState } from "react";
+import type { MouseEvent } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEllipsisVertical,
@@ -11,6 +11,16 @@ import {
 import Button from "../Button/Button";
 import EditableField from "../EditableField/EditableField";
 import PopOverMenu from "../PopOverMenu/PopOverMenu";
+import type { EnrichedBudgetItem } from "../../utils/budgetStore/types";
+
+export interface DebtItemRowProps {
+  item: EnrichedBudgetItem;
+  onSaveField: (id: string, fieldName: string, value: string | number) => void;
+  onRecordPaymentClick: (item: EnrichedBudgetItem) => void;
+  onViewPaymentsClick: (item: EnrichedBudgetItem) => void;
+  onEditDebtClick: (item: EnrichedBudgetItem) => void;
+  onDeleteItemClick: (id: string) => void;
+}
 
 const DebtItemRow = ({
   item,
@@ -19,7 +29,7 @@ const DebtItemRow = ({
   onViewPaymentsClick,
   onEditDebtClick,
   onDeleteItemClick,
-}) => {
+}: DebtItemRowProps) => {
   const {
     id,
     name: itemName,
@@ -30,7 +40,7 @@ const DebtItemRow = ({
   } = item;
   const [showPopOver, setShowPopOver] = useState(false);
 
-  const popOverHandler = (e) => {
+  const popOverHandler = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setShowPopOver((prev) => !prev);
   };
@@ -53,7 +63,11 @@ const DebtItemRow = ({
       {/* Balance */}
       <div className="debt-item-cell debt-item-balance">
         <span className="debt-item-value">
-          £{(parseFloat(outstandingBalance) || 0).toFixed(2)}
+          £
+          {(typeof outstandingBalance === "number"
+            ? outstandingBalance
+            : parseFloat(String(outstandingBalance)) || 0
+          ).toFixed(2)}
         </span>
       </div>
 
@@ -134,22 +148,6 @@ const DebtItemRow = ({
       </div>
     </div>
   );
-};
-
-DebtItemRow.propTypes = {
-  item: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    assigned: PropTypes.number.isRequired,
-    outstandingBalance: PropTypes.number,
-    spent: PropTypes.number,
-    isPaidOff: PropTypes.bool,
-  }).isRequired,
-  onSaveField: PropTypes.func.isRequired,
-  onRecordPaymentClick: PropTypes.func.isRequired,
-  onViewPaymentsClick: PropTypes.func.isRequired,
-  onEditDebtClick: PropTypes.func.isRequired,
-  onDeleteItemClick: PropTypes.func.isRequired,
 };
 
 export default DebtItemRow;

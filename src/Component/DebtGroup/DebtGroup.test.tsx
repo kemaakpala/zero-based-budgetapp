@@ -1,10 +1,11 @@
-import React from "react";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import DebtGroup from "./DebtGroup";
+import type { EnrichedBudgetItem } from "../../utils/budgetStore/types";
 
 const noop = () => {};
 
-const createDebtGroup = (overrides = {}) => ({
+const createDebtGroup = (overrides: Record<string, unknown> = {}) => ({
   name: "Debt",
   isDebtGroup: true,
   budgetGroupItems: [
@@ -12,26 +13,30 @@ const createDebtGroup = (overrides = {}) => ({
       id: "d1",
       name: "Barclaycard",
       assigned: 150,
-      type: "debt",
+      type: "debt" as const,
       outstandingBalance: 3200,
       minimumPayment: 85,
       debtType: "credit-card",
       spent: 150,
+      remaining: 0,
+      status: [],
       isPaidOff: false,
     },
     {
       id: "d2",
       name: "Old Loan",
       assigned: 0,
-      type: "debt",
+      type: "debt" as const,
       outstandingBalance: 0,
       minimumPayment: 0,
       debtType: "personal-loan",
       spent: 0,
+      remaining: 0,
+      status: [],
       isPaidOff: true,
     },
-    ...(overrides.extraItems || []),
-  ],
+    ...((overrides["extraItems"] as EnrichedBudgetItem[]) || []),
+  ] as EnrichedBudgetItem[],
   ...overrides,
 });
 

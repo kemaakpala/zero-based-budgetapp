@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
+import { useState } from "react";
+import type { MouseEvent } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import Button from "../Button/Button";
@@ -7,7 +7,23 @@ import BudgetGroup from "../BudgetGroup/BudgetGroup";
 import BudgetGroupItem from "../BudgetGroup/BudgetGroupItem";
 import BudgetGroupActions from "../BudgetGroup/BudgetGroupActions";
 import DebtItemRow from "./DebtItemRow";
+import type {
+  EnrichedBudgetGroup,
+  EnrichedBudgetItem,
+} from "../../utils/budgetStore/types";
 import "./styles/DebtGroup.css";
+
+export interface DebtGroupProps {
+  budgetGroup:
+    | EnrichedBudgetGroup
+    | { name: string; budgetGroupItems: EnrichedBudgetItem[] };
+  onSaveField: (id: string, fieldName: string, value: string | number) => void;
+  onRecordPaymentClick: (item: EnrichedBudgetItem) => void;
+  onViewPaymentsClick: (item: EnrichedBudgetItem) => void;
+  onEditDebtClick: (item: EnrichedBudgetItem) => void;
+  onDeleteItemClick: (id: string) => void;
+  onAddDebtClick: (e?: MouseEvent<HTMLButtonElement>) => void;
+}
 
 const DebtGroup = ({
   budgetGroup,
@@ -17,8 +33,8 @@ const DebtGroup = ({
   onEditDebtClick,
   onDeleteItemClick,
   onAddDebtClick,
-}) => {
-  const { name, budgetGroupItems } = budgetGroup;
+}: DebtGroupProps) => {
+  const { name, budgetGroupItems = [] } = budgetGroup;
   const columns = [
     { name: "Balance" },
     { name: "Planned" },
@@ -80,19 +96,6 @@ const DebtGroup = ({
       </BudgetGroupItem>
     </BudgetGroup>
   );
-};
-
-DebtGroup.propTypes = {
-  budgetGroup: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    budgetGroupItems: PropTypes.array.isRequired,
-  }).isRequired,
-  onSaveField: PropTypes.func.isRequired,
-  onRecordPaymentClick: PropTypes.func.isRequired,
-  onViewPaymentsClick: PropTypes.func.isRequired,
-  onEditDebtClick: PropTypes.func.isRequired,
-  onDeleteItemClick: PropTypes.func.isRequired,
-  onAddDebtClick: PropTypes.func.isRequired,
 };
 
 export default DebtGroup;
