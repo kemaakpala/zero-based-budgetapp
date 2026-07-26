@@ -1,5 +1,3 @@
-import React from "react";
-import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlus,
@@ -8,9 +6,29 @@ import {
   faTriangleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
 import EditableField from "../EditableField/EditableField";
+import type { Income } from "../../utils/budgetStore/types";
 import "./styles/Hero.css";
 
 const SEGMENT_COLORS = ["#1a73e8", "#6c3eb6", "#e67c00", "#0d8a72", "#c81e1e"];
+
+export interface HeroProps {
+  monthLabel?: string;
+  cycleRangeLabel?: string;
+  incomes: Income[];
+  totalIncome?: number;
+  totalAssigned?: number;
+  unassignedIncome?: number;
+  isOverallocated?: boolean;
+  onUpdateIncomeField: (
+    incomeId: string,
+    fieldName: string,
+    value: string | number | boolean
+  ) => void;
+  onAddIncome: () => void;
+  onDeleteIncome: (incomeId: string) => void;
+  viewMode?: string;
+  onViewModeToggle: (mode: "remaining" | "spent") => void;
+}
 
 const Hero = ({
   monthLabel = "",
@@ -25,7 +43,7 @@ const Hero = ({
   onDeleteIncome,
   viewMode = "remaining",
   onViewModeToggle,
-}) => {
+}: HeroProps) => {
   const pct = totalIncome > 0 ? (totalAssigned / totalIncome) * 100 : 0;
   const clampedPct = Math.min(pct, 100);
   const overage = Math.abs(unassignedIncome);
@@ -193,28 +211,6 @@ const Hero = ({
       )}
     </div>
   );
-};
-
-Hero.propTypes = {
-  monthLabel: PropTypes.string,
-  cycleRangeLabel: PropTypes.string,
-  incomes: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      amount: PropTypes.number.isRequired,
-      received: PropTypes.bool.isRequired,
-    })
-  ).isRequired,
-  totalIncome: PropTypes.number,
-  totalAssigned: PropTypes.number,
-  unassignedIncome: PropTypes.number,
-  isOverallocated: PropTypes.bool,
-  onUpdateIncomeField: PropTypes.func.isRequired,
-  onAddIncome: PropTypes.func.isRequired,
-  onDeleteIncome: PropTypes.func.isRequired,
-  viewMode: PropTypes.string,
-  onViewModeToggle: PropTypes.func.isRequired,
 };
 
 export default Hero;
