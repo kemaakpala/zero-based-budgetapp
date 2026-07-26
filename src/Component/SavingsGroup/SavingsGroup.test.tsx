@@ -1,10 +1,11 @@
-import React from "react";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import SavingsGroup from "./SavingsGroup";
+import type { EnrichedBudgetItem } from "../../utils/budgetStore/types";
 
 const noop = () => {};
 
-const createSavingsGroup = (overrides = {}) => ({
+const createSavingsGroup = (overrides: Record<string, unknown> = {}) => ({
   name: "Savings",
   isSavingsGroup: true,
   budgetGroupItems: [
@@ -12,13 +13,16 @@ const createSavingsGroup = (overrides = {}) => ({
       id: "s1",
       name: "Emergency Fund",
       assigned: 200,
-      type: "savings",
+      type: "savings" as const,
       goal: 1000,
       currentBalance: 400,
       toSave: 600,
+      spent: 0,
+      remaining: 200,
+      status: [],
     },
-    ...(overrides.extraItems || []),
-  ],
+    ...((overrides["extraItems"] as EnrichedBudgetItem[]) || []),
+  ] as EnrichedBudgetItem[],
   ...overrides,
 });
 

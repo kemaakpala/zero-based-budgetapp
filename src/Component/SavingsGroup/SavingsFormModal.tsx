@@ -1,9 +1,29 @@
-import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
+import { useState, useEffect } from "react";
+import type { ChangeEvent } from "react";
 import TextField from "../TextField/TextField";
+import type { BudgetItem } from "../../utils/budgetStore/types";
 import "../TransactionModals/styles/TransactionModals.css";
 
-const SavingsFormModal = ({ isOpen, savingsItem, onClose, onSubmit }) => {
+export interface SavingsFormData {
+  itemId?: string;
+  name: string;
+  goal: number;
+  startingBalance: number;
+}
+
+export interface SavingsFormModalProps {
+  isOpen: boolean;
+  savingsItem?: BudgetItem | null;
+  onClose: () => void;
+  onSubmit: (data: SavingsFormData) => void;
+}
+
+const SavingsFormModal = ({
+  isOpen,
+  savingsItem,
+  onClose,
+  onSubmit,
+}: SavingsFormModalProps) => {
   const isEditMode = !!savingsItem;
 
   const [name, setName] = useState("");
@@ -12,7 +32,7 @@ const SavingsFormModal = ({ isOpen, savingsItem, onClose, onSubmit }) => {
 
   useEffect(() => {
     if (isOpen) {
-      if (isEditMode) {
+      if (savingsItem) {
         setName(savingsItem.name || "");
         setGoal(savingsItem.goal?.toString() || "");
         setStartingBalance(savingsItem.startingBalance?.toString() || "");
@@ -22,7 +42,7 @@ const SavingsFormModal = ({ isOpen, savingsItem, onClose, onSubmit }) => {
         setStartingBalance("");
       }
     }
-  }, [isOpen, savingsItem, isEditMode]);
+  }, [isOpen, savingsItem]);
 
   if (!isOpen) return null;
 
@@ -30,7 +50,7 @@ const SavingsFormModal = ({ isOpen, savingsItem, onClose, onSubmit }) => {
     if (!name.trim()) return;
 
     onSubmit({
-      ...(isEditMode ? { itemId: savingsItem.id } : {}),
+      ...(savingsItem?.id ? { itemId: savingsItem.id } : {}),
       name: name.trim(),
       goal: parseFloat(goal) || 0,
       startingBalance: parseFloat(startingBalance) || 0,
@@ -52,7 +72,9 @@ const SavingsFormModal = ({ isOpen, savingsItem, onClose, onSubmit }) => {
               id="savingsName"
               label="Goal Name"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setName(e.target.value)
+              }
               placeholder="e.g. Emergency Fund"
               autoFocus
             />
@@ -65,7 +87,9 @@ const SavingsFormModal = ({ isOpen, savingsItem, onClose, onSubmit }) => {
               step="0.01"
               min="0"
               value={goal}
-              onChange={(e) => setGoal(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setGoal(e.target.value)
+              }
               placeholder="0.00"
             />
           </div>
@@ -77,7 +101,9 @@ const SavingsFormModal = ({ isOpen, savingsItem, onClose, onSubmit }) => {
               step="0.01"
               min="0"
               value={startingBalance}
-              onChange={(e) => setStartingBalance(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setStartingBalance(e.target.value)
+              }
               placeholder="0.00"
             />
           </div>
@@ -97,18 +123,6 @@ const SavingsFormModal = ({ isOpen, savingsItem, onClose, onSubmit }) => {
       </div>
     </div>
   );
-};
-
-SavingsFormModal.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  savingsItem: PropTypes.shape({
-    id: PropTypes.string,
-    name: PropTypes.string,
-    goal: PropTypes.number,
-    startingBalance: PropTypes.number,
-  }),
-  onClose: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired,
 };
 
 export default SavingsFormModal;

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
+import { useState } from "react";
+import type { MouseEvent } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEllipsisVertical,
@@ -12,7 +12,17 @@ import Button from "../Button/Button";
 import EditableField from "../EditableField/EditableField";
 import PopOverMenu from "../PopOverMenu/PopOverMenu";
 import ProgressBar from "../ProgressBar";
+import type { EnrichedBudgetItem } from "../../utils/budgetStore/types";
 import "./styles/SavingsGroup.css";
+
+export interface SavingsItemRowProps {
+  item: EnrichedBudgetItem;
+  onSaveField: (id: string, fieldName: string, value: string | number) => void;
+  onRecordPaymentClick: (item: EnrichedBudgetItem) => void;
+  onViewPaymentsClick: (item: EnrichedBudgetItem) => void;
+  onEditSavingsClick: (item: EnrichedBudgetItem) => void;
+  onDeleteItemClick: (id: string) => void;
+}
 
 const SavingsItemRow = ({
   item,
@@ -21,11 +31,11 @@ const SavingsItemRow = ({
   onViewPaymentsClick,
   onEditSavingsClick,
   onDeleteItemClick,
-}) => {
+}: SavingsItemRowProps) => {
   const { id, name: itemName, assigned, goal = 0, currentBalance = 0 } = item;
   const [showPopOver, setShowPopOver] = useState(false);
 
-  const popOverHandler = (e) => {
+  const popOverHandler = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setShowPopOver((prev) => !prev);
   };
@@ -60,7 +70,11 @@ const SavingsItemRow = ({
         {/* To Save */}
         <div className="savings-item-cell savings-item-tosave">
           <span className="savings-item-value">
-            £{(parseFloat(item.toSave) || 0).toFixed(2)}
+            £
+            {(typeof item.toSave === "number"
+              ? item.toSave
+              : parseFloat(String(item.toSave)) || 0
+            ).toFixed(2)}
           </span>
         </div>
 
@@ -134,22 +148,6 @@ const SavingsItemRow = ({
       </div>
     </div>
   );
-};
-
-SavingsItemRow.propTypes = {
-  item: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    assigned: PropTypes.number.isRequired,
-    goal: PropTypes.number,
-    currentBalance: PropTypes.number,
-    toSave: PropTypes.number,
-  }).isRequired,
-  onSaveField: PropTypes.func.isRequired,
-  onRecordPaymentClick: PropTypes.func.isRequired,
-  onViewPaymentsClick: PropTypes.func.isRequired,
-  onEditSavingsClick: PropTypes.func.isRequired,
-  onDeleteItemClick: PropTypes.func.isRequired,
 };
 
 export default SavingsItemRow;

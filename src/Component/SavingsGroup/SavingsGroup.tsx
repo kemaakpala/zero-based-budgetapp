@@ -1,5 +1,4 @@
-import React from "react";
-import PropTypes from "prop-types";
+import type { MouseEvent } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import Button from "../Button/Button";
@@ -7,7 +6,23 @@ import BudgetGroup from "../BudgetGroup/BudgetGroup";
 import BudgetGroupItem from "../BudgetGroup/BudgetGroupItem";
 import BudgetGroupActions from "../BudgetGroup/BudgetGroupActions";
 import SavingsItemRow from "./SavingsItemRow";
+import type {
+  EnrichedBudgetGroup,
+  EnrichedBudgetItem,
+} from "../../utils/budgetStore/types";
 import "./styles/SavingsGroup.css";
+
+export interface SavingsGroupProps {
+  budgetGroup:
+    | EnrichedBudgetGroup
+    | { name: string; budgetGroupItems: EnrichedBudgetItem[] };
+  onSaveField: (id: string, fieldName: string, value: string | number) => void;
+  onRecordPaymentClick: (item: EnrichedBudgetItem) => void;
+  onViewPaymentsClick: (item: EnrichedBudgetItem) => void;
+  onEditSavingsClick: (item: EnrichedBudgetItem) => void;
+  onDeleteItemClick: (id: string) => void;
+  onAddSavingsClick: (e?: MouseEvent<HTMLButtonElement>) => void;
+}
 
 const SavingsGroup = ({
   budgetGroup,
@@ -17,8 +32,8 @@ const SavingsGroup = ({
   onEditSavingsClick,
   onDeleteItemClick,
   onAddSavingsClick,
-}) => {
-  const { name, budgetGroupItems } = budgetGroup;
+}: SavingsGroupProps) => {
+  const { name, budgetGroupItems = [] } = budgetGroup;
   const columns = [{ name: "Assigned" }, { name: "To Save" }];
 
   return (
@@ -56,19 +71,6 @@ const SavingsGroup = ({
       </BudgetGroupItem>
     </BudgetGroup>
   );
-};
-
-SavingsGroup.propTypes = {
-  budgetGroup: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    budgetGroupItems: PropTypes.array.isRequired,
-  }).isRequired,
-  onSaveField: PropTypes.func.isRequired,
-  onRecordPaymentClick: PropTypes.func.isRequired,
-  onViewPaymentsClick: PropTypes.func.isRequired,
-  onEditSavingsClick: PropTypes.func.isRequired,
-  onDeleteItemClick: PropTypes.func.isRequired,
-  onAddSavingsClick: PropTypes.func.isRequired,
 };
 
 export default SavingsGroup;
