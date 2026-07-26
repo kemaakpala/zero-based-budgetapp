@@ -9,7 +9,7 @@ import {
   calculateSummary,
 } from "./index";
 import { BudgetTemplate } from "./BudgetTemplate";
-import { BudgetState } from "./types";
+import type { BudgetState } from "./types";
 
 describe("BudgetCycleStore Modules", () => {
   describe("InMemoryStorageAdapter", () => {
@@ -56,7 +56,7 @@ describe("BudgetCycleStore Modules", () => {
         type: "LOAD_CYCLE",
         payload: newState as any,
       });
-      expect(result.incomes![0].amount).toBe(4000.0);
+      expect(result.incomes![0]!.amount).toBe(4000.0);
       expect(result.budgetGroups.length).toBe(0);
     });
 
@@ -67,17 +67,17 @@ describe("BudgetCycleStore Modules", () => {
         payload: { name: "Side Hustle", amount: 500, received: false },
       });
       expect(state.incomes!.length).toBe(2);
-      expect(state.incomes![1].name).toBe("Side Hustle");
-      expect(state.incomes![1].amount).toBe(500);
+      expect(state.incomes![1]!.name).toBe("Side Hustle");
+      expect(state.incomes![1]!.amount).toBe(500);
 
-      const newIncomeId = state.incomes![1].id;
+      const newIncomeId = state.incomes![1]!.id;
 
       // Update income field
       state = budgetReducer(state, {
         type: "UPDATE_INCOME_FIELD",
         payload: { incomeId: newIncomeId, fieldName: "amount", value: 600 },
       });
-      expect(state.incomes![1].amount).toBe(600);
+      expect(state.incomes![1]!.amount).toBe(600);
 
       // Delete income
       state = budgetReducer(state, {
@@ -92,7 +92,9 @@ describe("BudgetCycleStore Modules", () => {
         type: "UPDATE_ITEM_FIELD",
         payload: { itemId: "h1", fieldName: "assigned", value: "1200.00" },
       });
-      expect(result.budgetGroups[0].budgetGroupItems[0].assigned).toBe(1200.0);
+      expect(result.budgetGroups[0]!.budgetGroupItems[0]!.assigned).toBe(
+        1200.0
+      );
     });
 
     it("handles ADD_ITEM", () => {
@@ -100,9 +102,11 @@ describe("BudgetCycleStore Modules", () => {
         type: "ADD_ITEM",
         payload: { groupIndex: 0 },
       });
-      expect(result.budgetGroups[0].budgetGroupItems.length).toBe(2);
-      expect(result.budgetGroups[0].budgetGroupItems[1].name).toBe("New Item");
-      expect(result.budgetGroups[0].budgetGroupItems[1].assigned).toBe(0);
+      expect(result.budgetGroups[0]!.budgetGroupItems.length).toBe(2);
+      expect(result.budgetGroups[0]!.budgetGroupItems[1]!.name).toBe(
+        "New Item"
+      );
+      expect(result.budgetGroups[0]!.budgetGroupItems[1]!.assigned).toBe(0);
     });
 
     it("handles DELETE_ITEM and cleans up associated transactions", () => {
@@ -117,9 +121,9 @@ describe("BudgetCycleStore Modules", () => {
         type: "DELETE_ITEM",
         payload: "h1",
       });
-      expect(result.budgetGroups[0].budgetGroupItems.length).toBe(0);
+      expect(result.budgetGroups[0]!.budgetGroupItems.length).toBe(0);
       expect(result.transactions.length).toBe(1);
-      expect(result.transactions[0].id).toBe("tx2");
+      expect(result.transactions[0]!.id).toBe("tx2");
     });
 
     it("handles ADD_GROUP", () => {
@@ -128,7 +132,7 @@ describe("BudgetCycleStore Modules", () => {
         payload: { name: "Savings" },
       });
       expect(result.budgetGroups.length).toBe(2);
-      expect(result.budgetGroups[1].name).toBe("Savings");
+      expect(result.budgetGroups[1]!.name).toBe("Savings");
     });
 
     it("handles DELETE_GROUP and cleans up associated transactions", () => {
@@ -155,9 +159,9 @@ describe("BudgetCycleStore Modules", () => {
         payload: { groupIndex: 1 },
       });
       expect(result.budgetGroups.length).toBe(1);
-      expect(result.budgetGroups[0].name).toBe("Group 1");
+      expect(result.budgetGroups[0]!.name).toBe("Group 1");
       expect(result.transactions.length).toBe(1);
-      expect(result.transactions[0].id).toBe("tx2"); // Rent transaction remains
+      expect(result.transactions[0]!.id).toBe("tx2"); // Rent transaction remains
     });
 
     it("handles RENAME_GROUP", () => {
@@ -165,7 +169,7 @@ describe("BudgetCycleStore Modules", () => {
         type: "RENAME_GROUP",
         payload: { groupIndex: 0, newName: "Housing & Utility" },
       });
-      expect(result.budgetGroups[0].name).toBe("Housing & Utility");
+      expect(result.budgetGroups[0]!.name).toBe("Housing & Utility");
     });
 
     it("handles ADD_TRANSACTION", () => {
@@ -174,9 +178,9 @@ describe("BudgetCycleStore Modules", () => {
         payload: { payee: "Tesco", amount: "55.50", budgetItemId: "h1" },
       });
       expect(result.transactions.length).toBe(1);
-      expect(result.transactions[0].payee).toBe("Tesco");
-      expect(result.transactions[0].amount).toBe(55.5);
-      expect(result.transactions[0].budgetItemId).toBe("h1");
+      expect(result.transactions[0]!.payee).toBe("Tesco");
+      expect(result.transactions[0]!.amount).toBe(55.5);
+      expect(result.transactions[0]!.budgetItemId).toBe("h1");
     });
 
     it("handles DELETE_TRANSACTION", () => {
@@ -207,7 +211,7 @@ describe("BudgetCycleStore Modules", () => {
         payload: ["tx1", "tx3"],
       });
       expect(result.transactions.length).toBe(1);
-      expect(result.transactions[0].id).toBe("tx2");
+      expect(result.transactions[0]!.id).toBe("tx2");
     });
 
     it("handles ADD_DEBT_REPAYMENT_GROUP", () => {
@@ -215,7 +219,7 @@ describe("BudgetCycleStore Modules", () => {
         type: "ADD_DEBT_REPAYMENT_GROUP",
       });
       expect(result.budgetGroups.length).toBe(2);
-      const debtGroup = result.budgetGroups[1];
+      const debtGroup = result.budgetGroups[1]!;
       expect(debtGroup.name).toBe("Debt");
       expect(debtGroup.isDebtGroup).toBe(true);
       expect(debtGroup.budgetGroupItems).toEqual([]);
@@ -263,7 +267,7 @@ describe("BudgetCycleStore Modules", () => {
       });
       const debtGroup = result.budgetGroups.find((g) => g.isDebtGroup);
       expect(debtGroup!.budgetGroupItems.length).toBe(1);
-      const item = debtGroup!.budgetGroupItems[0];
+      const item = debtGroup!.budgetGroupItems[0]!;
       expect(item.name).toBe("Barclaycard");
       expect(item.type).toBe("debt");
       expect(item.outstandingBalance).toBe(3200);
@@ -297,7 +301,7 @@ describe("BudgetCycleStore Modules", () => {
         },
       });
       const debtGroup = result.budgetGroups.find((g) => g.isDebtGroup);
-      expect(debtGroup!.budgetGroupItems[0].id).toBe("custom-id-999");
+      expect(debtGroup!.budgetGroupItems[0]!.id).toBe("custom-id-999");
     });
 
     it("handles UPDATE_DEBT_ITEM", () => {
@@ -335,7 +339,7 @@ describe("BudgetCycleStore Modules", () => {
         },
       });
       const debtGroup = result.budgetGroups.find((g) => g.isDebtGroup);
-      const item = debtGroup!.budgetGroupItems[0];
+      const item = debtGroup!.budgetGroupItems[0]!;
       expect(item.name).toBe("Barclays Visa");
       expect(item.outstandingBalance).toBe(2800);
       expect(item.minimumPayment).toBe(100);
@@ -348,7 +352,7 @@ describe("BudgetCycleStore Modules", () => {
       const adapter = new InMemoryStorageAdapter();
       // Test default fallback
       const data1 = loadBudgetData("June-2026", adapter);
-      expect(data1.incomes![0].amount).toBe(5000.0);
+      expect(data1.incomes![0]!.amount).toBe(5000.0);
       expect(data1.budgetGroups.length).toBeGreaterThan(0);
       expect(data1.paydayDay).toBe(20);
       expect(data1.weekendBehavior).toBe("preceding-friday");
@@ -364,8 +368,8 @@ describe("BudgetCycleStore Modules", () => {
       };
       adapter.set("budget_app_defaults", JSON.stringify(defaults));
       const data2 = loadBudgetData("June-2026", adapter);
-      expect(data2.incomes![0].amount).toBe(4500.0);
-      expect(data2.budgetGroups[0].name).toBe("CustomGroup");
+      expect(data2.incomes![0]!.amount).toBe(4500.0);
+      expect(data2.budgetGroups[0]!.name).toBe("CustomGroup");
       expect(data2.paydayDay).toBe(25);
       expect(data2.weekendBehavior).toBe("following-monday");
     });
@@ -382,7 +386,7 @@ describe("BudgetCycleStore Modules", () => {
       saveBudgetData("June-2026", state as any, adapter);
 
       const loaded = JSON.parse(adapter.get("budget_app_data_June-2026")!);
-      expect(loaded.incomes[0].amount).toBe(6000.0);
+      expect(loaded.incomes[0]!.amount).toBe(6000.0);
     });
 
     it("enriches budget groups correctly", () => {
@@ -409,11 +413,11 @@ describe("BudgetCycleStore Modules", () => {
         transactions as any,
         "remaining"
       );
-      const itemRemaining = enrichedRemaining[0].budgetGroupItems[0];
+      const itemRemaining = enrichedRemaining[0]!.budgetGroupItems[0]!;
       expect(itemRemaining.spent).toBe(800);
       expect(itemRemaining.remaining).toBe(200);
-      expect(itemRemaining.status[0].label).toBe("Remaining");
-      expect(itemRemaining.status[0].value).toBe("200.00");
+      expect(itemRemaining.status[0]!.label).toBe("Remaining");
+      expect(itemRemaining.status[0]!.value).toBe("200.00");
 
       // spent view
       const enrichedSpent = getEnrichedGroups(
@@ -421,9 +425,9 @@ describe("BudgetCycleStore Modules", () => {
         transactions as any,
         "spent"
       );
-      const itemSpent = enrichedSpent[0].budgetGroupItems[0];
-      expect(itemSpent.status[0].label).toBe("Spent");
-      expect(itemSpent.status[0].value).toBe("800.00");
+      const itemSpent = enrichedSpent[0]!.budgetGroupItems[0]!;
+      expect(itemSpent.status[0]!.label).toBe("Spent");
+      expect(itemSpent.status[0]!.value).toBe("800.00");
     });
 
     it("enriches debt items with isPaidOff flag", () => {
@@ -467,9 +471,9 @@ describe("BudgetCycleStore Modules", () => {
         transactions as any,
         "remaining"
       );
-      const debtGroup = enriched[0];
-      const activeDebt = debtGroup.budgetGroupItems[0];
-      const paidOffDebt = debtGroup.budgetGroupItems[1];
+      const debtGroup = enriched[0]!;
+      const activeDebt = debtGroup.budgetGroupItems[0]!;
+      const paidOffDebt = debtGroup.budgetGroupItems[1]!;
 
       expect(activeDebt.spent).toBe(150);
       expect(activeDebt.isPaidOff).toBe(false);
@@ -505,7 +509,7 @@ describe("BudgetCycleStore Modules", () => {
       template.updateDebtBalance("d1", -150);
 
       const updated = template.get();
-      const debtItem = updated!.budgetGroups[0].budgetGroupItems[0];
+      const debtItem = updated!.budgetGroups[0]!.budgetGroupItems[0]!;
       expect(debtItem.outstandingBalance).toBe(3050);
     });
 
@@ -556,8 +560,8 @@ describe("BudgetCycleStore Modules", () => {
         type: "ADD_SAVINGS_GROUP",
       });
       expect(nextState.budgetGroups.length).toBe(1);
-      expect(nextState.budgetGroups[0].name).toBe("Savings");
-      expect(nextState.budgetGroups[0].isSavingsGroup).toBe(true);
+      expect(nextState.budgetGroups[0]!.name).toBe("Savings");
+      expect(nextState.budgetGroups[0]!.isSavingsGroup).toBe(true);
 
       // Duplicate check
       nextState = budgetReducer(nextState, { type: "ADD_SAVINGS_GROUP" });
@@ -573,8 +577,8 @@ describe("BudgetCycleStore Modules", () => {
           startingBalance: 200,
         },
       });
-      expect(nextState.budgetGroups[0].budgetGroupItems.length).toBe(1);
-      const item = nextState.budgetGroups[0].budgetGroupItems[0];
+      expect(nextState.budgetGroups[0]!.budgetGroupItems.length).toBe(1);
+      const item = nextState.budgetGroups[0]!.budgetGroupItems[0]!;
       expect(item.name).toBe("Trip Fund");
       expect(item.goal).toBe(1000);
       expect(item.startingBalance).toBe(200);
@@ -590,7 +594,7 @@ describe("BudgetCycleStore Modules", () => {
           startingBalance: 250,
         },
       });
-      const updatedItem = nextState.budgetGroups[0].budgetGroupItems[0];
+      const updatedItem = nextState.budgetGroups[0]!.budgetGroupItems[0]!;
       expect(updatedItem.name).toBe("Tokyo Trip");
       expect(updatedItem.goal).toBe(1200);
       expect(updatedItem.startingBalance).toBe(250);
@@ -622,15 +626,15 @@ describe("BudgetCycleStore Modules", () => {
         transactions as any,
         "remaining"
       );
-      const item = enriched[0].budgetGroupItems[0];
+      const item = enriched[0]!.budgetGroupItems[0]!;
 
       expect(item.spent).toBe(150);
       // currentBalance = startingBalance + assigned - spent = 400 + 200 - 150 = 450
       expect(item.currentBalance).toBe(450);
       // toSave = goal - currentBalance = 1000 - 450 = 550
       expect(item.toSave).toBe(550);
-      expect(item.status[0].label).toBe("To Save");
-      expect(item.status[0].value).toBe("550.00");
+      expect(item.status[0]!.label).toBe("To Save");
+      expect(item.status[0]!.value).toBe("550.00");
     });
 
     it("manages savings template updates correctly", () => {
@@ -659,9 +663,9 @@ describe("BudgetCycleStore Modules", () => {
       // 1. Update savings balance in template
       template.updateSavingsBalance("sav-1", 100);
       let updated = template.get()!;
-      expect(updated.budgetGroups[0].budgetGroupItems[0].startingBalance).toBe(
-        300
-      );
+      expect(
+        updated.budgetGroups[0]!.budgetGroupItems[0]!.startingBalance
+      ).toBe(300);
 
       // 2. Update savings item metadata in template
       template.updateSavingsItem({
@@ -671,7 +675,7 @@ describe("BudgetCycleStore Modules", () => {
         startingBalance: 350,
       });
       updated = template.get()!;
-      const item = updated.budgetGroups[0].budgetGroupItems[0];
+      const item = updated.budgetGroups[0]!.budgetGroupItems[0]!;
       expect(item.name).toBe("Sinking Fund");
       expect(item.goal).toBe(1500);
       expect(item.startingBalance).toBe(350);
@@ -684,12 +688,14 @@ describe("BudgetCycleStore Modules", () => {
         startingBalance: 500,
       });
       updated = template.get()!;
-      expect(updated.budgetGroups[0].budgetGroupItems.length).toBe(2);
-      expect(updated.budgetGroups[0].budgetGroupItems[1].name).toBe("Car Goal");
-      expect(updated.budgetGroups[0].budgetGroupItems[1].goal).toBe(5000);
-      expect(updated.budgetGroups[0].budgetGroupItems[1].startingBalance).toBe(
-        500
+      expect(updated.budgetGroups[0]!.budgetGroupItems.length).toBe(2);
+      expect(updated.budgetGroups[0]!.budgetGroupItems[1]!.name).toBe(
+        "Car Goal"
       );
+      expect(updated.budgetGroups[0]!.budgetGroupItems[1]!.goal).toBe(5000);
+      expect(
+        updated.budgetGroups[0]!.budgetGroupItems[1]!.startingBalance
+      ).toBe(500);
     });
   });
 
@@ -724,9 +730,9 @@ describe("BudgetCycleStore Modules", () => {
 
       let data = template.get()!;
       expect(data.budgetGroups.length).toBe(1);
-      expect(data.budgetGroups[0].name).toBe("Debt");
-      expect(data.budgetGroups[0].isDebtGroup).toBe(true);
-      expect(data.budgetGroups[0].budgetGroupItems[0]).toEqual({
+      expect(data.budgetGroups[0]!.name).toBe("Debt");
+      expect(data.budgetGroups[0]!.isDebtGroup).toBe(true);
+      expect(data.budgetGroups[0]!.budgetGroupItems[0]!).toEqual({
         id: "d1",
         name: "Credit Card A",
         assigned: 0,
@@ -740,14 +746,14 @@ describe("BudgetCycleStore Modules", () => {
       // 2. Update outstanding balance
       template.updateDebtBalance("d1", -150);
       data = template.get()!;
-      expect(data.budgetGroups[0].budgetGroupItems[0].outstandingBalance).toBe(
-        1350
-      );
+      expect(
+        data.budgetGroups[0]!.budgetGroupItems[0]!.outstandingBalance
+      ).toBe(1350);
 
       // 3. Update assigned amount
       template.updateDebtAssigned("d1", 100);
       data = template.get()!;
-      expect(data.budgetGroups[0].budgetGroupItems[0].assigned).toBe(100);
+      expect(data.budgetGroups[0]!.budgetGroupItems[0]!.assigned).toBe(100);
 
       // 4. Update metadata
       template.updateDebtItem({
@@ -759,7 +765,7 @@ describe("BudgetCycleStore Modules", () => {
         interestRate: 5.5,
       });
       data = template.get()!;
-      expect(data.budgetGroups[0].budgetGroupItems[0]).toEqual({
+      expect(data.budgetGroups[0]!.budgetGroupItems[0]!).toEqual({
         id: "d1",
         name: "New Name",
         assigned: 100,
@@ -785,9 +791,9 @@ describe("BudgetCycleStore Modules", () => {
 
       let data = template.get()!;
       expect(data.budgetGroups.length).toBe(1);
-      expect(data.budgetGroups[0].name).toBe("Savings");
-      expect(data.budgetGroups[0].isSavingsGroup).toBe(true);
-      expect(data.budgetGroups[0].budgetGroupItems[0]).toEqual({
+      expect(data.budgetGroups[0]!.name).toBe("Savings");
+      expect(data.budgetGroups[0]!.isSavingsGroup).toBe(true);
+      expect(data.budgetGroups[0]!.budgetGroupItems[0]!).toEqual({
         id: "sav-1",
         name: "Emergency Fund",
         assigned: 0,
@@ -799,7 +805,7 @@ describe("BudgetCycleStore Modules", () => {
       // 2. Update savings balance
       template.updateSavingsBalance("sav-1", 100);
       data = template.get()!;
-      expect(data.budgetGroups[0].budgetGroupItems[0].startingBalance).toBe(
+      expect(data.budgetGroups[0]!.budgetGroupItems[0]!.startingBalance).toBe(
         300
       );
 
@@ -811,7 +817,7 @@ describe("BudgetCycleStore Modules", () => {
         startingBalance: 350,
       });
       data = template.get()!;
-      expect(data.budgetGroups[0].budgetGroupItems[0]).toEqual({
+      expect(data.budgetGroups[0]!.budgetGroupItems[0]!).toEqual({
         id: "sav-1",
         name: "Sinking Fund",
         assigned: 0,

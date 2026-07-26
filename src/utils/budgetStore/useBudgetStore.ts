@@ -8,8 +8,8 @@ import {
 } from "./helpers";
 import { BudgetTemplate } from "./BudgetTemplate";
 import { generateUniqueId } from "../utils";
-import { StorageAdapter } from "./adapters";
-import { BudgetItem, EnrichedBudgetGroup } from "./types";
+import type { StorageAdapter } from "./adapters";
+import type { BudgetItem, EnrichedBudgetGroup } from "./types";
 
 export function useBudgetStore(
   monthKey: string,

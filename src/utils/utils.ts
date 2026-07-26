@@ -1,4 +1,4 @@
-import { BudgetGroup } from "./budgetStore/types";
+import type { BudgetGroup } from "./budgetStore/types";
 
 export const generateUniqueId = (): string =>
   Array.from(window.crypto.getRandomValues(new Uint8Array(16)))
