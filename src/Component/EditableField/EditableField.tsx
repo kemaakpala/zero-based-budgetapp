@@ -1,7 +1,16 @@
-import React, { useState, useRef, useEffect } from "react";
-import PropTypes from "prop-types";
+import { useState, useRef, useEffect } from "react";
+import type { KeyboardEvent, ChangeEvent } from "react";
 import TextField from "../TextField/TextField";
 import "./styles/EditableField.css";
+
+export interface EditableFieldProps {
+  value: string | number;
+  onSave: (val: string | number) => void;
+  type?: string;
+  prefix?: string;
+  className?: string;
+  placeholder?: string;
+}
 
 const EditableField = ({
   value,
@@ -10,10 +19,10 @@ const EditableField = ({
   prefix = "",
   className = "",
   placeholder = "",
-}) => {
+}: EditableFieldProps) => {
   const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState(value);
-  const inputRef = useRef(null);
+  const [draft, setDraft] = useState<string | number>(value);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setDraft(value);
@@ -29,7 +38,7 @@ const EditableField = ({
     setDraft(value);
   };
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       inputRef.current?.blur();
     } else if (e.key === "Escape") {
@@ -48,7 +57,9 @@ const EditableField = ({
           id={`editable-${type}-${Date.now()}`}
           type={type}
           value={draft}
-          onChange={(e) => setDraft(e.target.value)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            setDraft(e.target.value)
+          }
           onBlur={commit}
           onKeyDown={handleKeyDown}
           className="editable-field__input"
@@ -69,15 +80,6 @@ const EditableField = ({
       {value}
     </span>
   );
-};
-
-EditableField.propTypes = {
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  onSave: PropTypes.func.isRequired,
-  type: PropTypes.string,
-  prefix: PropTypes.string,
-  className: PropTypes.string,
-  placeholder: PropTypes.string,
 };
 
 export default EditableField;

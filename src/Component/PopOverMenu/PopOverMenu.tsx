@@ -1,24 +1,30 @@
-import React from "react";
-import PropTypes from "prop-types";
+import type { ReactNode } from "react";
 import Button from "../Button/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import "./styles/PopOverMenu.css";
 
-const MenuItem = ({ children }) => (
+export interface MenuItemType {
+  title: string;
+  icon: IconDefinition;
+  description?: string;
+  action?: () => void;
+}
+
+export interface PopOverMenuProps {
+  menuList: MenuItemType[];
+  width: string;
+  left: string;
+}
+
+const MenuItem = ({ children }: { children: ReactNode }) => (
   <li className="popover-menu-list-item">{children}</li>
 );
 
 /**
  * PopOverMenu component renders a navigation menu with a list of items.
- *
- * @param {Object[]} menuList - Array of menu items.
- * @param {string} menuList[].title - Title of the menu item.
- * @param {Object} menuList[].icon - Icon of the menu item.
- * @param {string} [menuList[].description] - Description of the menu item.
- * @param {string} width - Width of the menu.
- * @param {string} left - Left position of the menu.
  */
-function PopOverMenu({ menuList, width, left }) {
+function PopOverMenu({ menuList, width, left }: PopOverMenuProps) {
   return (
     <nav>
       <ul className="popover-menu-list" style={{ width, left }}>
@@ -51,15 +57,4 @@ function PopOverMenu({ menuList, width, left }) {
   );
 }
 
-PopOverMenu.propTypes = {
-  menuList: PropTypes.arrayOf(
-    PropTypes.shape({
-      title: PropTypes.string.isRequired,
-      icon: PropTypes.object.isRequired,
-      description: PropTypes.string,
-    })
-  ).isRequired,
-  width: PropTypes.string.isRequired,
-  left: PropTypes.string.isRequired,
-};
 export default PopOverMenu;
