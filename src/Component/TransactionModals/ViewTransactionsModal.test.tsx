@@ -1,20 +1,28 @@
-import React from "react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import ViewTransactionsModal from "./ViewTransactionsModal";
+import type { BudgetItem, Transaction } from "../../utils/budgetStore/types";
 
 describe("ViewTransactionsModal", () => {
-  const mockItem = { id: "h1", name: "Rent / Mortgage" };
-  const mockTransactions = [
+  const mockItem: BudgetItem = {
+    id: "h1",
+    name: "Rent / Mortgage",
+    assigned: 1000,
+    type: "expense",
+  };
+  const mockTransactions: Transaction[] = [
     {
       id: "tx1",
       payee: "Rent July",
       amount: 950.0,
+      budgetItemId: "h1",
       date: "2026-06-18T10:00:00.000Z",
     },
     {
       id: "tx2",
       payee: "Rent Latefee",
       amount: 50.0,
+      budgetItemId: "h1",
       date: "2026-06-18T11:00:00.000Z",
     },
   ];
@@ -87,7 +95,7 @@ describe("ViewTransactionsModal", () => {
     );
 
     const deleteBtns = screen.getAllByTitle("Delete Transaction");
-    fireEvent.click(deleteBtns[0]); // Delete first transaction (tx1)
+    fireEvent.click(deleteBtns[0]!); // Delete first transaction (tx1)
 
     expect(mockOnDeleteTransaction).toHaveBeenCalledWith("tx1");
   });

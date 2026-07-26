@@ -1,9 +1,15 @@
-import React from "react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import AddTransactionModal from "./AddTransactionModal";
+import type { BudgetItem } from "../../utils/budgetStore/types";
 
 describe("AddTransactionModal", () => {
-  const mockItem = { id: "h1", name: "Rent / Mortgage" };
+  const mockItem: BudgetItem = {
+    id: "h1",
+    name: "Rent / Mortgage",
+    assigned: 0,
+    type: "expense",
+  };
   const mockOnClose = vi.fn();
   const mockOnSubmit = vi.fn();
 
@@ -36,8 +42,8 @@ describe("AddTransactionModal", () => {
     expect(screen.getByText("Add Transaction")).toBeInTheDocument();
     expect(screen.getByDisplayValue("Rent / Mortgage")).toBeInTheDocument();
 
-    const nameInput = screen.getByPlaceholderText(/Tesco/i);
-    const amountInput = screen.getByPlaceholderText("0.00");
+    const nameInput = screen.getByPlaceholderText(/Tesco/i) as HTMLInputElement;
+    const amountInput = screen.getByPlaceholderText("0.00") as HTMLInputElement;
 
     fireEvent.change(nameInput, { target: { value: "Landlord" } });
     fireEvent.change(amountInput, { target: { value: "850.00" } });

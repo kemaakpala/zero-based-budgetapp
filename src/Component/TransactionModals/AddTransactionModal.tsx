@@ -1,9 +1,22 @@
-import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
+import { useState, useEffect } from "react";
+import type { ChangeEvent, MouseEvent, JSX } from "react";
 import TextField from "../TextField/TextField";
+import type { BudgetItem } from "../../utils/budgetStore/types";
 import "./styles/TransactionModals.css";
 
-const AddTransactionModal = ({ isOpen, budgetItem, onClose, onSubmit }) => {
+export interface AddTransactionModalProps {
+  isOpen: boolean;
+  budgetItem?: BudgetItem | null;
+  onClose: () => void;
+  onSubmit: (name: string, amount: string) => void;
+}
+
+const AddTransactionModal = ({
+  isOpen,
+  budgetItem,
+  onClose,
+  onSubmit,
+}: AddTransactionModalProps): JSX.Element | null => {
   const [txName, setTxName] = useState("");
   const [txAmount, setTxAmount] = useState("");
 
@@ -25,12 +38,15 @@ const AddTransactionModal = ({ isOpen, budgetItem, onClose, onSubmit }) => {
   };
 
   const parsedAmount = parseFloat(txAmount) || 0;
-  const currentBalance = parseFloat(budgetItem.outstandingBalance) || 0;
+  const currentBalance = parseFloat(String(budgetItem.outstandingBalance)) || 0;
   const balanceAfterPayment = currentBalance - parsedAmount;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="modal-box"
+        onClick={(e: MouseEvent<HTMLDivElement>) => e.stopPropagation()}
+      >
         <div className="modal-header">
           <h3>{isDebt ? "Record Payment" : "Add Transaction"}</h3>
           <button className="btn-close-modal" onClick={onClose}>
@@ -65,7 +81,9 @@ const AddTransactionModal = ({ isOpen, budgetItem, onClose, onSubmit }) => {
               id="txName"
               label="Payee / Description"
               value={txName}
-              onChange={(e) => setTxName(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setTxName(e.target.value)
+              }
               placeholder={
                 isDebt ? "e.g. Monthly payment" : "e.g. Tesco, Rent payment"
               }
@@ -79,7 +97,9 @@ const AddTransactionModal = ({ isOpen, budgetItem, onClose, onSubmit }) => {
               type="number"
               step="0.01"
               value={txAmount}
-              onChange={(e) => setTxAmount(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setTxAmount(e.target.value)
+              }
               placeholder="0.00"
               autoFocus={isDebt}
             />
@@ -103,18 +123,6 @@ const AddTransactionModal = ({ isOpen, budgetItem, onClose, onSubmit }) => {
       </div>
     </div>
   );
-};
-
-AddTransactionModal.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  budgetItem: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    type: PropTypes.string,
-    outstandingBalance: PropTypes.number,
-  }),
-  onClose: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired,
 };
 
 export default AddTransactionModal;

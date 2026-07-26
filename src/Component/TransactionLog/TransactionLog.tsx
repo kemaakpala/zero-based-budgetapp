@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from "react";
-import PropTypes from "prop-types";
+import { useState, useMemo } from "react";
+import type { ChangeEvent } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronDown,
@@ -10,24 +10,32 @@ import {
   faReceipt,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
+import type { Transaction, BudgetGroup } from "../../utils/budgetStore/types";
 import "./styles/TransactionLog.css";
+
+export interface TransactionLogProps {
+  transactions?: Transaction[];
+  budgetGroups?: BudgetGroup[];
+  onDeleteTransaction: (txId: string) => void;
+  onDeleteMultipleTransactions: (txIds: string[]) => void;
+}
 
 const TransactionLog = ({
   transactions = [],
   budgetGroups = [],
   onDeleteTransaction,
   onDeleteMultipleTransactions,
-}) => {
+}: TransactionLogProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedItemId, setSelectedItemId] = useState("all");
-  const [selectedTxIds, setSelectedTxIds] = useState([]);
+  const [selectedTxIds, setSelectedTxIds] = useState<string[]>([]);
 
   // Resolve item name and group name from budgetItemId
   const getBudgetItemDetails = useMemo(() => {
-    const cache = {};
-    return (itemId) => {
-      if (cache[itemId]) return cache[itemId];
+    const cache: Record<string, { itemName: string; groupName: string }> = {};
+    return (itemId: string) => {
+      if (cache[itemId]) return cache[itemId]!;
 
       for (const group of budgetGroups) {
         for (const item of group.budgetGroupItems) {
@@ -47,7 +55,7 @@ const TransactionLog = ({
 
   // Unique list of budget items that have transactions, or all items in budget
   const budgetItemsOptions = useMemo(() => {
-    const options = [];
+    const options: { id: string; name: string; groupName: string }[] = [];
     budgetGroups.forEach((group) => {
       group.budgetGroupItems.forEach((item) => {
         options.push({
@@ -73,11 +81,11 @@ const TransactionLog = ({
           selectedItemId === "all" || tx.budgetItemId === selectedItemId;
         return matchSearch && matchItem;
       })
-      .sort((a, b) => new Date(b.date) - new Date(a.date)); // Sort by date descending
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // Sort by date descending
   }, [transactions, searchTerm, selectedItemId]);
 
   // Handle single row selection
-  const handleSelectRow = (txId) => {
+  const handleSelectRow = (txId: string) => {
     setSelectedTxIds((prev) =>
       prev.includes(txId) ? prev.filter((id) => id !== txId) : [...prev, txId]
     );
@@ -177,7 +185,9 @@ const TransactionLog = ({
                     type="text"
                     placeholder="Search payee..."
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      setSearchTerm(e.target.value)
+                    }
                     className="filter-input filter-search"
                   />
                   {searchTerm && (
@@ -196,7 +206,9 @@ const TransactionLog = ({
                   <FontAwesomeIcon icon={faFilter} className="filter-icon" />
                   <select
                     value={selectedItemId}
-                    onChange={(e) => setSelectedItemId(e.target.value)}
+                    onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                      setSelectedItemId(e.target.value)
+                    }
                     className="filter-input filter-select"
                   >
                     <option value="all">All Budget Items</option>
@@ -340,32 +352,6 @@ const TransactionLog = ({
       )}
     </div>
   );
-};
-
-TransactionLog.propTypes = {
-  transactions: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      payee: PropTypes.string.isRequired,
-      amount: PropTypes.number.isRequired,
-      budgetItemId: PropTypes.string.isRequired,
-      date: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-  budgetGroups: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string.isRequired,
-      budgetGroupItems: PropTypes.arrayOf(
-        PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          name: PropTypes.string.isRequired,
-          assigned: PropTypes.number.isRequired,
-        })
-      ).isRequired,
-    })
-  ).isRequired,
-  onDeleteTransaction: PropTypes.func.isRequired,
-  onDeleteMultipleTransactions: PropTypes.func.isRequired,
 };
 
 export default TransactionLog;

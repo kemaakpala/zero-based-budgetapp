@@ -1,9 +1,10 @@
-import React from "react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import TransactionLog from "./TransactionLog";
+import type { Transaction, BudgetGroup } from "../../utils/budgetStore/types";
 
 describe("TransactionLog", () => {
-  const mockTransactions = [
+  const mockTransactions: Transaction[] = [
     {
       id: "tx1",
       payee: "Tesco Groceries",
@@ -20,7 +21,7 @@ describe("TransactionLog", () => {
     },
   ];
 
-  const mockBudgetGroups = [
+  const mockBudgetGroups: BudgetGroup[] = [
     {
       name: "Housing",
       budgetGroupItems: [
@@ -28,6 +29,7 @@ describe("TransactionLog", () => {
           id: "item-rent",
           name: "Rent / Mortgage",
           assigned: 1200.0,
+          type: "expense",
         },
       ],
     },
@@ -38,6 +40,7 @@ describe("TransactionLog", () => {
           id: "item-groceries",
           name: "Groceries",
           assigned: 100.0,
+          type: "expense",
         },
       ],
     },
@@ -156,7 +159,7 @@ describe("TransactionLog", () => {
     fireEvent.click(screen.getByRole("button", { name: /Transactions Log/i }));
 
     const deleteButtons = screen.getAllByTitle("Delete transaction");
-    fireEvent.click(deleteButtons[0]); // delete Tesco
+    fireEvent.click(deleteButtons[0]!); // delete Tesco
 
     expect(confirmSpy).toHaveBeenCalledWith(
       'Delete transaction "Tesco Groceries" for £45.50?'
@@ -189,13 +192,13 @@ describe("TransactionLog", () => {
     // checkboxes[2] is tx2 (Rent)
 
     // Select Tesco
-    fireEvent.click(checkboxes[1]);
+    fireEvent.click(checkboxes[1]!);
 
     // Bulk action bar should appear
     expect(screen.getByText("1 item selected")).toBeInTheDocument();
 
     // Select Rent
-    fireEvent.click(checkboxes[2]);
+    fireEvent.click(checkboxes[2]!);
     expect(screen.getByText("2 items selected")).toBeInTheDocument();
 
     // Perform batch delete

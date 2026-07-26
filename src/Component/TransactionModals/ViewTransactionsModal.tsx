@@ -1,8 +1,16 @@
-import React from "react";
-import PropTypes from "prop-types";
+import type { MouseEvent, JSX } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import type { BudgetItem, Transaction } from "../../utils/budgetStore/types";
 import "./styles/TransactionModals.css";
+
+export interface ViewTransactionsModalProps {
+  isOpen: boolean;
+  budgetItem?: BudgetItem | null;
+  transactions?: Transaction[];
+  onClose: () => void;
+  onDeleteTransaction: (txId: string) => void;
+}
 
 const ViewTransactionsModal = ({
   isOpen,
@@ -10,12 +18,15 @@ const ViewTransactionsModal = ({
   transactions = [],
   onClose,
   onDeleteTransaction,
-}) => {
+}: ViewTransactionsModalProps): JSX.Element | null => {
   if (!isOpen || !budgetItem) return null;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="modal-box"
+        onClick={(e: MouseEvent<HTMLDivElement>) => e.stopPropagation()}
+      >
         <div className="modal-header">
           <h3>Transactions List</h3>
           <button className="btn-close-modal" onClick={onClose}>
@@ -61,24 +72,6 @@ const ViewTransactionsModal = ({
       </div>
     </div>
   );
-};
-
-ViewTransactionsModal.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  budgetItem: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-  }),
-  transactions: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      payee: PropTypes.string.isRequired,
-      amount: PropTypes.number.isRequired,
-      date: PropTypes.string.isRequired,
-    })
-  ),
-  onClose: PropTypes.func.isRequired,
-  onDeleteTransaction: PropTypes.func.isRequired,
 };
 
 export default ViewTransactionsModal;
