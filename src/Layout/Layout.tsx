@@ -8,6 +8,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import "./Layout.css";
+
 export default function Layout() {
   const months = [
     "January",
@@ -91,21 +92,6 @@ export default function Layout() {
       <main className="App-main">
         <Outlet />
       </main>
-      {/* <aside>
-        <nav>
-          <ul>
-            <li>
-              <Link to={"Budget"}>Budget</Link>
-            </li>
-            <li>
-              <Link to={"insights"}>Insights</Link>
-            </li>
-            <li>
-              <Link to={"settings"}>Settings</Link>
-            </li>
-          </ul>
-        </nav>
-      </aside> */}
       <footer className="App-footer">
         <hr />
         <p>&copy; {year}</p>
